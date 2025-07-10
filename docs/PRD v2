@@ -1,0 +1,473 @@
+# HireGen-AI: Premium Design System & Frontend Specifications
+
+## 🎨 Core Design Philosophy
+
+**"Effortless Intelligence"** - Every interface element should feel intuitive, luxurious, and psychologically comforting while conveying cutting-edge AI capabilities.
+# **Apple Centric Like Design**
+**Feel & Aesthetics** - Fluid, Glassmorphism
+**Premium** - Every interface element should be designed to be premium.
+**Intuitive** - Every interface element should be designed to be intuitive.
+**Easy to Use** - Every interface element should be designed to be easy to use.
+**Premium** - Every interface element should be designed to be premium.
+
+---
+
+## 🌈 Color Psychology & Palette
+
+### Primary Colors
+- **Deep Sapphire**: `#1a365d` - Trust, intelligence, stability
+- **Electric Blue**: `#3182ce` - Innovation, technology, progress
+- **Soft Periwinkle**: `#e6f3ff` - Calm, accessible, friendly
+
+### Secondary Colors
+- **Warm Gold**: `#f6e05e` - Success, achievement, premium
+- **Sage Green**: `#48bb78` - Growth, harmony, positive outcomes
+- **Soft Coral**: `#feb2b2` - Warmth, human connection, alerts
+
+### Neutral Foundation
+- **Pure White**: `#ffffff` - Clarity, simplicity, space
+- **Whisper Gray**: `#f7fafc` - Subtle backgrounds, gentle separation
+- **Slate Gray**: `#4a5568` - Professional text, reliability
+- **Charcoal**: `#2d3748` - Strong text, authority
+
+---
+
+## 📝 Typography Hierarchy
+
+### Primary Font: **Inter** (Clean, modern, highly readable)
+### Secondary Font: **Poppins** (Friendly, approachable for headings)
+
+#### Font Specifications:
+- **Hero Headlines**: Poppins Bold, 48px, -0.5px letter-spacing
+- **Page Titles**: Poppins SemiBold, 32px, -0.3px letter-spacing
+- **Section Headers**: Poppins Medium, 24px, -0.2px letter-spacing
+- **Body Large**: Inter Regular, 18px, 1.6 line-height
+- **Body Medium**: Inter Regular, 16px, 1.5 line-height
+- **Body Small**: Inter Regular, 14px, 1.4 line-height
+- **Labels**: Inter Medium, 12px, 0.1px letter-spacing, uppercase
+- **Buttons**: Inter SemiBold, 16px, 0.1px letter-spacing
+
+---
+
+## 🎯 Component Design System
+
+### Buttons
+#### Primary Button
+- **Background**: Linear gradient `#3182ce` to `#2c5282`
+- **Padding**: 16px 32px
+- **Border-radius**: 12px
+- **Shadow**: 0 4px 12px rgba(49, 130, 206, 0.3)
+- **Hover**: Lift 2px, shadow intensifies
+- **Active**: Scale 0.98, shadow reduces
+
+#### Secondary Button
+- **Background**: `#ffffff` with 1px border `#e2e8f0`
+- **Text**: `#4a5568`
+- **Hover**: Background `#f7fafc`, border `#cbd5e0`
+
+### Input Fields
+- **Background**: `#ffffff`
+- **Border**: 1px solid `#e2e8f0`
+- **Border-radius**: 8px
+- **Padding**: 14px 16px
+- **Focus**: Border `#3182ce`, glow 0 0 0 3px rgba(49, 130, 206, 0.1)
+- **Placeholder**: `#a0aec0`
+
+### Cards
+- **Background**: `#ffffff`
+- **Border-radius**: 16px
+- **Shadow**: 0 4px 20px rgba(0, 0, 0, 0.08)
+- **Hover**: Shadow intensifies, slight lift
+- **Padding**: 24px
+
+---
+
+## 📱 Page-by-Page Specifications
+
+### 1. Authentication Page (`/login`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│           [HireGen Logo]             │
+│                                     │
+│        Welcome Back                 │
+│    Continue your hiring journey     │
+│                                     │
+│    marcus.thompson@techcorp.com     │
+│         ••••••••••••••••            │
+│                                     │
+│      [Sign In Button - Full Width]  │
+│                                     │
+│    Don't have an account? Sign up   │
+│                                     │
+│   [Google] [LinkedIn] [Microsoft]   │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Background**: Subtle gradient from `#f7fafc` to `#e6f3ff`
+- **Container**: 400px max-width, centered, 32px padding
+- **Logo**: 48px height, Deep Sapphire color
+- **Main Heading**: Poppins SemiBold 32px, `#2d3748`
+- **Subheading**: Inter Regular 16px, `#4a5568`, 8px margin-top
+- **Input Fields**: 100% width, 56px height, 16px margin-bottom
+- **Sign In Button**: 56px height, full width, 24px margin-top
+- **Social Buttons**: 48px height, 48px width, 16px between each
+
+### 2. Search Creation Page (`/search/new`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│  [MT] [Settings] [3 notifications]  │
+│                                     │
+│     🚀 Find Your Perfect Hire      │
+│   Describe your role in plain English │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ Looking for a Senior iOS         │ │
+│  │ Developer with 5+ years          │ │
+│  │ experience in Swift, SwiftUI,    │ │
+│  │ and Core Data. Must have         │ │
+│  │ experience with payment APIs     │ │
+│  │ and fintech applications...      │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  [Advanced Filters ▼]              │
+│                                     │
+│    [Start AI Search - Prominent]    │
+│                                     │
+│  Recent Searches:                   │
+│  • Senior React Developer at Netflix│
+│  • DevOps Engineer for Stripe      │
+│  • Product Manager at Shopify      │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Header**: 64px height, `#ffffff` background, subtle shadow
+- **Profile Icons**: 32px, right-aligned, 16px spacing
+- **Hero Section**: 80px padding-top, center-aligned
+- **Main Heading**: Poppins Bold 36px, `#2d3748`
+- **Subheading**: Inter Regular 18px, `#4a5568`, 12px margin-top
+- **Text Area**: 160px height, 24px padding, placeholder in `#a0aec0`
+- **Advanced Filters**: Collapsible, 16px margin-top
+- **Search Button**: 56px height, full width, prominent gradient
+- **Recent Searches**: 32px margin-top, each item 40px height
+
+### 3. Search Results Page (`/search/[id]`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│  [Back] Senior iOS Developer [⚙️]   │
+│                                     │
+│  🎯 23 candidates found in 1.7 hrs │
+│                                     │
+│  [List] [Grid] [Filters] [Sort ▼]  │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ [👨‍💻] David Chen             97% │ │
+│  │ Senior iOS Developer @ Apple    │ │
+│  │ 🏆 Perfect match • 📍 Cupertino │ │
+│  │ Swift, SwiftUI, Core Data, ARKit│ │
+│  │ 8 years exp • Available now     │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ [👩‍💻] Sarah Martinez         94% │ │
+│  │ Lead iOS Engineer @ Uber        │ │
+│  │ 🎯 Excellent match • 📍 Remote  │ │
+│  │ Swift, Objective-C, Payment APIs│ │
+│  │ 7 years exp • 2 weeks notice    │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ [👨‍💻] Michael Johnson        91% │ │
+│  │ iOS Developer @ Square          │ │
+│  │ 🎯 Great match • 📍 San Francisco│ │
+│  │ Swift, SwiftUI, Fintech, TDD    │ │
+│  │ 6 years exp • Open to offers    │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  [Load More Candidates]             │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Header**: Breadcrumb navigation, 48px height
+- **Results Summary**: Poppins Medium 20px, `#2d3748`, celebratory emoji
+- **View Toggle**: Segmented control, 40px height
+- **Candidate Cards**: 120px height, 16px margin-bottom
+- **Avatar**: 56px diameter, positioned top-left
+- **Match Score**: 28px height, top-right, gradient background
+- **Name**: Poppins SemiBold 18px, `#2d3748`
+- **Title**: Inter Regular 14px, `#4a5568`
+- **Tags**: 8px padding, rounded, colored backgrounds
+- **Skills**: Comma-separated, `#4a5568`, 12px font
+
+### 4. Candidate Profile Page (`/candidates/[id]`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│  [Back] [Share] [Contact] [Star]    │
+│                                     │
+│  ┌─────────────────────────────────┐ │
+│  │ [👨‍💻] David Chen              │ │
+│  │ Senior iOS Developer @ Apple 97%│ │
+│  │ 📍 Cupertino, CA • 🎯 Available │ │
+│  │ 💰 $165k-$190k • 🕐 PST timezone│ │
+│  │                                 │ │
+│  │ [Schedule Interview] [Message]  │ │
+│  └─────────────────────────────────┘ │
+│                                     │
+│  ⭐ AI Assessment                   │
+│  Technical: 97% • Cultural: 94%     │
+│  Communication: 96% • Leadership: 89%│
+│                                     │
+│  💼 Experience                      │
+│  • Senior iOS Dev @ Apple (2019-2024)│
+│  • iOS Engineer @ Tesla (2017-2019)│
+│  • Mobile Dev @ Airbnb (2016-2017) │
+│                                     │
+│  🎓 Education                       │
+│  • MS Computer Science, Stanford   │
+│  • BS Software Engineering, MIT    │
+│                                     │
+│  🛠️ Core Skills                     │
+│  [Swift] [SwiftUI] [Core Data]      │
+│  [ARKit] [Payment APIs] [TDD]       │
+│  [Firebase] [REST APIs] [Git]       │
+│                                     │
+│  📞 Ariane's Voice Analysis         │
+│  "David demonstrates exceptional    │
+│  technical clarity and leadership   │
+│  potential. His communication style │
+│  is direct yet collaborative, with  │
+│  strong problem-solving instincts." │
+│                                     │
+│  🏆 Achievements                    │
+│  • Led iOS team for Apple Pay      │
+│  • 15+ App Store published apps    │
+│  • Speaker at WWDC 2023            │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Header Actions**: 40px height, icon buttons with tooltips
+- **Profile Hero**: 200px height, gradient background
+- **Avatar**: 80px diameter, professional shadow
+- **Name**: Poppins Bold 28px, `#ffffff`
+- **Title**: Inter Regular 16px, `#e6f3ff`
+- **Action Buttons**: 48px height, side-by-side
+- **Section Headers**: Poppins Medium 20px, emoji prefix
+- **AI Scores**: Circular progress indicators, 32px diameter
+- **Experience Items**: 56px height, timeline design
+- **Skills Tags**: 32px height, colorful, rounded
+- **Voice Analysis**: Card with quote styling, italicized text
+
+### 5. Settings Page (`/settings`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│  Settings                           │
+│                                     │
+│  👤 Profile                         │
+│  Marcus Thompson                    │
+│  marcus.thompson@techcorp.com       │
+│  TechCorp Industries                │
+│                                     │
+│  🔔 Notifications                   │
+│  ● Email alerts for new matches     │
+│  ● Push notifications (mobile)      │
+│  ○ Weekly digest reports            │
+│  ● Slack integration (#hiring)      │
+│                                     │
+│  🎯 Search Preferences              │
+│  Default location: [Remote ▼]      │
+│  Salary range: [$120k - $180k]     │
+│  Experience level: [Senior ▼]      │
+│  Industry focus: [Fintech ▼]       │
+│                                     │
+│  📊 Usage & Limits (Scale Plan)     │
+│  Searches: 7/10 this month         │
+│  AI screenings: 23/50               │
+│  Profile views: 145/500             │
+│  Next reset: January 15, 2025      │
+│                                     │
+│  🎛️ AI Preferences                  │
+│  ● Enable Ariane voice screening    │
+│  ● Auto-rank by cultural fit        │
+│  ● Include personality insights     │
+│  ○ Advanced technical assessments   │
+│                                     │
+│  [Save Changes]                     │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Page Title**: Poppins SemiBold 32px, 32px margin-bottom
+- **Section Groups**: 32px spacing between groups
+- **Section Headers**: 24px height, emoji + text
+- **Toggle Switches**: iOS-style, 24px height
+- **Input Fields**: Consistent with login page
+- **Usage Bars**: Progress indicators with percentage
+- **Save Button**: Sticky at bottom, full width
+
+### 6. Pricing Page (`/pricing`)
+
+#### Layout Structure:
+```
+┌─────────────────────────────────────┐
+│  Choose Your Plan                   │
+│  Scale your hiring with AI          │
+│                                     │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ │
+│  │ Startup │ │  Scale  │ │Enterprise│ │
+│  │  $299   │ │  $399   │ │ $2,000  │ │
+│  │ /month  │ │ /month  │ │ /month  │ │
+│  │         │ │[POPULAR]│ │         │ │
+│  │ 5 roles │ │10 roles │ │Unlimited│ │
+│  │Basic AI │ │Full AI  │ │Premium+ │ │
+│  │screening│ │+ voice  │ │Dedicated│ │
+│  │Email    │ │+ Slack  │ │ Success │ │
+│  │support  │ │+ Phone  │ │ Manager │ │
+│  │         │ │support  │ │+ SLA    │ │
+│  │[Select] │ │[Select] │ │[Contact]│ │
+│  └─────────┘ └─────────┘ └─────────┘ │
+│                                     │
+│  ✨ All plans include:              │
+│  • 24-hour candidate delivery       │
+│  • AI-powered screening with Ariane │
+│  • Integration with LinkedIn/GitHub │
+│  • Advanced search filters          │
+│  • Mobile app access               │
+│  • Export candidate data           │
+│                                     │
+│  💳 Used by 200+ companies:         │
+│  [Stripe] [Shopify] [Airbnb] [Uber] │
+│                                     │
+│  [Start 14-Day Free Trial]          │
+│  No credit card required            │
+└─────────────────────────────────────┘
+```
+
+#### Detailed Specifications:
+- **Hero Section**: 64px padding, center-aligned
+- **Main Heading**: Poppins Bold 36px, `#2d3748`
+- **Subheading**: Inter Regular 18px, `#4a5568`
+- **Pricing Cards**: 320px height, 16px spacing
+- **Popular Badge**: Gradient background, positioned top-right
+- **Price**: Poppins Bold 32px, `#2d3748`
+- **Features**: Checkmark icons, 16px spacing
+- **Select Buttons**: 40px height, full width within card
+- **Included Features**: Bulleted list, 24px margin-top each
+
+---
+
+## 🎭 Micro-Interactions & Animations
+
+### Button Interactions
+- **Hover**: Smooth 0.2s ease-out transition
+- **Click**: 0.1s scale animation (0.98x)
+- **Success**: Brief green checkmark animation
+
+### Page Transitions
+- **Fade In**: 0.3s opacity transition
+- **Slide Up**: Cards animate in from bottom
+- **Stagger**: Sequential animation for lists
+
+### Loading States
+- **Skeleton Loading**: Shimmer effect for content
+- **Progress Indicators**: Smooth color transitions
+- **Pulsing Dots**: For real-time AI processing
+
+### Form Interactions
+- **Focus**: Smooth border color change
+- **Validation**: Gentle shake for errors
+- **Success**: Green checkmark slide-in
+
+---
+
+## 📐 Spacing & Layout System
+
+### Grid System
+- **Container**: 1200px max-width, 24px padding
+- **Columns**: 12-column grid, 24px gutters
+- **Breakpoints**: 
+  - Mobile: 320px+
+  - Tablet: 768px+
+  - Desktop: 1024px+
+
+### Spacing Scale
+- **4px**: Micro elements
+- **8px**: Small spacing
+- **16px**: Default spacing
+- **24px**: Section spacing
+- **32px**: Large spacing
+- **48px**: Extra large spacing
+- **64px**: Hero spacing
+
+---
+
+## 🎨 Psychological Design Elements
+
+### Trust Indicators
+- **Subtle shadows**: Depth without overwhelming
+- **Rounded corners**: Friendly, approachable
+- **Consistent spacing**: Predictable, comfortable
+
+### Attention Direction
+- **Color hierarchy**: Blue for primary actions
+- **Size hierarchy**: Important elements larger
+- **Contrast**: High contrast for readability
+
+### Emotional Response
+- **Success states**: Celebratory colors and animations
+- **Progress indicators**: Sense of advancement
+- **Personal touches**: Avatars, personalized messages
+
+---
+
+## 🔧 Technical Implementation Notes
+
+### CSS Framework
+- **Tailwind CSS**: Utility-first approach
+- **Custom components**: Consistent design tokens
+- **Responsive design**: Mobile-first approach
+
+### Performance
+- **Lazy loading**: Images and components
+- **Optimized fonts**: WOFF2 format
+- **Minimal JavaScript**: Progressive enhancement
+
+### Accessibility
+- **Color contrast**: WCAG AA compliance
+- **Focus indicators**: Visible keyboard navigation
+- **Screen reader**: Semantic HTML and ARIA labels
+
+---
+
+## 🎯 Key Success Metrics
+
+### User Engagement
+- **Time on page**: Increased by compelling design
+- **Click-through rates**: Improved by clear CTAs
+- **Task completion**: Streamlined user flows
+
+### Conversion Optimization
+- **Sign-up rates**: Reduced friction in auth flow
+- **Plan upgrades**: Clear value proposition
+- **Feature adoption**: Discoverable interface
+
+### Brand Perception
+- **Trust signals**: Professional, polished design
+- **Innovation**: AI-forward visual language
+- **Accessibility**: Inclusive design principles
+
+---
+
+*"Every pixel serves a purpose. Every interaction tells a story. Every screen builds trust."*
