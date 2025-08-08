@@ -4,6 +4,508 @@ Version: 1.0.0
 Spec: OAS 3.1 (source path: `/openapi.json`)
 Summary: AI-powered talent sourcing using multi-agent workflows
 Full Reference: api_full_reference.md
+
+## Content
+search
+
+
+GET
+/api/v1/search/test
+Test Endpoint
+
+
+POST
+/api/v1/search/search/simple-mock
+Simple Mock Search
+
+
+POST
+/api/v1/search/search
+Search Talents
+
+
+GET
+/api/v1/search/search/{search_id}
+Get Search Results
+
+
+POST
+/api/v1/search/search/{search_id}/refine
+Refine Search
+
+
+GET
+/api/v1/search/search/{search_id}/report
+Get Search Report
+
+
+GET
+/api/v1/search/search/history
+Get Search History
+
+
+GET
+/api/v1/search/test-simple
+Test Simple
+
+agents
+
+
+GET
+/api/v1/agents/agents/status
+Get Agents Status
+
+
+GET
+/api/v1/agents/agents/{agent_name}/status
+Get Agent Status
+
+
+POST
+/api/v1/agents/agents/health-check
+Perform Health Check
+
+
+GET
+/api/v1/agents/agents/metrics
+Get Agent Metrics
+
+
+POST
+/api/v1/agents/agents/{agent_name}/restart
+Restart Agent
+
+
+GET
+/api/v1/agents/agents/logs
+Get Agent Logs
+
+
+POST
+/api/v1/agents/agents/config
+Update Agent Config
+
+
+GET
+/api/v1/agents/agents/workflows
+Get Active Workflows
+
+monitoring
+
+
+GET
+/api/v1/monitoring/health
+Health Check
+
+
+GET
+/api/v1/monitoring/metrics
+Get Metrics
+
+
+GET
+/api/v1/monitoring/metrics/performance
+Get Performance Metrics
+
+
+GET
+/api/v1/monitoring/alerts
+Get Alerts
+
+
+POST
+/api/v1/monitoring/alerts/{alert_name}/clear
+Clear Alert
+
+
+GET
+/api/v1/monitoring/system/status
+Get System Status
+
+
+GET
+/api/v1/monitoring/logs
+Get Logs
+
+users
+
+
+POST
+/api/v1/users/
+Create User
+
+
+GET
+/api/v1/users/users/{user_id}
+Get User
+
+
+PUT
+/api/v1/users/{user_id}
+Update User
+
+
+POST
+/api/v1/users/reset-password-request
+Request Password Reset
+
+
+POST
+/api/v1/users/reset-password-verify
+Verify Password Reset
+
+
+POST
+/api/v1/users/create-email-otp
+Create Email Otp
+
+
+POST
+/api/v1/users/verify-email
+Verify Email
+
+
+POST
+/api/v1/users/resend-verification
+Resend Verification
+
+
+GET
+/api/v1/users/by-phone/{phone}
+Get User By Phone
+
+authentications
+
+
+POST
+/api/v1/auths/login
+Login
+
+
+POST
+/api/v1/auths/logout
+Logout
+
+
+
+POST
+/api/v1/auths/refresh
+Refresh Token
+
+
+GET
+/api/v1/auths/me
+Read Users Me
+
+
+
+DELETE
+/api/v1/auths/me
+Delete Account
+
+
+subscriptions
+
+
+POST
+/api/v1/subscriptions/
+Create Subscription
+
+
+
+GET
+/api/v1/subscriptions/me
+Get My Subscription
+
+
+
+GET
+/api/v1/subscriptions/me/history
+Get My Subscription History
+
+
+
+PUT
+/api/v1/subscriptions/{subscription_id}
+Update Subscription
+
+
+
+POST
+/api/v1/subscriptions/{subscription_id}/cancel
+Cancel Subscription
+
+
+
+GET
+/api/v1/subscriptions/subscriptions/{subscription_id}
+Get Subscription
+
+search-cache
+
+
+GET
+/api/v1/cache/history
+Get User Search History
+
+
+
+DELETE
+/api/v1/cache/history
+Clear User Search History
+
+
+
+GET
+/api/v1/cache/history/{search_id}
+Get User Search By Id
+
+
+
+DELETE
+/api/v1/cache/history/{search_id}
+Delete User Search History
+
+
+
+GET
+/api/v1/cache/statistics
+Get Cache Statistics
+
+
+
+POST
+/api/v1/cache/cleanup
+Cleanup Expired Cache
+
+
+
+GET
+/api/v1/cache/cache-info
+Get Cache Info
+
+
+extract-Profiles-from-LinkedIn
+
+
+GET
+/api/v1/core-signal/
+Root
+
+
+POST
+/api/v1/core-signal/search-talents
+Search Talents
+
+
+POST
+/api/v1/core-signal/fetch-talent-details
+Fetch Talent Details
+
+
+GET
+/api/v1/core-signal/search-status/{search_id}
+Get Search Status
+
+
+GET
+/api/v1/core-signal/talents
+Get Talents
+
+
+GET
+/api/v1/core-signal/talents/{talent_id}
+Get Talent By Id
+
+
+DELETE
+/api/v1/core-signal/talents/{talent_id}
+Delete Talent
+
+
+GET
+/api/v1/core-signal/search-history
+Get Search History
+
+
+POST
+/api/v1/core-signal/collect-by-id/{talent_id}
+Collect By Id
+
+
+POST
+/api/v1/core-signal/collect-by-shorthand-name
+Collect By Shorthand Name
+
+
+POST
+/api/v1/core-signal/search-database
+Search Database
+
+
+GET
+/api/v1/core-signal/search-database/by-linkedin
+Get Profile By Linkedin Url
+
+Health
+
+
+GET
+/api/v1/core-signal/
+Root
+
+Talent Search
+
+
+POST
+/api/v1/core-signal/search-talents
+Search Talents
+
+Talent Details
+
+
+POST
+/api/v1/core-signal/fetch-talent-details
+Fetch Talent Details
+
+Status
+
+
+GET
+/api/v1/core-signal/search-status/{search_id}
+Get Search Status
+
+Talent Management
+
+
+GET
+/api/v1/core-signal/talents
+Get Talents
+
+
+GET
+/api/v1/core-signal/talents/{talent_id}
+Get Talent By Id
+
+
+DELETE
+/api/v1/core-signal/talents/{talent_id}
+Delete Talent
+
+Search Management
+
+
+GET
+/api/v1/core-signal/search-history
+Get Search History
+
+Talent Collection
+
+
+POST
+/api/v1/core-signal/collect-by-id/{talent_id}
+Collect By Id
+
+
+POST
+/api/v1/core-signal/collect-by-shorthand-name
+Collect By Shorthand Name
+
+Database Search
+
+
+POST
+/api/v1/core-signal/search-database
+Search Database
+
+
+GET
+/api/v1/core-signal/search-database/by-linkedin
+Get Profile By Linkedin Url
+
+chat
+
+
+POST
+/api/v1/chat/chat
+Chat With Agent
+
+
+
+GET
+/api/v1/chat/chat/history
+Get Chat History
+
+
+
+GET
+/api/v1/chat/chat/sessions
+Get Chat Sessions
+
+
+
+POST
+/api/v1/chat/chat/analyze-search
+Analyze Search History
+
+
+
+GET
+/api/v1/chat/chat/status
+Get Chat Agent Status
+
+
+POST
+/api/v1/chat/chat/clear-session
+Clear Chat Session
+
+
+
+GET
+/api/v1/chat/chat/tools
+Get Available Tools
+
+legacy-auth
+
+
+POST
+/v1/auth/login
+Login
+
+
+POST
+/v1/auth/logout
+Logout
+
+
+
+POST
+/v1/auth/refresh
+Refresh Token
+
+
+GET
+/v1/auth/me
+Read Users Me
+
+
+
+DELETE
+/v1/auth/me
+Delete Account
+
+
+default
+
+
+GET
+/health
+Health Check
+
+
+GET
+/
+Root
 ---
 
 ## 1) Base setup
