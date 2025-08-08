@@ -7,6 +7,10 @@ hiregen-ai-webapp/
 ├── components/             # Reusable UI components
 ├── hooks/                  # Custom React hooks
 ├── lib/                    # Utility functions and configurations
+│   ├── api/                # API client and services
+│   ├── store/              # State management
+│   ├── types/              # TypeScript type definitions
+│   └── config/             # Configuration and feature flags
 ├── public/                 # Static assets
 ├── styles/                 # Global styles
 └── docs/                   # Project documentation
@@ -59,8 +63,56 @@ components/
 - **components/ui/**: Reusable UI primitives
 - **hooks/**: Custom React hooks for shared logic
 
+## API Integration Structure
+```
+lib/api/
+├── client.ts               # Main API client configuration
+├── auth.ts                 # Authentication manager
+├── services/               # Service-specific API methods
+│   ├── search.ts           # Search API endpoints
+│   ├── users.ts            # User management endpoints
+│   ├── subscriptions.ts    # Subscription endpoints
+│   ├── coreSignal.ts       # Core Signal (LinkedIn) endpoints
+│   ├── chat.ts             # Chat agent endpoints
+│   └── monitoring.ts       # System monitoring endpoints
+├── types/                  # API response types
+├── cache.ts                # Request caching and deduplication
+├── errors.ts               # Error handling and classification
+└── mock/                   # Mock data for development
+```
+
+## State Management Structure
+```
+lib/store/
+├── index.ts                # Store configuration
+├── slices/                 # State slices
+│   ├── auth.ts             # Authentication state
+│   ├── search.ts           # Search state and results
+│   ├── candidates.ts       # Candidate data
+│   └── ui.ts               # UI state (loading, errors)
+└── middleware/             # Store middleware (persistence, etc.)
+```
+
+## Custom Hooks Structure
+```
+hooks/
+├── useAuth.ts              # Authentication hook
+├── useSearch.ts            # Search functionality hook
+├── useChat.ts              # Chat agent hook
+├── useSubscription.ts      # Subscription management hook
+├── useCandidates.ts        # Candidate data hook
+└── api/                    # API-specific hooks
+    ├── useSearchQuery.ts   # Search API queries
+    ├── useUserQuery.ts     # User API queries
+    └── useCacheQuery.ts    # Cache management queries
+```
+
 ## Development Patterns
 - Server Components by default (Next.js 13+ App Router)
 - Client Components marked with `"use client"`
 - Shared utilities in `lib/` directory
 - Custom hooks for reusable stateful logic
+- API client with automatic retry and error handling
+- Progressive enhancement with feature flags
+- Mock data fallbacks for development
+- Type-safe API responses with generated TypeScript types

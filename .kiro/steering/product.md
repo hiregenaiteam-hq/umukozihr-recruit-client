@@ -17,8 +17,26 @@ HireGen is an AI-first hiring platform that transforms talent acquisition from g
 - **Real-time Results**: Minutes to quality candidates vs weeks of traditional sourcing
 - **Comprehensive Profiles**: AI-enriched candidate intelligence from multiple sources
 - **Smart Recommendations**: AI suggests refinements and similar candidates
+- **Chat Agent**: AI assistant for search analysis and candidate research (progressive rollout)
+- **Core Signal Integration**: LinkedIn profile collection and database expansion
+- **Subscription Management**: Tiered access with usage tracking
 
 ## User Journey
 Auth → Search → Results → Profile → Connect
+
+## API Integration Features
+- **Search Modes**: Database, Live, and Hybrid search capabilities
+- **Multi-Agent System**: Separate agents for search, core signal, chat, and monitoring
+- **Progressive Enhancement**: Features can be enabled/disabled via feature flags
+- **Real-time Progress**: Live updates during search and data collection processes
+- **Comprehensive Analytics**: Search reports, candidate analysis, and usage metrics
+
+## Search Criteria Support
+- Job titles, skills, location (country/full address)
+- Experience range (min/max years)
+- Management levels (Intern to C-Level)
+- Departments (Engineering, Sales, Marketing, etc.)
+- Company types (Startup, Public, Nonprofit, etc.)
+- Employment status and exclusion keywords
 
 The platform emphasizes simplicity, intelligence, and speed over traditional ATS complexity.
