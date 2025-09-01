@@ -10,7 +10,6 @@ import "react-toastify/dist/ReactToastify.css"
 import SignInForm from "@/components/SignInForm"
 import SignUpForm from "@/components/SignUpForm"
 import VerificationForm from "@/components/VerificationForm"
-import { setCookie } from "@/lib/api" 
 
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false)
