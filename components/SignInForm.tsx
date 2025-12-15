@@ -12,6 +12,7 @@ type NotVerifiedPayload = { email: string; userId?: string | number | null; mess
 type Props = {
   onSuccess?: () => void
   onNotVerified?: (payload: NotVerifiedPayload) => void
+  onSwitchToSignUp?: () => void
 }
 
 type ApiError = Error & {
@@ -20,7 +21,7 @@ type ApiError = Error & {
 }
 
 
-export default function SignInForm({ onSuccess, onNotVerified }: Props) {
+export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp }: Props) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -84,9 +85,39 @@ export default function SignInForm({ onSuccess, onNotVerified }: Props) {
 
 
     try {
-      const token = await loginAndGetToken(email, password)
-      setCookie("hg_token", token, 7)
-      toast.success("You’re now signed in.")
+      const loginData = await loginAndGetToken(email, password)
+      const token = loginData?.token || loginData?.access_token || loginData?.accessToken
+
+      // Set all required cookies for the external API
+      setCookie("hg_token", token || "", 7)
+      if (loginData?.access_token) {
+        setCookie("access_token", loginData.access_token, 7)
+      }
+      if (loginData?.refresh_token) {
+        setCookie("refresh_token", loginData.refresh_token, 7)
+      }
+      if (loginData?.session_id) {
+        setCookie("session_id", loginData.session_id, 7)
+      }
+
+      // Store user data in localStorage for easy access
+      if (loginData) {
+        const userData = {
+          id: loginData.id,
+          email: loginData.email,
+          username: loginData.username,
+          full_name: loginData.full_name,
+          company: loginData.company,
+          job_title: loginData.job_title,
+          is_active: loginData.is_active,
+          is_verified: loginData.is_verified,
+          is_premium: loginData.is_premium,
+          subscription_tier: loginData.subscription_tier
+        }
+        localStorage.setItem('user_data', JSON.stringify(userData))
+      }
+
+      toast.success("You're now signed in.")
       // success - notify parent
       onSuccess?.()
     } catch (err: any) {
@@ -126,43 +157,93 @@ export default function SignInForm({ onSuccess, onNotVerified }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="w-full">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h3 className="text-2xl font-medium text-slate-900 mb-2 font-inter">Welcome back</h3>
+          <p className="text-slate-600 font-inter">Sign in to your account</p>
+        </div>
 
-      {/* Email */}
-      {fieldErrors["email"] && <p className="text-red-600 text-sm -mt-2">{fieldErrors["email"]}</p>}
-      <Input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => { setEmail(e.target.value); clearFieldError("email") }}
-        className="h-15 rounded-2xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-base px-5"
-        required
-      />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700 font-inter">Email</label>
+            {fieldErrors["email"] && (
+              <p className="text-sm text-red-600 font-inter">{fieldErrors["email"]}</p>
+            )}
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); clearFieldError("email") }}
+              className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 ${fieldErrors["email"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                }`}
+              required
+            />
+          </div>
 
-      {/* Password with visibility toggle */}
-      <div className="relative">
-        {fieldErrors["password"] && <p className="text-red-600 text-sm -mt-2">{fieldErrors["password"]}</p>}
-        <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => { setPassword(e.target.value); clearFieldError("password") }}
-          className="h-15 rounded-2xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-base px-5 pr-12"
-          required
-        />
-        <button
-          type="button"
-          aria-label={showPassword ? "Show password" : "Hide password"}
-          onClick={() => setShowPassword((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-        >
-          {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-        </button>
+          {/* Password */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700 font-inter">Password</label>
+            {fieldErrors["password"] && (
+              <p className="text-sm text-red-600 font-inter">{fieldErrors["password"]}</p>
+            )}
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); clearFieldError("password") }}
+                className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 pr-10 ${fieldErrors["password"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                  }`}
+                required
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? "Show password" : "Hide password"}
+                onClick={() => setShowPassword((s) => !s)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-lg bg-umukozi-orange hover:bg-umukozi-orange-dark text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Signing in...</span>
+              </div>
+            ) : (
+              "Sign In"
+            )}
+          </Button>
+
+
+          {/* Footer */}
+          <div className="text-center pt-4">
+            <p className="text-sm text-slate-600 font-inter">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToSignUp}
+                className="text-umukozi-orange hover:text-umukozi-orange-dark font-medium transition-colors font-inter"
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
+        </form>
       </div>
-
-      <Button type="submit" className="w-full h-12 rounded-2xl" disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign in"}
-      </Button>
-    </form>
+    </div>
   )
 }

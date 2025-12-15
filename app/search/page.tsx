@@ -1,196 +1,107 @@
 "use client"
 
-import React, { useMemo, useState, useRef, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import Navbar from "@/components/Navbar"
-import { Sparkles, X, Check, MapPin, Layers } from "lucide-react"
+import {
+  StepHeader,
+  VerticalStepper,
+  StepNavigation,
+  SearchSummary,
+  FormField,
+  TagAutocomplete,
+  ExperienceRange,
+  LocationAutocomplete,
+  LoadingScreen
+} from "@/components/search"
+import AnimatedFormField from "@/components/search/AnimatedFormField"
+import SuccessScreen from "@/components/search/SuccessScreen"
+
+import {
+  JOB_SUGGESTIONS,
+  SKILL_SUGGESTIONS,
+  INDUSTRY_SUGGESTIONS,
+  EDUCATION_SUGGESTIONS,
+  LOCATION_SUGGESTIONS,
+  EXPERIENCE_RANGE,
+  EXPERIENCE_PRESETS,
+  SEARCH_STEPS
+} from "@/lib/constants"
+import { X, Check, Sparkles } from "lucide-react"
 
 // IMPORTANT: uses apiFetch util provided by your codebase. Update the import path if needed.
-import { apiFetch, normalizeError, parseValidationDetails } from "@/lib/api"
+import { apiFetch, normalizeError, parseValidationDetails, getCookie } from "@/lib/api"
 
-// --- Mock suggestion data (replace with real API calls as needed) ---
-const JOB_SUGGESTIONS = [
-  "Machine Learning Engineer",
-  "Data Scientist",
-  "Senior React Developer",
-  "Backend Engineer",
-  "DevOps Engineer",
-  "Product Manager",
-] as const
-const SKILL_SUGGESTIONS = [
-  "Python",
-  "FastAPI",
-  "PostgreSQL",
-  "Node.js",
-  "TypeScript",
-  "Docker",
-  "Kubernetes",
-  "React",
-] as const
-const INDUSTRY_SUGGESTIONS = ["technology", "software", "fintech", "healthcare", "education"] as const
-const EDUCATION_SUGGESTIONS = ["High School", "Associate's", "Bachelor's", "Master's", "PhD"] as const
-const LOCATION_SUGGESTIONS = ["Nigeria", "Ghana", "United States", "United Kingdom", "Kenya"] as const
 
-// --- Small utility functions ---
-const uniq = <T,>(arr: T[]) => Array.from(new Set(arr)) as T[]
-const fuzzyFilter = (list: readonly string[], q?: string) => {
-  const s = (q || "").trim().toLowerCase()
-  if (!s) return Array.from(list)
-  return Array.from(list).filter((item) => item.toLowerCase().includes(s))
-}
 
 // --- Types ---
 type Toast = { type: "error" | "success"; message: string } | null
 
-interface TagAutocompleteProps {
-  label: string
-  placeholder?: string
-  suggestions: readonly string[]
-  selected: string[]
-  setSelected: (vals: string[]) => void
-  emptyMessage?: string
-}
 
-// --- Reusable Autocomplete Tag Input ---
-const TagAutocomplete: React.FC<TagAutocompleteProps> = ({
-  label,
-  placeholder,
-  suggestions,
-  selected,
-  setSelected,
-  emptyMessage = "No results",
-}) => {
-  const [query, setQuery] = useState("")
-  const [open, setOpen] = useState(false)
-  const filtered = useMemo(() => fuzzyFilter(suggestions, query), [suggestions, query])
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
 
-  // open when there's input
-  useEffect(() => {
-    if (query) setOpen(true)
-  }, [query])
 
-  // close when clicking outside
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!wrapperRef.current) return
-      if (!(e.target instanceof Node)) return
-      if (!wrapperRef.current.contains(e.target)) {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", onDocClick)
-    return () => document.removeEventListener("mousedown", onDocClick)
-  }, [])
-
-  const onSelect = (value: string) => {
-    setSelected(uniq([...selected, value]))
-    setQuery("")
-    setOpen(false)
-    inputRef.current?.focus()
-  }
-
-  const onRemove = (value: string) => {
-    setSelected(selected.filter((p) => p !== value))
-  }
-
-  return (
-    <div className="group relative" ref={wrapperRef}>
-      <Label className="text-sm text-slate-600 mb-2 flex items-center gap-2">
-        {label}
-        <span className="text-xs text-slate-400">(type to search & press enter)</span>
-      </Label>
-
-      <div className="min-h-[56px] bg-slate-50 border border-slate-100 rounded-2xl p-3 flex flex-col gap-2 transition-shadow group-focus-within:shadow-md">
-        <div className="flex flex-wrap gap-2">
-          {selected.map((s) => (
-            <div
-              key={s}
-              className="flex items-center bg-white px-3 py-1 rounded-full shadow-xs border border-slate-100 text-sm"
-            >
-              <span className="mr-2">{s}</span>
-              <button
-                aria-label={`Remove ${s}`}
-                onClick={() => onRemove(s)}
-                className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-slate-100"
-                type="button"
-              >
-                <X className="w-3 h-3 text-slate-500" />
-              </button>
-            </div>
-          ))}
-
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setOpen(true)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && query.trim()) {
-                // if it matches an existing suggestion pick that, otherwise add typed text
-                const match = suggestions.find((s) => s.toLowerCase() === query.trim().toLowerCase())
-                onSelect(match || query.trim())
-                e.preventDefault()
-              }
-              if (e.key === "Escape") setOpen(false)
-            }}
-            placeholder={placeholder}
-            className="bg-transparent outline-none flex-1 min-w-[140px] text-sm text-slate-700"
-            aria-label={label}
-            type="text"
-          />
-        </div>
-
-        {open && (
-          <div className="mt-2 bg-white border border-slate-100 rounded-xl shadow-lg max-h-52 overflow-auto">
-            {filtered.length === 0 ? (
-              <div className="p-3 text-sm text-slate-500">{emptyMessage}</div>
-            ) : (
-              filtered.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => onSelect(s)}
-                  className="w-full text-left p-3 hover:bg-slate-50 flex items-center gap-3"
-                  type="button"
-                >
-                  <Check className="w-4 h-4 text-green-500" />
-                  <span className="text-sm text-slate-700">{s}</span>
-                </button>
-              ))
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
 
 export default function PremiumSearchPage() {
   const router = useRouter()
 
-  // Selected fields
-  const [jobTitles, setJobTitles] = useState<string[]>(["Machine Learning"]) // default example
-  const [skills, setSkills] = useState<string[]>(["Python", "FastAPI", "PostgreSQL"])
+  // Stepper state
+  const [currentStep, setCurrentStep] = useState(1)
+
+  // Selected fields with better defaults
+  const [jobTitles, setJobTitles] = useState<string[]>([])
+  const [skills, setSkills] = useState<string[]>([])
   const [industries, setIndustries] = useState<string[]>([])
-  const [educations, setEducations] = useState<string[]>(["Bachelor's", "Master's"])
-  const [location, setLocation] = useState<string>("Nigeria")
-  const [searchMode, setSearchMode] = useState<string>("database")
+  const [educations, setEducations] = useState<string[]>([])
+  const [location, setLocation] = useState<string>("")
+  // Remove search mode - always use database search
 
   // experience
-  const [expMin, setExpMin] = useState<number>(1)
-  const [expMax, setExpMax] = useState<number>(10)
+  const [expMin, setExpMin] = useState<number>(EXPERIENCE_RANGE.DEFAULT_MIN)
+  const [expMax, setExpMax] = useState<number>(EXPERIENCE_RANGE.DEFAULT_MAX)
 
   // UI state
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showSuccess, setShowSuccess] = useState<boolean>(false)
+  const [searchResults, setSearchResults] = useState<any>(null)
   const [toast, setToast] = useState<Toast>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  const steps = [
+    { id: 1, title: "Job Position", description: "What role are you hiring for?" },
+    { id: 2, title: "Requirements", description: "Experience & education needed" },
+    { id: 3, title: "Location & Industry", description: "Where and what business" },
+    { id: 4, title: "Review & Search", description: "Review and find candidates" }
+  ]
+
+  const nextStep = () => {
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return jobTitles.length > 0
+      case 2:
+        return true // Experience and education are optional
+      case 3:
+        return true // Location and industry are optional
+      case 4:
+        return jobTitles.length > 0
+      default:
+        return false
+    }
+  }
 
   // Build payload
   const payload = useMemo(() => {
@@ -204,32 +115,104 @@ export default function PremiumSearchPage() {
         experience_years_min: Number(expMin),
         experience_years_max: Number(expMax),
       },
-      search_mode: searchMode,
+      search_mode: "database",
+      // use_hardcoded_response: true, // Use hardcoded response for testing
     }
-  }, [jobTitles, skills, location, educations, industries, expMin, expMax, searchMode])
+  }, [jobTitles, skills, location, educations, industries, expMin, expMax])
+
+  const handleEditSection = (section: string) => {
+    switch (section) {
+      case 'job-position':
+        setCurrentStep(1)
+        break
+      case 'requirements':
+        setCurrentStep(2)
+        break
+      case 'location-industry':
+        setCurrentStep(3)
+        break
+      default:
+        break
+    }
+  }
 
   const submit = async (): Promise<void> => {
-    // basic validation
+    // User-friendly validation
     if (payload.criteria.job_titles.length === 0) {
-      setToast({ type: "error", message: "Please add at least one job title." })
+      setToast({ type: "error", message: "Please tell us what job position you're looking to fill." })
+      return
+    }
+
+    if (payload.criteria.skills_keywords.length === 0) {
+      setToast({ type: "error", message: "Adding some skills will help us find better matches for you." })
+      return
+    }
+
+    if (!payload.criteria.location_full) {
+      setToast({ type: "error", message: "Please specify the work location for this position." })
+      return
+    }
+
+    if (payload.criteria.experience_years_min > payload.criteria.experience_years_max) {
+      setToast({ type: "error", message: "Minimum experience cannot be greater than maximum experience." })
       return
     }
 
     setIsSubmitting(true)
+    setIsLoading(true)
     setToast(null)
     setFieldErrors({})
 
     try {
-      // Use apiFetch which will prefix baseUrl internally
-      const data = await apiFetch("/search/search", {
+      // Log the payload for debugging
+      console.log("Submitting search with payload:", payload)
+
+      // Use local API route to avoid CORS issues
+      const token = getCookie("hg_token")
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      }
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`
+      }
+
+      const response = await fetch("/api/search", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
+        credentials: "include", // This ensures cookies are sent with the request
       })
 
-      // On success, navigate to results. You may want to pass an id returned from API.
-      // router.push('/results') can't include complex object easily; stringify if needed
-      router.push({ pathname: "/results", query: { q: JSON.stringify(payload) } } as any)
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      console.log("Search API response:", data)
+
+      // Validate that we have actual results
+      if (!data || !data.results || data.results.length === 0) {
+        setToast({ type: "error", message: "No candidates found matching your criteria. Please try adjusting your search parameters." })
+        return
+      }
+
+      // Store the search results in localStorage for the results page
+      localStorage.setItem('searchResults', JSON.stringify(data))
+      localStorage.setItem('searchCriteria', JSON.stringify(payload))
+
+      // Store results for success screen
+      setSearchResults(data)
+
+      // Show success screen briefly before navigating
+      setShowSuccess(true)
+
+      // Navigate to results page after showing success
+      setTimeout(() => {
+        router.push("/results")
+      }, 3000)
     } catch (err: unknown) {
       const norm = normalizeError(err)
       setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
@@ -243,7 +226,12 @@ export default function PremiumSearchPage() {
       }
     } finally {
       setIsSubmitting(false)
+      setIsLoading(false)
     }
+  }
+
+  const handleContinueToResults = () => {
+    router.push("/results")
   }
 
   // small helper to render toast
@@ -253,259 +241,345 @@ export default function PremiumSearchPage() {
     return () => clearTimeout(t)
   }, [toast])
 
+  // Show success screen when search is complete
+  if (showSuccess) {
+    return (
+      <SuccessScreen
+        searchCriteria={{
+          jobTitles,
+          skills,
+          location,
+          industries
+        }}
+        searchResults={searchResults}
+        onContinue={handleContinueToResults}
+      />
+    )
+  }
+
+  // Show loading screen when searching
+  if (isLoading) {
+    return (
+      <LoadingScreen
+        searchCriteria={{
+          jobTitles,
+          skills,
+          location,
+          industries
+        }}
+      />
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50/30">
-      <Navbar />
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,140,0,0.05)_1px,transparent_0)] bg-[length:24px_24px] opacity-20"></div>
+      <div className="relative">
+        <Navbar />
 
-      <main className="max-w-5xl mx-auto px-6 py-16">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">Find the right candidate — faster</h1>
-          <p className="mt-3 text-lg text-slate-600 max-w-2xl mx-auto">
-            Fill the fields below (type to search). Selected items become chips. Refine experience ranges and hit
-            &ldquo;Find Candidates&rdquo;.
-          </p>
-        </div>
+        <main className="max-w-7xl mx-auto px-6 py-12">
+          {/* Hero Section */}
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-4 font-inter">
+              Find the perfect candidate
+            </h1>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-inter">
+              Follow our simple steps to discover qualified candidates for your team
+            </p>
+          </div>
 
-        <Card className="p-6 rounded-3xl shadow-xl border-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <TagAutocomplete
-                label="Job titles"
-                placeholder="e.g. Machine Learning Engineer"
-                suggestions={JOB_SUGGESTIONS as unknown as string[]}
-                selected={jobTitles}
-                setSelected={setJobTitles}
-                emptyMessage="No job titles found"
-              />
+          {/* Vertical Stepper Layout */}
+          <div className="flex gap-12 max-w-7xl mx-auto px-6">
+            {/* Left Side - Vertical Stepper */}
+            <VerticalStepper
+              steps={steps}
+              currentStep={currentStep}
+              completedSections={new Set([
+                ...(jobTitles.length > 0 ? ['job-position'] : []),
+                ...(skills.length > 0 || educations.length > 0 || (expMin !== 0 || expMax !== 5) ? ['requirements'] : []),
+                ...(location || industries.length > 0 ? ['location-industry'] : [])
+              ])}
+            />
 
-              <TagAutocomplete
-                label="Skills & keywords"
-                placeholder="e.g. Python, FastAPI"
-                suggestions={SKILL_SUGGESTIONS as unknown as string[]}
-                selected={skills}
-                setSelected={setSkills}
-                emptyMessage="No skills found"
-              />
+            {/* Right Side - Step Content */}
+            <div className="flex-1">
+              <Card className="p-8 umukozi-card-clean min-h-[600px] relative overflow-visible">
+                {/* Subtle background pattern */}
+                <div className="absolute inset-0 bg-gradient-to-br from-umukozi-orange/3 via-transparent to-umukozi-teal/3 pointer-events-none"></div>
+                <div className="relative">
+                  {/* Clean Progress Indicator */}
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-slate-600 font-inter">Step {currentStep} of {steps.length}</span>
+                      <span className="text-sm font-medium text-umukozi-orange font-inter">{Math.round((currentStep / steps.length) * 100)}% Complete</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-umukozi-orange h-2 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${(currentStep / steps.length) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
 
-              <TagAutocomplete
-                label="Industry"
-                placeholder="e.g. technology"
-                suggestions={INDUSTRY_SUGGESTIONS as unknown as string[]}
-                selected={industries}
-                setSelected={setIndustries}
-                emptyMessage="No industries found"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
-                <TagAutocomplete
-                  label="Education levels"
-                  placeholder="e.g. Bachelor's"
-                  suggestions={EDUCATION_SUGGESTIONS as unknown as string[]}
-                  selected={educations}
-                  setSelected={setEducations}
-                  emptyMessage="No education levels found"
-                />
-
-                <div>
-                  <Label className="text-sm text-slate-600 mb-2 flex items-center gap-2">Location</Label>
-                  <div className="flex gap-2 items-center">
-                    <div className="flex-1">
-                      <Input
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Country, city, or remote"
-                        className="rounded-2xl"
-                        aria-label="location"
+                  {/* Step 1: Job Position */}
+                  {currentStep === 1 && (
+                    <div className="space-y-12">
+                      <StepHeader
+                        title="What position are you hiring for?"
+                        description="Tell us about the job role and required skills for your ideal candidate"
                       />
-                      <div className="mt-2 text-xs text-slate-500">Suggestions: {LOCATION_SUGGESTIONS.join(", ")}</div>
+
+                      {/* Clean Job Position Section */}
+                      <div className="space-y-12">
+                        {/* Job Title Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Job Title
+                            </h3>
+                            <p className="text-base text-gray-600">Select the primary role you're hiring for</p>
+                          </div>
+
+                          <FormField label="">
+                            <TagAutocomplete
+                              label=""
+                              placeholder="e.g. Nurse, Teacher, Sales Representative"
+                              suggestions={JOB_SUGGESTIONS as unknown as string[]}
+                              selected={jobTitles}
+                              setSelected={setJobTitles}
+                              emptyMessage="No positions found"
+                            />
+                          </FormField>
+                        </div>
+
+                        {/* Required Skills Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Required Skills
+                            </h3>
+                            <p className="text-base text-gray-600">What skills and competencies should your ideal candidate have?</p>
+                          </div>
+
+                          <FormField label="">
+                            <TagAutocomplete
+                              label=""
+                              placeholder="e.g. Communication, Microsoft Office, Customer Service"
+                              suggestions={SKILL_SUGGESTIONS as unknown as string[]}
+                              selected={skills}
+                              setSelected={setSkills}
+                              emptyMessage="No skills found"
+                            />
+                          </FormField>
+                        </div>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => setLocation("")}
-                      className="px-3 py-2 bg-slate-100 rounded-full hover:bg-slate-200"
-                      title="Clear"
-                      type="button"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  )}
 
-            <div className="space-y-5">
-              <div>
-                <Label className="text-sm text-slate-600 mb-2">Experience</Label>
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <div className="flex justify-between text-xs text-slate-500 mb-2">
-                        <span>Minimum years</span>
-                        <span>Maximum years</span>
+                  {/* Step 2: Requirements */}
+                  {currentStep === 2 && (
+                    <div className="space-y-12">
+                      <StepHeader
+                        title="Experience & Education Requirements"
+                        description="Set the experience level and education requirements for your ideal candidate"
+                      />
+
+                      {/* Clean Requirements Section */}
+                      <div className="space-y-12">
+                        {/* Experience Range Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Experience Range
+                            </h3>
+                            <p className="text-base text-gray-600">How many years of experience should your ideal candidate have?</p>
+                          </div>
+
+                          <FormField label="">
+                            <ExperienceRange
+                              min={expMin}
+                              max={expMax}
+                              onMinChange={setExpMin}
+                              onMaxChange={setExpMax}
+                            />
+                          </FormField>
+                        </div>
+
+                        {/* Education Level Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Education Level
+                            </h3>
+                            <p className="text-base text-gray-600">What educational qualifications are required for this role?</p>
+                          </div>
+
+                          <FormField label="">
+                            <TagAutocomplete
+                              label=""
+                              placeholder="e.g. High School Diploma, Bachelor's Degree"
+                              suggestions={EDUCATION_SUGGESTIONS as unknown as string[]}
+                              selected={educations}
+                              setSelected={setEducations}
+                              emptyMessage="No education levels found"
+                            />
+                          </FormField>
+                        </div>
                       </div>
-
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="range"
-                          min={0}
-                          max={30}
-                          value={String(expMin)}
-                          onChange={(e) => {
-                            const val = Math.min(Number(e.target.value), expMax)
-                            setExpMin(val)
-                          }}
-                          className="range-input w-full"
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={30}
-                          value={String(expMax)}
-                          onChange={(e) => {
-                            const val = Math.max(Number(e.target.value), expMin)
-                            setExpMax(val)
-                          }}
-                          className="range-input w-full"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between mt-3">
-                        <input
-                          type="number"
-                          min={0}
-                          max={50}
-                          value={expMin}
-                          onChange={(e) => setExpMin(Math.min(Number(e.target.value || 0), expMax))}
-                          className="w-[90px] rounded-lg p-2 border border-slate-200 text-sm"
-                        />
-                        <div className="text-xs text-slate-500">—</div>
-                        <input
-                          type="number"
-                          min={0}
-                          max={50}
-                          value={expMax}
-                          onChange={(e) => setExpMax(Math.max(Number(e.target.value || 0), expMin))}
-                          className="w-[90px] rounded-lg p-2 border border-slate-200 text-sm"
-                        />
-                      </div>
-
-                      <div className="mt-3 text-sm text-slate-600">Selected range: <strong>{expMin} — {expMax} years</strong></div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* Step 3: Location & Industry */}
+                  {currentStep === 3 && (
+                    <div className="space-y-12">
+                      <StepHeader
+                        title="Location & Industry"
+                        description="Where do you need the person and what industry are you in?"
+                      />
+
+                      {/* Clean Location & Industry Section */}
+                      <div className="space-y-12">
+                        {/* Work Location Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Work Location
+                            </h3>
+                            <p className="text-base text-gray-600">Where will this person be working? Select a country or city.</p>
+                          </div>
+
+                          <FormField label="">
+                            <LocationAutocomplete
+                              value={location}
+                              onChange={setLocation}
+                              placeholder="Search for a country or city..."
+                              label=""
+                            />
+
+                            {/* Quick Location Suggestions */}
+                            <div className="mt-4">
+                              <p className="text-sm text-gray-600 mb-3">Popular locations:</p>
+                              <div className="flex flex-wrap gap-2">
+                                {LOCATION_SUGGESTIONS.slice(0, 8).map((suggestion) => (
+                                  <button
+                                    key={suggestion}
+                                    onClick={() => setLocation(suggestion)}
+                                    className={`px-4 py-3 text-sm font-medium rounded-xl border-2 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 ${location === suggestion
+                                      ? 'bg-umukozi-orange/10 text-umukozi-orange border-umukozi-orange'
+                                      : 'bg-white text-gray-700 border-gray-200 hover:bg-umukozi-orange/5 hover:border-umukozi-orange/50'
+                                      }`}
+                                  >
+                                    {suggestion}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </FormField>
+                        </div>
+
+                        {/* Industry Section */}
+                        <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm hover:shadow-md hover:border-umukozi-orange/30 transition-all duration-300 overflow-visible">
+                          <div className="mb-6">
+                            <h3 className="text-xl font-medium text-slate-900 mb-3 font-inter">
+                              Industry
+                            </h3>
+                            <p className="text-base text-gray-600">What industry or business sector are you in?</p>
+                          </div>
+
+                          <FormField label="">
+                            <TagAutocomplete
+                              label=""
+                              placeholder="e.g. Healthcare, Retail, Education"
+                              suggestions={INDUSTRY_SUGGESTIONS as unknown as string[]}
+                              selected={industries}
+                              setSelected={setIndustries}
+                              emptyMessage="No industries found"
+                            />
+                          </FormField>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 4: Review & Search */}
+                  {currentStep === 4 && (
+                    <div className="space-y-10">
+                      <StepHeader
+                        title="Review Your Search"
+                        description="Review your criteria and find the perfect candidates for your team"
+                      />
+
+                      <SearchSummary
+                        jobTitles={jobTitles}
+                        skills={skills}
+                        expMin={expMin}
+                        expMax={expMax}
+                        location={location}
+                        educations={educations}
+                        industries={industries}
+                        onEditSection={handleEditSection}
+                      />
+                    </div>
+                  )}
+
+                  {/* Navigation Buttons */}
+                  <StepNavigation
+                    currentStep={currentStep}
+                    totalSteps={steps.length}
+                    canProceed={canProceed}
+                    isSubmitting={isSubmitting}
+                    onPrevious={prevStep}
+                    onNext={nextStep}
+                    onSubmit={submit}
+                  />
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
 
+          {/* Validation Errors */}
+          {Object.keys(fieldErrors).length > 0 && (
+            <div className="mt-8 p-6 bg-red-50 border border-red-200 rounded-lg">
+              <h3 className="text-lg font-semibold text-red-900 mb-4">Please fix the following errors:</h3>
+              <ul className="space-y-2">
+                {Object.entries(fieldErrors).map(([k, v]) => (
+                  <li key={k} className="text-red-700">
+                    <span className="font-medium capitalize">{k.replace(/_/g, " ")}:</span> {v}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </main>
 
-           <div>
-                <Label className="text-sm text-slate-600 mb-2">Search mode</Label>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setSearchMode("database")}
-                    className={`px-4 py-2 rounded-2xl border ${searchMode === "database" ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold text-white" : "bg-white"}`}
-                    type="button"
-                  >
-                    Database
-                  </button>
-                  <button
-                    onClick={() => setSearchMode("profile")}
-                    className={`px-4 py-2 rounded-2xl border ${searchMode === "profile" ? "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold text-white" : "bg-white"}`}
-                    type="button"
-                  >
-                    Profile
-                  </button>
-                </div>
-                <div className="mt-2 text-xs text-slate-500">Database mode searches our stored profiles. Profile mode searches a single profile source.</div>
-              </div>
-
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarFallback>AI</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="text-slate-900 font-semibold">AI candidate finder</div>
-                      <div className="text-xs text-slate-500">We score & surface the best matches</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Button
-                      onClick={submit}
-                      disabled={isSubmitting}
-                      className="px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-semibold"
-                    >
-                      {isSubmitting ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                          Searching...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4" />
-                          Find Candidates
-                        </div>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* <div className="mt-3 text-xs text-slate-500">Payload preview (for debugging):</div>
-                <pre className="mt-2 p-3 bg-slate-50 rounded-xl text-xs text-slate-700 max-h-40 overflow-auto">{JSON.stringify(payload, null, 2)}</pre> */}
-
-                {Object.keys(fieldErrors).length > 0 && (
-                  <div className="mt-3 text-sm text-red-600">
-                    <strong>Validation issues:</strong>
-                    <ul className="list-disc ml-5">
-                      {Object.entries(fieldErrors).map(([k, v]) => (
-                        <li key={k}>{k}: {v}</li>
-                      ))}
-                    </ul>
-                  </div>
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`fixed right-8 bottom-8 p-6 rounded-lg shadow-lg border z-50 ${toast.type === "error"
+            ? "bg-red-50 border-red-200 text-red-800"
+            : "bg-green-50 border-green-200 text-green-800"
+            }`}>
+            <div className="flex items-center gap-4">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${toast.type === "error" ? "bg-red-100" : "bg-green-100"
+                }`}>
+                {toast.type === "error" ? (
+                  <X className="w-4 h-4 text-red-600" />
+                ) : (
+                  <Check className="w-4 h-4 text-green-600" />
                 )}
               </div>
-        </Card>
-
-
-
-        {/* metrics / trust */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-4 rounded-2xl bg-white shadow-sm flex items-center gap-4">
-            <Sparkles className="w-7 h-7 text-blue-500" />
-            <div>
-              <div className="text-lg font-semibold">Lightning fast</div>
-              <div className="text-sm text-slate-500">Most searches return results in under 2 minutes</div>
+              <div>
+                <div className="font-semibold">
+                  {toast.type === "error" ? "Error" : "Success"}
+                </div>
+                <div className="text-sm">{toast.message}</div>
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="p-4 rounded-2xl bg-white shadow-sm flex items-center gap-4">
-            <Layers className="w-7 h-7 text-blue-500" />
-            <div>
-              <div className="text-lg font-semibold">High accuracy</div>
-              <div className="text-sm text-slate-500">We blend filters with ML ranking for better matches</div>
-            </div>
-          </div>
 
-          <div className="p-4 rounded-2xl bg-white shadow-sm flex items-center gap-4">
-            <MapPin className="w-7 h-7 text-blue-500" />
-            <div>
-              <div className="text-lg font-semibold">Geo-aware</div>
-              <div className="text-sm text-slate-500">Filter by country, region, or remote</div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed right-6 bottom-6 p-4 rounded-xl shadow-lg ${toast.type === "error" ? "bg-red-50 border border-red-200" : "bg-emerald-50 border border-emerald-200"}`}>
-          <div className="flex items-center gap-3">
-            <div className="text-sm font-semibold">{toast.type === "error" ? "Error" : "Success"}</div>
-            <div className="text-sm text-slate-700">{toast.message}</div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   )
 }

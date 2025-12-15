@@ -2,13 +2,14 @@
 
 import React, { useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Card } from "@/components/ui/card"
-import { Sparkles } from "lucide-react"
+import Image from "next/image"
+import { Users, Shield, Star, ArrowRight } from "lucide-react"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 import SignInForm from "@/components/SignInForm"
-import SignUpForm from "@/components/SignUpForm"
+import MultiStepRegistration from "@/components/auth/MultiStepRegistration"
+import AuthTabSwitcher from "@/components/auth/AuthTabSwitcher"
 import VerificationForm from "@/components/VerificationForm"
 
 export default function AuthPage() {
@@ -26,96 +27,134 @@ export default function AuthPage() {
   }, [isSignUp])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 flex">
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover draggable theme="colored" />
 
-      {/* Floating shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/5 rounded-full animate-pulse" />
-        <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-purple-500/5 rounded-lg rotate-45 animate-pulse" />
-        <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-amber-500/5 rounded-full animate-pulse" />
-      </div>
-
       {pendingVerification ? (
-        <VerificationForm
-          email={verificationEmail}
-          userId={pendingUserId}
-          onVerified={() => {
-            setPendingVerification(false)
-            setIsSignUp(false)
-            setVerificationEmail("")
-            setPendingUserId(null)
-            // After successful verification, keep them on auth page to sign in
-          }}
-          onCancel={() => {
-            setPendingVerification(false)
-            setVerificationEmail("")
-            setPendingUserId(null)
-          }}
-        />
-      ) : (
-        <Card className="w-full max-w-lg bg-white/80 backdrop-blur-sm shadow-2xl border-0 rounded-3xl p-12 relative">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-6">
-              <Sparkles className="w-8 h-8 text-blue-500 mr-2" />
-              <h1 className="text-3xl font-bold text-slate-900">HireGen</h1>
-            </div>
-            <h2 className="text-xl text-slate-600 font-medium mb-2">Hiring shouldn't feel like guesswork</h2>
-            <p className="text-slate-500 leading-relaxed">Describe what you need. Our AI finds the top 1% talent in minutes.</p>
-          </div>
-
-          {/* Toggle */}
-          <div className="flex bg-slate-100 rounded-full p-1 mb-8 relative h-14 w-full max-w-lg mx-auto">
-            <div
-              className="absolute top-1 left-1 h-12 w-1/2 rounded-full bg-blue-500 shadow-sm transition-transform duration-500"
-              style={{ transform: isSignUp ? "translateX(100%)" : "translateX(0%)", transition: "transform 0.5s cubic-bezier(0.4,0,0.2,1)" }}
-              aria-hidden="true"
+        <div className="w-full flex items-center justify-center p-6">
+          <div className="w-full max-w-md">
+            <VerificationForm
+              email={verificationEmail}
+              userId={pendingUserId}
+              onVerified={() => {
+                setPendingVerification(false)
+                setIsSignUp(false)
+                setVerificationEmail("")
+                setPendingUserId(null)
+              }}
+              onCancel={() => {
+                setPendingVerification(false)
+                setVerificationEmail("")
+                setPendingUserId(null)
+              }}
             />
-            <button
-              type="button"
-              onClick={() => setIsSignUp(false)}
-              className={`flex-1 py-3 px-6 rounded-full text-sm font-medium z-10 transition-colors duration-200 ${!isSignUp ? "text-white" : "text-slate-600 hover:text-slate-900"}`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsSignUp(true)}
-              className={`flex-1 py-3 px-6 rounded-full text-sm font-medium z-10 transition-colors duration-200 ${isSignUp ? "text-white" : "text-slate-600 hover:text-slate-900"}`}
-            >
-              Sign Up
-            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Left Side - Professional Branding */}
+          <div className="hidden lg:flex lg:w-1/2 bg-white overflow-hidden h-screen lg:h-screen lg:sticky lg:top-0 relative">
+
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-20 left-20 w-32 h-32 border border-gray-300 rounded-full" />
+              <div className="absolute top-40 right-32 w-24 h-24 border border-gray-300 rounded-full" />
+              <div className="absolute bottom-32 left-32 w-28 h-28 border border-gray-300 rounded-full" />
+              <div className="absolute bottom-20 right-20 w-20 h-20 border border-gray-300 rounded-full" />
+            </div>
+
+            <div className="relative z-10 flex flex-col justify-center px-16 py-12 w-full h-full">
+              {/* Logo - Top Left of Page */}
+              <div className="absolute top-4 left-4 z-50">
+                <img
+                  src="/logo.png?v=1"
+                  alt="Umukozi HR Logo"
+                  className="w-48 h-16 object-contain"
+                  key="auth-logo"
+                />
+              </div>
+
+              {/* Main Content */}
+              <div className="space-y-10">
+                <div>
+                  <h2 className="text-5xl font-light text-slate-900 leading-tight mb-6 tracking-tight font-inter">
+                    Find the right talent,{" "}
+                    <span className="font-medium text-umukozi-orange">faster</span>
+                  </h2>
+                  <p className="text-lg text-slate-600 leading-relaxed max-w-md font-inter">
+                    Join thousands of companies using our platform to build exceptional teams.
+                  </p>
+                </div>
+
+                {/* Sweet Benefits */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-1.5 h-1.5 bg-umukozi-orange rounded-full" />
+                    <span className="text-slate-600 text-sm font-inter font-normal">Automated end-to-end hiring on autopilot</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-1.5 h-1.5 bg-umukozi-orange rounded-full" />
+                    <span className="text-slate-600 text-sm font-inter font-normal">Hire the best candidates for you in hours not weeks</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-1.5 h-1.5 bg-umukozi-orange rounded-full" />
+                    <span className="text-slate-600 text-sm font-inter font-normal">Save time and reduce costs</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-1.5 h-1.5 bg-umukozi-orange rounded-full" />
+                    <span className="text-slate-600 text-sm font-inter font-normal">Hiring at scale with accuracy, speed and fairness</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-1.5 h-1.5 bg-umukozi-orange rounded-full" />
+                    <span className="text-slate-600 text-sm font-inter font-normal">Enterprise-grade compliance and data</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
 
-          {/* Render selected form */}
-          <div className="pt-1 px-1">
-            {isSignUp ? (
-              <SignUpForm
-                onSignedUp={({ email, userId }) => {
-                  setVerificationEmail(email)
-                  setPendingUserId(userId ?? null)
-                  setPendingVerification(true)
-                }}
-              />
-            ) : (
-              <SignInForm
-                onSuccess={() => {
-                  // redirect to application after sign-in
-                  router.push(nextPath)
-                }}
-                onNotVerified={({ email, userId }) => {
-                  setVerificationEmail(email)
-                  setPendingUserId(userId ?? null)
-                  setPendingVerification(true)
-                }}
-              />
-            )}
-          </div>
+          {/* Right Side - Clean Auth Form */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-gradient-to-br from-slate-50/50 to-white">
+            <div className="w-full max-w-md flex flex-col justify-center">
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-slate-500">Used by 500+ companies worldwide</p>
+              {/* Sweet Auth Container */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-200/50 p-10 flex flex-col">
+                {/* Tab Switcher */}
+                <AuthTabSwitcher
+                  isSignUp={isSignUp}
+                  onToggle={setIsSignUp}
+                />
+
+                {/* Form Content */}
+                <div className="pt-6">
+                  {isSignUp ? (
+                    <MultiStepRegistration
+                      onSignedUp={({ email, userId }) => {
+                        setVerificationEmail(email)
+                        setPendingUserId(userId ?? null)
+                        setPendingVerification(true)
+                      }}
+                    />
+                  ) : (
+                    <SignInForm
+                      onSuccess={() => {
+                        router.push(nextPath)
+                      }}
+                      onNotVerified={({ email, userId }) => {
+                        setVerificationEmail(email)
+                        setPendingUserId(userId ?? null)
+                        setPendingVerification(true)
+                      }}
+                      onSwitchToSignUp={() => setIsSignUp(true)}
+                    />
+                  )}
+                </div>
+              </div>
+
+            </div>
           </div>
-        </Card>
+        </>
       )}
     </div>
   )

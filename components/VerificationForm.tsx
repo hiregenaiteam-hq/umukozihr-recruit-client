@@ -240,7 +240,7 @@ export default function VerificationForm({
                 onChange={(e) => handleChange(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
                 onPaste={i === 0 ? handlePaste : undefined}
-                className="w-12 h-12 text-center border border-black focus:border-blue-500 focus:ring-blue-500/20 rounded-lg text-xl focus:outline-none"
+                className="w-12 h-12 text-center border border-black focus:border-umukozi-orange focus:ring-umukozi-orange/20 rounded-lg text-xl focus:outline-none"
                 aria-label={`Digit ${i + 1}`}
               />
             ))}

@@ -1,339 +1,205 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Sparkles, User, Bell, CreditCard, Zap, Upload } from "lucide-react"
-import Navbar from "@/components/Navbar"
-import Link from "next/link"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import { useToast } from "@/hooks/use-toast";
+import {
+  SettingsHeader,
+  SettingsTabs,
+  AccountSettings,
+  AIPreferences,
+  NotificationSettings,
+  BillingSettings,
+} from "@/components/settings";
+
+interface UserData {
+  id: string;
+  email: string;
+  username: string | null;
+  full_name: string | null;
+  company: string | null;
+  job_title: string | null;
+  is_active: boolean;
+  is_verified: boolean;
+  is_premium: boolean;
+  subscription_tier: string;
+  monthly_search_limit: number;
+  monthly_searches_used: number;
+  created_at: string;
+}
 
 export default function SettingsPage() {
-  const [notifications, setNotifications] = useState({
-    newCandidates: true,
-    searchComplete: true,
-    weeklyDigest: false,
-    productUpdates: true,
-  })
+  const [user, setUser] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("account");
+  const router = useRouter();
+  const { toast } = useToast();
 
-  // Pricing tiers
-  const plans = [
-    {
-      id: "startup",
-      name: "Startup Plan",
-      price: 299,
-      searches: 20,
-      description: "For early stage pre-revenue startups",
-    },
-    {
-      id: "professional",
-      name: "Professional Plan",
-      price: 399,
-      searches: 50,
-      description: "For SMEs & HR managers",
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise Plan",
-      price: 2000,
-      searches: "Unlimited",
-      description: "For enterprises & HR firms",
-    },
+  useEffect(() => {
+    const loadUserData = () => {
+      try {
+        const storedUserData = localStorage.getItem('user_data');
+        if (storedUserData) {
+          const userData = JSON.parse(storedUserData);
+          setUser(userData);
+        } else {
+          router.push('/auth');
+        }
+      } catch (error) {
+        console.error("Failed to load user data:", error);
+        router.push('/auth');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, [router]);
+
+  const handleAccountSave = async (data: Partial<UserData>) => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Update local storage
+      const updatedUser = { ...user, ...data } as UserData;
+      localStorage.setItem('user_data', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      toast({
+        title: "Account updated",
+        description: "Your account information has been saved successfully.",
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handlePreferencesSave = (preferences: any) => {
+    // Save AI preferences
+    localStorage.setItem('ai_preferences', JSON.stringify(preferences));
+    toast({
+      title: "Preferences saved",
+      description: "Your AI preferences have been updated.",
+    });
+  };
+
+  const handleNotificationsSave = (notifications: any) => {
+    // Save notification preferences
+    localStorage.setItem('notification_preferences', JSON.stringify(notifications));
+    toast({
+      title: "Notifications updated",
+      description: "Your notification preferences have been saved.",
+    });
+  };
+
+  // Mock data for billing
+  const currentPlan = {
+    id: "professional",
+    name: "Professional Plan",
+    price: 399,
+    searches: 50,
+    description: "For SMEs & HR managers",
+  };
+
+  const searchesUsed = 23;
+
+  const usageHistory = [
+    { date: "Jan 15, 2024", searches: 8, cost: "$16.00" },
+    { date: "Jan 14, 2024", searches: 3, cost: "$6.00" },
+    { date: "Jan 13, 2024", searches: 12, cost: "$24.00" },
   ];
 
-  // Simulate current plan (change index to test different plans)
-  const currentPlanIndex = 1; // 0: Startup, 1: Professional, 2: Enterprise
-  const currentPlan = plans[currentPlanIndex];
-  const searchesUsed = 23; // Simulated usage
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-umukozi-orange/10">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-umukozi-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-600 font-inter">Loading settings...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-umukozi-orange/10">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Settings</h1>
-          <p className="text-slate-600">Manage your account and AI preferences</p>
-        </div>
+      {/* Header */}
+      <SettingsHeader onBack={() => router.back()} />
 
-        <Tabs defaultValue="account" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 bg-white border border-slate-200">
-            <TabsTrigger value="account" className="flex items-center">
-              <User className="w-4 h-4 mr-2" />
-              Account
-            </TabsTrigger>
-            <TabsTrigger value="preferences" className="flex items-center">
-              <Zap className="w-4 h-4 mr-2" />
-              AI Preferences
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="billing" className="flex items-center">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Billing
-            </TabsTrigger>
-          </TabsList>
+      {/* Tabs */}
+      <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-          <TabsContent value="account">
-            <Card className="p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Account Information</h2>
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Account Tab */}
+        {activeTab === "account" && (
+          <AccountSettings user={user} onSave={handleAccountSave} />
+        )}
 
-              <div className="space-y-6">
-                {/* Profile Photo */}
-                <div>
-                  <Label className="text-base font-medium text-slate-900 mb-3 block">Profile Photo</Label>
-                  <div className="flex items-center space-x-6">
-                    <Avatar className="w-20 h-20">
-                      <AvatarFallback className="bg-blue-500 text-white text-2xl font-bold">JD</AvatarFallback>
-                    </Avatar>
-                    <Button variant="outline" className="flex items-center bg-transparent">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload New Photo
-                    </Button>
-                  </div>
-                </div>
+        {/* AI Preferences Tab */}
+        {activeTab === "preferences" && (
+          <AIPreferences onSave={handlePreferencesSave} />
+        )}
 
-                {/* Form Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="firstName" className="text-base font-medium text-slate-900">
-                      First Name
-                    </Label>
-                    <Input id="firstName" defaultValue="John" className="mt-2 h-12 rounded-xl" />
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName" className="text-base font-medium text-slate-900">
-                      Last Name
-                    </Label>
-                    <Input id="lastName" defaultValue="Doe" className="mt-2 h-12 rounded-xl" />
-                  </div>
-                  <div>
-                    <Label htmlFor="email" className="text-base font-medium text-slate-900">
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      defaultValue="john.doe@company.com"
-                      className="mt-2 h-12 rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="company" className="text-base font-medium text-slate-900">
-                      Company
-                    </Label>
-                    <Input id="company" defaultValue="TechCorp Inc." className="mt-2 h-12 rounded-xl" />
-                  </div>
-                </div>
+        {/* Notifications Tab */}
+        {activeTab === "notifications" && (
+          <NotificationSettings onSave={handleNotificationsSave} />
+        )}
 
-                <Button className="bg-blue-500 hover:bg-blue-600">Save Changes</Button>
+        {/* Billing Tab */}
+        {activeTab === "billing" && (
+          <BillingSettings
+            currentPlan={currentPlan}
+            searchesUsed={searchesUsed}
+            usageHistory={usageHistory}
+          />
+        )}
+
+        {/* Security Tab */}
+        {activeTab === "security" && (
+          <div className="space-y-6">
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-umukozi-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-umukozi-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
               </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="preferences">
-            <Card className="p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">AI Search Preferences</h2>
-
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-medium text-slate-900 mb-4">Search Behavior</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Aggressive Sourcing</p>
-                        <p className="text-sm text-slate-600">
-                          Include passive candidates who may not be actively looking
-                        </p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Diversity Priority</p>
-                        <p className="text-sm text-slate-600">Emphasize diverse candidate pools in search results</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Remote-First</p>
-                        <p className="text-sm text-slate-600">Prioritize remote-friendly candidates</p>
-                      </div>
-                      <Switch />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-slate-900 mb-4">Experience Weighting</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Prefer Senior Candidates</p>
-                        <p className="text-sm text-slate-600">Weight experience more heavily in scoring</p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Include Junior Talent</p>
-                        <p className="text-sm text-slate-600">Show promising junior candidates with growth potential</p>
-                      </div>
-                      <Switch />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="notifications">
-            <Card className="p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-6">Notification Preferences</h2>
-
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">New Candidate Matches</p>
-                    <p className="text-sm text-slate-600">
-                      Get notified when AI finds new candidates matching your searches
-                    </p>
-                  </div>
-                  <Switch
-                    checked={notifications.newCandidates}
-                    onCheckedChange={(checked) => setNotifications((prev) => ({ ...prev, newCandidates: checked }))}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Search Completion</p>
-                    <p className="text-sm text-slate-600">Receive alerts when your AI searches are complete</p>
-                  </div>
-                  <Switch
-                    checked={notifications.searchComplete}
-                    onCheckedChange={(checked) => setNotifications((prev) => ({ ...prev, searchComplete: checked }))}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Weekly Digest</p>
-                    <p className="text-sm text-slate-600">Summary of your hiring activity and new opportunities</p>
-                  </div>
-                  <Switch
-                    checked={notifications.weeklyDigest}
-                    onCheckedChange={(checked) => setNotifications((prev) => ({ ...prev, weeklyDigest: checked }))}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-slate-900">Product Updates</p>
-                    <p className="text-sm text-slate-600">Learn about new features and improvements</p>
-                  </div>
-                  <Switch
-                    checked={notifications.productUpdates}
-                    onCheckedChange={(checked) => setNotifications((prev) => ({ ...prev, productUpdates: checked }))}
-                  />
-                </div>
-              </div>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="billing">
-            <div className="space-y-6">
-              {/* Current Plan */}
-              <Card className="p-8 border-2 border-blue-500">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">{currentPlan.name}</h2>
-                    <p className="text-slate-600">{currentPlan.searches} searches per month</p>
-                    <p className="text-xs text-slate-400 mt-1">{currentPlan.description}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-3xl font-bold text-slate-900">${currentPlan.price.toLocaleString()}</p>
-                    <p className="text-slate-600">per month</p>
-                  </div>
-                </div>
-
-                {typeof currentPlan.searches === "number" && (
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Searches Used</span>
-                        <span>{searchesUsed} / {currentPlan.searches}</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(searchesUsed / currentPlan.searches) * 100}%` }} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <Link href="/payment" passHref legacyBehavior>
-                  <a tabIndex={0} className="w-full block">
-                    <Button variant="outline" className="w-full bg-transparent">
-                      Upgrade Plan
-                    </Button>
-                  </a>
-                </Link>
-              </Card>
-
-              {/* Payment Method */}
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Payment Method</h2>
-
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
-                  <div className="flex items-center">
-                    <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center mr-4">
-                      <span className="text-white text-xs font-bold">VISA</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-900">•••• •••• •••• 4242</p>
-                      <p className="text-sm text-slate-600">Expires 12/25</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    Edit
-                  </Button>
-                </div>
-              </Card>
-
-              {/* Usage History */}
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Recent Usage</h2>
-
-                <div className="space-y-4">
-                  {[
-                    { date: "Jan 15, 2024", searches: 8, cost: "$16.00" },
-                    { date: "Jan 14, 2024", searches: 3, cost: "$6.00" },
-                    { date: "Jan 13, 2024", searches: 12, cost: "$24.00" },
-                  ].map((usage, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0"
-                    >
-                      <div>
-                        <p className="font-medium text-slate-900">{usage.date}</p>
-                        <p className="text-sm text-slate-600">{usage.searches} searches</p>
-                      </div>
-                      <p className="font-medium text-slate-900">{usage.cost}</p>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Security Settings</h3>
+              <p className="text-slate-600 mb-6">Password management and security preferences coming soon.</p>
+              <button className="text-umukozi-orange hover:text-umukozi-orange-dark font-medium">
+                Learn more about security →
+              </button>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
+
+        {/* Appearance Tab */}
+        {activeTab === "appearance" && (
+          <div className="space-y-6">
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-umukozi-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-umukozi-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">Appearance Settings</h3>
+              <p className="text-slate-600 mb-6">Theme and display preferences coming soon.</p>
+              <button className="text-umukozi-orange hover:text-umukozi-orange-dark font-medium">
+                Learn more about themes →
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
-  )
+  );
 }

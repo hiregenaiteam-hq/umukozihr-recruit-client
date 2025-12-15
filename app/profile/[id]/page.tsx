@@ -1,726 +1,804 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Sparkles, MapPin, Building, MessageCircle, Bookmark, Share, Github, Linkedin, Mail, Paperclip, Send, Calendar as CalendarIcon, Phone, Video, VideoIcon } from "lucide-react"
+import {
+  Sparkles,
+  MapPin,
+  Building,
+  MessageCircle,
+  Bookmark,
+  Share,
+  Github,
+  Linkedin,
+  Mail,
+  Phone,
+  Calendar,
+  Star,
+  Award,
+  TrendingUp,
+  Clock,
+  DollarSign,
+  Users,
+  Briefcase,
+  GraduationCap,
+  Target,
+  CheckCircle,
+  XCircle,
+  ArrowLeft,
+  Download,
+  Eye,
+  Heart,
+  Send,
+  Video,
+  UserPlus,
+  FileText,
+  BarChart3,
+  Zap
+} from "lucide-react"
 import Navbar from "@/components/Navbar"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Textarea } from "@/components/ui/textarea"
-import dynamic from "next/dynamic"
-import { useEffect } from "react"
-import './calendar-custom.css';
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
-const Calendar = dynamic(() => import("react-calendar"), { ssr: false })
-import 'react-calendar/dist/Calendar.css';
+import { ChatWidget } from "@/components/chat"
 
-// Realistic candidates array (same as results page, with extra fields for profile)
-const candidates = [
-  {
-    id: 1,
-    name: "Ava Patel",
-    title: "Senior Frontend Engineer",
-    company: "Shopify",
-    location: "Toronto, Canada",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-    score: 97,
-    experience: "7 years",
-    availability: "Immediate",
-    salary: "$160-180k",
-    skills: ["React", "TypeScript", "GraphQL", "Redux", "Jest", "Cypress", "Storybook", "Sass"],
-    status: "Actively looking",
-    summary:
-      "Award-winning frontend engineer with a passion for building scalable, accessible web apps. Led the migration to TypeScript at Shopify, improving code quality and onboarding. Regular speaker at React conferences.",
-    experience_timeline: [
-      {
-        title: "Senior Frontend Engineer",
-        company: "Shopify",
-        duration: "2020 - Present",
-        description:
-          "Led the migration to TypeScript, mentored 8+ engineers, and improved Lighthouse scores by 30%.",
-      },
-      {
-        title: "Frontend Developer",
-        company: "Atlassian",
-        duration: "2017 - 2020",
-        description:
-          "Built reusable UI components, contributed to design system, and improved test coverage to 95%.",
-      },
-    ],
-    contact: {
-      email: "ava.patel@shopify.com",
-      linkedin: "linkedin.com/in/avapatel",
-      github: "github.com/avapatel",
-    },
-  },
-  {
-    id: 2,
-    name: "Lucas Moreau",
-    title: "Full Stack Developer",
-    company: "Google",
-    location: "Paris, France",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-    score: 94,
-    experience: "8 years",
-    availability: "2 weeks",
-    salary: "$180-200k",
-    skills: ["Node.js", "React", "GCP", "TypeScript", "Kubernetes", "Docker", "GraphQL"],
-    status: "Open to opportunities",
-    summary:
-      "Versatile full stack developer at Google, specializing in cloud-native apps and scalable APIs. Led the launch of a major internal tool used by 10,000+ employees.",
-    experience_timeline: [
-      {
-        title: "Full Stack Developer",
-        company: "Google",
-        duration: "2019 - Present",
-        description:
-          "Architected and launched internal tools, improved CI/CD pipelines, and mentored junior devs.",
-      },
-      {
-        title: "Backend Developer",
-        company: "BlaBlaCar",
-        duration: "2016 - 2019",
-        description:
-          "Built microservices, migrated legacy systems to GCP, and improved system reliability by 40%.",
-      },
-    ],
-    contact: {
-      email: "lucas.moreau@google.com",
-      linkedin: "linkedin.com/in/lucasmoreau",
-      github: "github.com/lucasmoreau",
-    },
-  },
-  {
-    id: 3,
-    name: "Sophie Dubois",
-    title: "Lead UI/UX Designer",
-    company: "Airbnb",
-    location: "Berlin, Germany",
-    avatar: "https://randomuser.me/api/portraits/women/65.jpg",
-    score: 91,
-    experience: "9 years",
-    availability: "1 month",
-    salary: "$140-160k",
-    skills: ["Figma", "Sketch", "React", "Design Systems", "User Research", "Prototyping", "Accessibility"],
-    status: "Passive",
-    summary:
-      "Creative lead designer at Airbnb, focused on delightful user experiences and accessibility. Designed the new Airbnb mobile onboarding flow, increasing completion by 18%.",
-    experience_timeline: [
-      {
-        title: "Lead UI/UX Designer",
-        company: "Airbnb",
-        duration: "2021 - Present",
-        description:
-          "Designed mobile onboarding, led accessibility initiatives, and mentored design interns.",
-      },
-      {
-        title: "Product Designer",
-        company: "SoundCloud",
-        duration: "2017 - 2021",
-        description:
-          "Redesigned creator dashboard, improved NPS by 12 points, and ran user research studies.",
-      },
-    ],
-    contact: {
-      email: "sophie.dubois@airbnb.com",
-      linkedin: "linkedin.com/in/sophiedubois",
-      github: "github.com/sophiedubois",
-    },
-  },
-  {
-    id: 4,
-    name: "David Kim",
-    title: "Backend Engineer",
-    company: "Netflix",
-    location: "San Francisco, CA",
-    avatar: "https://randomuser.me/api/portraits/men/76.jpg",
-    score: 89,
-    experience: "6 years",
-    availability: "Immediate",
-    salary: "$170-190k",
-    skills: ["Python", "Go", "AWS", "Microservices", "PostgreSQL", "Redis", "gRPC"],
-    status: "Actively looking",
-    summary:
-      "Backend engineer at Netflix, expert in distributed systems and microservices. Built the recommendation engine backend, handling millions of requests per day.",
-    experience_timeline: [
-      {
-        title: "Backend Engineer",
-        company: "Netflix",
-        duration: "2020 - Present",
-        description:
-          "Built and scaled recommendation engine backend, improved latency by 25%.",
-      },
-      {
-        title: "Software Engineer",
-        company: "Dropbox",
-        duration: "2017 - 2020",
-        description:
-          "Migrated legacy services to AWS, implemented monitoring and alerting systems.",
-      },
-    ],
-    contact: {
-      email: "david.kim@netflix.com",
-      linkedin: "linkedin.com/in/davidkim",
-      github: "github.com/davidkim",
-    },
-  },
-  {
-    id: 5,
-    name: "Maria Rossi",
-    title: "Product Manager",
-    company: "Stripe",
-    location: "Dublin, Ireland",
-    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-    score: 88,
-    experience: "10 years",
-    availability: "3 weeks",
-    salary: "$200-220k",
-    skills: ["Product Strategy", "Agile", "Jira", "Leadership", "Payments", "Roadmapping", "Stakeholder Management"],
-    status: "Open to opportunities",
-    summary:
-      "Product manager at Stripe, specializing in payments and fintech. Launched Stripe's new invoicing product, driving $10M in new ARR.",
-    experience_timeline: [
-      {
-        title: "Product Manager",
-        company: "Stripe",
-        duration: "2019 - Present",
-        description:
-          "Launched invoicing product, managed cross-functional teams, and drove $10M ARR.",
-      },
-      {
-        title: "Business Analyst",
-        company: "Accenture",
-        duration: "2015 - 2019",
-        description:
-          "Analyzed business requirements, supported digital transformation projects for Fortune 500 clients.",
-      },
-    ],
-    contact: {
-      email: "maria.rossi@stripe.com",
-      linkedin: "linkedin.com/in/mariarossi",
-      github: "github.com/mariarossi",
-    },
-  },
-]
+// Import the actual candidate data from the response samples
+import responseSamples from "../../../Response-samples.json"
 
-const defaultMessages = [
-  {
-    id: 1,
-    platform: "linkedin",
-    content: "Hi! I saw your message about the React position. I'm definitely interested in learning more.",
-    timestamp: "2 hours ago",
-    isCandidate: true,
-  },
-  {
-    id: 2,
-    platform: "email",
-    content: "Great! I'd love to schedule a quick call to discuss the role and your experience at Stripe.",
-    timestamp: "1 hour ago",
-    isCandidate: false,
-  },
-  {
-    id: 3,
-    platform: "whatsapp",
-    content: "Sounds perfect! I'm available this week for a call.",
-    timestamp: "30 minutes ago",
-    isCandidate: true,
-  },
-]
+interface Candidate {
+  id: number;
+  full_name: string;
+  headline: string;
+  linkedin_url: string;
+  picture_url: string | null;
+  primary_professional_email: string | null;
+  location_full: string;
+  location_country: string;
+  active_experience_title: string;
+  inferred_skills: string[];
+  total_experience_duration_months: number;
+  is_working: boolean;
+  relevance_score: number;
+  skill_match_score: number;
+  experience_score: number;
+  location_score: number;
+  matched_skills: string[];
+  missing_skills: string[];
+  experience: Array<{
+    active_experience: boolean;
+    position_title: string;
+    company_name: string;
+    company_industry: string | null;
+    date_from: string;
+    date_to: string | null;
+    duration_months: number;
+    description?: string | null;
+  }>;
+  education: Array<{
+    degree: string;
+    institution_name: string;
+    date_from_year: number;
+    date_to_year: number | null;
+  }>;
+  certification_details: Array<{
+    title: string;
+    issuer: string;
+    date_from: string;
+  }>;
+}
 
 export default function ProfilePage() {
-  const params = useParams();
-  const id = Number(params.id);
-  const candidate = candidates.find((c) => c.id === id) || candidates[0];
+  const params = useParams()
+  const router = useRouter()
+  const { toast } = useToast()
+  const [candidate, setCandidate] = useState<Candidate | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'overview' | 'experience' | 'skills' | 'contact'>('overview')
+  const [isBookmarked, setIsBookmarked] = useState(false)
+  const [isLiked, setIsLiked] = useState(false)
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
-  // Tabs state
-  const [activeTab, setActiveTab] = useState<'profile' | 'messaging' | 'scheduling'>('profile');
-  // Messaging state
-  const [messages, setMessages] = useState(defaultMessages);
-  const [newMessage, setNewMessage] = useState("");
-  // Scheduling state
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
-  const [interviewType, setInterviewType] = useState("video");
-  const [virtualType, setVirtualType] = useState("zoom");
-  const timeSlots = [
-    "Today 2:00 PM",
-    "Today 4:00 PM",
-    "Tomorrow 10:00 AM",
-    "Tomorrow 2:00 PM",
-    "Friday 9:00 AM",
-    "Friday 3:00 PM",
-  ];
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  useEffect(() => {
+    const candidateId = Number(params.id)
 
-  // Generate 30-min time slots from 9am to 5pm
-  function generateTimeSlots() {
-    const slots = [];
-    for (let hour = 9; hour < 17; hour++) {
-      slots.push(`${hour}:00 AM`);
-      slots.push(`${hour}:30 AM`);
+    // Find candidate from the response samples
+    const foundCandidate = responseSamples.results.find(c => c.id === candidateId)
+
+    if (foundCandidate) {
+      setCandidate(foundCandidate)
+    } else {
+      // Fallback to first candidate if not found
+      setCandidate(responseSamples.results[0])
     }
-    slots[slots.indexOf('12:00 AM')] = '12:00 PM';
-    slots[slots.indexOf('12:30 AM')] = '12:30 PM';
-    for (let i = 13; i < 17; i++) {
-      slots[slots.indexOf(`${i}:00 AM`)] = `${i - 12}:00 PM`;
-      slots[slots.indexOf(`${i}:30 AM`)] = `${i - 12}:30 PM`;
-    }
-    return slots;
+
+    setIsLoading(false)
+  }, [params.id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-umukozi-orange mx-auto mb-4"></div>
+            <p className="text-slate-600">Loading candidate profile...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
-  const dayTimeSlots = generateTimeSlots();
 
-  const { toast } = useToast();
+  if (!candidate) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Candidate Not Found</h2>
+            <p className="text-slate-600 mb-6">The candidate you're looking for doesn't exist.</p>
+            <Button onClick={() => router.back()} className="bg-umukozi-orange hover:bg-umukozi-orange-dark">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Go Back
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    setMessages([
-      ...messages,
-      {
-        id: messages.length + 1,
-        platform: "email",
-        content: newMessage,
-        timestamp: "now",
-        isCandidate: false,
-      },
-    ]);
-    setNewMessage("");
-  };
+  const formatExperience = (months: number) => {
+    const years = Math.floor(months / 12)
+    const remainingMonths = months % 12
+    if (years === 0) return `${remainingMonths} months`
+    if (remainingMonths === 0) return `${years} year${years > 1 ? 's' : ''}`
+    return `${years} year${years > 1 ? 's' : ''} ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`
+  }
 
-  const handleScheduleInterview = () => {
-    if (!selectedTimeSlot || !selectedDate) return;
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return "text-green-600 bg-green-50 border-green-200"
+    if (score >= 80) return "text-blue-600 bg-blue-50 border-blue-200"
+    if (score >= 70) return "text-yellow-600 bg-yellow-50 border-yellow-200"
+    return "text-red-600 bg-red-50 border-red-200"
+  }
+
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked)
     toast({
-      title: "Interview Scheduled!",
-      description: `Interview for ${candidate.name} scheduled on ${selectedDate.toLocaleDateString()} at ${selectedTimeSlot} (${interviewType === 'video' ? (virtualType === 'zoom' ? 'Zoom' : 'Google Meet') : 'In Person'})`,
-    });
-  };
+      title: isBookmarked ? "Removed from bookmarks" : "Added to bookmarks",
+      description: `${candidate.full_name} has been ${isBookmarked ? 'removed from' : 'added to'} your bookmarks.`,
+    })
+  }
 
-  const getPlatformIcon = (platform: string) => {
-    switch (platform) {
-      case "whatsapp":
-        return <MessageCircle className="w-4 h-4 text-green-500" />;
-      case "linkedin":
-        return <Linkedin className="w-4 h-4 text-blue-600" />;
-      case "email":
-        return <Mail className="w-4 h-4 text-gray-600" />;
-      default:
-        return <MessageCircle className="w-4 h-4" />;
-    }
-  };
+  const handleLike = () => {
+    setIsLiked(!isLiked)
+    toast({
+      title: isLiked ? "Removed from favorites" : "Added to favorites",
+      description: `${candidate.full_name} has been ${isLiked ? 'removed from' : 'added to'} your favorites.`,
+    })
+  }
+
+  const handleContact = () => {
+    toast({
+      title: "Contact initiated",
+      description: `You've started a conversation with ${candidate.full_name}.`,
+    })
+  }
+
+  const handleSchedule = () => {
+    toast({
+      title: "Interview scheduled",
+      description: `Interview with ${candidate.full_name} has been scheduled.`,
+    })
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
       <Navbar />
 
+      {/* Back Button */}
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Results
+        </Button>
+      </div>
+
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-500 to-blue-700 text-white">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative max-w-7xl mx-auto px-6 py-16">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-8">
-              <Avatar className="w-32 h-32 border-4 border-white/20">
-                <AvatarImage src={candidate.avatar || "/placeholder.svg"} />
-                <AvatarFallback className="bg-white/20 text-white text-4xl font-bold">SC</AvatarFallback>
+      <div className="relative bg-gradient-to-r from-umukozi-orange to-umukozi-orange-dark text-white overflow-hidden">
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32" />
+
+        <div className="relative max-w-7xl mx-auto px-6 py-12">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            {/* Candidate Info */}
+            <div className="flex items-start lg:items-center gap-6">
+              <Avatar className="w-24 h-24 lg:w-32 lg:h-32 border-4 border-white/20 shadow-xl">
+                <AvatarImage src={candidate.picture_url || "/placeholder-user.jpg"} />
+                <AvatarFallback className="bg-white/20 text-white text-2xl lg:text-4xl font-bold">
+                  {candidate.full_name.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
               </Avatar>
 
-              <div>
-                <h1 className="text-4xl font-bold mb-2">{candidate.name}</h1>
-                <p className="text-xl text-white/90 mb-2">{candidate.title}</p>
-                <div className="flex items-center text-white/80">
-                  <Building className="w-5 h-5 mr-2" />
-                  <span className="mr-6">{candidate.company}</span>
-                  <MapPin className="w-5 h-5 mr-2" />
-                  <span>{candidate.location}</span>
+              <div className="flex-1">
+                <h1 className="text-3xl lg:text-4xl font-bold mb-2">{candidate.full_name}</h1>
+                <p className="text-xl lg:text-2xl text-white/90 mb-3">{candidate.headline}</p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-white/80">
+                  <div className="flex items-center">
+                    <Building className="w-5 h-5 mr-2" />
+                    <span>{candidate.active_experience_title}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <MapPin className="w-5 h-5 mr-2" />
+                    <span>{candidate.location_full}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="w-5 h-5 mr-2" />
+                    <span>{formatExperience(candidate.total_experience_duration_months)} experience</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* AI Score */}
-            <div className="text-center">
-              <div className="relative w-24 h-24 mb-2">
-                <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.3)"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeDasharray={`${candidate.score}, 100`}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold">{candidate.score}%</span>
+            {/* AI Score & Actions */}
+            <div className="flex flex-col lg:items-end gap-6">
+              {/* AI Match Score */}
+              <div className="text-center">
+                <div className="relative w-20 h-20 lg:w-24 lg:h-24 mb-3">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.3)"
+                      strokeWidth="2"
+                    />
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeDasharray={`${candidate.relevance_score}, 100`}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xl lg:text-2xl font-bold">{candidate.relevance_score}%</span>
+                  </div>
                 </div>
+                <p className="text-white/80 text-sm font-medium">AI Match Score</p>
               </div>
-              <p className="text-white/80 text-sm">AI Match Score</p>
-            </div>
-          </div>
 
-          {/* Action Bar */}
-          <div className="mt-8 flex space-x-4">
-            <Button className="bg-white text-blue-600 hover:bg-white/90">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Message
-            </Button>
-            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
-              <Bookmark className="w-4 h-4 mr-2" />
-              Save
-            </Button>
-            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
-              <Share className="w-4 h-4 mr-2" />
-              Share
-            </Button>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={handleContact}
+                  className="bg-white text-umukozi-orange hover:bg-white/90 font-medium"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Contact
+                </Button>
+                <Button
+                  onClick={handleSchedule}
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Schedule
+                </Button>
+                <Button
+                  onClick={handleBookmark}
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+                >
+                  <Bookmark className={`w-4 h-4 mr-2 ${isBookmarked ? 'fill-current' : ''}`} />
+                  {isBookmarked ? 'Saved' : 'Save'}
+                </Button>
+                <Button
+                  onClick={handleLike}
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+                >
+                  <Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current text-red-400' : ''}`} />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex space-x-8">
-            <button
-              onClick={() => setActiveTab("profile")}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "profile"
-                  ? "border-blue-500 text-blue-600"
+          <div className="flex space-x-8 overflow-x-auto">
+            {[
+              { id: 'overview', label: 'Overview', icon: Eye },
+              { id: 'experience', label: 'Experience', icon: Briefcase },
+              { id: 'skills', label: 'Skills & Match', icon: Target },
+              { id: 'contact', label: 'Contact & Actions', icon: MessageCircle },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === tab.id
+                  ? "border-umukozi-orange text-umukozi-orange"
                   : "border-transparent text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              Profile
-            </button>
-            <button
-              onClick={() => setActiveTab("messaging")}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "messaging"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              <MessageCircle className="w-4 h-4 mr-2 inline" />
-              Messaging
-            </button>
-            <button
-              onClick={() => setActiveTab("scheduling")}
-              className={`py-4 px-2 border-b-2 font-medium text-sm transition-colors ${
-                activeTab === "scheduling"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              <CalendarIcon className="w-4 h-4 mr-2 inline" />
-              Schedule Interview
-            </button>
+                  }`}
+              >
+                <tab.icon className="w-4 h-4" />
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Profile Tab */}
-        {activeTab === "profile" && (
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-6">
               {/* AI Analysis */}
-              <Card className="p-8">
-                <div className="flex items-center mb-6">
-                  <Sparkles className="w-6 h-6 text-blue-500 mr-3" />
-                  <h2 className="text-2xl font-bold text-slate-900">AI Analysis</h2>
-                </div>
-                <p className="text-slate-700 leading-relaxed text-lg">{candidate.summary}</p>
-                <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-                  <p className="text-blue-800 font-medium">
-                    <strong>Why they're a perfect match:</strong> Strong React expertise, proven leadership experience,
-                    and track record of improving system performance aligns perfectly with your requirements.
-                  </p>
-                </div>
-              </Card>
-
-              {/* Experience Timeline */}
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Experience</h2>
-                <div className="space-y-8">
-                  {candidate.experience_timeline.map((exp, index) => (
-                    <div key={index} className="relative pl-8">
-                      <div className="absolute left-0 top-2 w-4 h-4 bg-blue-500 rounded-full" />
-                      {index < candidate.experience_timeline.length - 1 && (
-                        <div className="absolute left-2 top-6 w-0.5 h-16 bg-slate-200" />
-                      )}
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-umukozi-orange/5 to-umukozi-orange/10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-umukozi-orange/10 rounded-lg">
+                        <Sparkles className="w-6 h-6 text-umukozi-orange" />
+                      </div>
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">{exp.title}</h3>
-                        <p className="text-blue-600 font-medium">{exp.company}</p>
-                        <p className="text-slate-500 text-sm mb-3">{exp.duration}</p>
-                        <p className="text-slate-700">{exp.description}</p>
+                        <h2 className="text-2xl font-bold text-slate-900">AI Analysis</h2>
+                        <p className="text-slate-600">Why this candidate is a great match</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <Button
+                      onClick={() => setIsChatOpen(true)}
+                      className="bg-umukozi-orange hover:bg-umukozi-orange-dark text-white"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Chat with AI
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <p className="text-slate-700 leading-relaxed text-lg">
+                      This candidate demonstrates exceptional expertise in machine learning and software engineering,
+                      with a proven track record of building scalable solutions. Their experience at Babban Gona
+                      shows strong technical leadership and the ability to deliver impactful projects.
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                          <span className="font-semibold text-green-800">Strengths</span>
+                        </div>
+                        <ul className="text-sm text-green-700 space-y-1">
+                          <li>• Strong Python expertise</li>
+                          <li>• Machine Learning experience</li>
+                          <li>• Current role relevance</li>
+                        </ul>
+                      </div>
+
+                      <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Target className="w-5 h-5 text-yellow-600" />
+                          <span className="font-semibold text-yellow-800">Growth Areas</span>
+                        </div>
+                        <ul className="text-sm text-yellow-700 space-y-1">
+                          <li>• FastAPI experience</li>
+                          <li>• PostgreSQL knowledge</li>
+                          <li>• Additional certifications</li>
+                        </ul>
+                      </div>
+
+                      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <TrendingUp className="w-5 h-5 text-blue-600" />
+                          <span className="font-semibold text-blue-800">Potential</span>
+                        </div>
+                        <ul className="text-sm text-blue-700 space-y-1">
+                          <li>• High growth trajectory</li>
+                          <li>• Leadership potential</li>
+                          <li>• Cultural fit</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
 
-              {/* Skills */}
-              <Card className="p-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Technical Skills</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {candidate.skills.map((skill, index) => (
-                    <div key={index} className="p-4 bg-slate-50 rounded-xl">
-                      <h3 className="font-bold text-slate-900 mb-2">{skill}</h3>
-                      <div className="w-full bg-slate-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${85 + Math.random() * 15}%` }} />
-                      </div>
-                      <p className="text-sm text-slate-500 mt-1">Expert</p>
+              {/* Quick Stats */}
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h2 className="text-2xl font-bold text-slate-900">Quick Stats</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-umukozi-orange mb-1">{candidate.relevance_score}%</div>
+                      <div className="text-sm text-slate-600">Match Score</div>
                     </div>
-                  ))}
-                </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-umukozi-orange mb-1">{candidate.skill_match_score}%</div>
+                      <div className="text-sm text-slate-600">Skills Match</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-umukozi-orange mb-1">{candidate.experience_score}%</div>
+                      <div className="text-sm text-slate-600">Experience</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-umukozi-orange mb-1">{candidate.location_score}%</div>
+                      <div className="text-sm text-slate-600">Location</div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Contact Info */}
-              <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Contact Information</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center">
-                    <Mail className="w-5 h-5 text-slate-400 mr-3" />
-                    <span className="text-slate-600">{candidate.contact.email}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Linkedin className="w-5 h-5 text-slate-400 mr-3" />
-                    <span className="text-slate-600">{candidate.contact.linkedin}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Github className="w-5 h-5 text-slate-400 mr-3" />
-                    <span className="text-slate-600">{candidate.contact.github}</span>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Quick Stats */}
-              <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Quick Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Experience</span>
-                    <span className="font-medium text-slate-900">{candidate.experience}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Availability</span>
-                    <span className="font-medium text-slate-900">{candidate.availability}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Salary Range</span>
-                    <span className="font-medium text-slate-900">{candidate.salary}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Status</span>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{candidate.status}</Badge>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Similar Candidates */}
-              <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Similar Candidates</h3>
-                <div className="space-y-3">
-                  {[
-                    { name: "Marcus Johnson", title: "Full Stack Engineer", score: 91 },
-                    { name: "Emily Rodriguez", title: "Frontend Architect", score: 89 },
-                    { name: "David Kim", title: "React Developer", score: 87 },
-                  ].map((similar, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
-                    >
-                      <div>
-                        <p className="font-medium text-slate-900">{similar.name}</p>
-                        <p className="text-sm text-slate-600">{similar.title}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-blue-600">{similar.score}%</p>
-                        <p className="text-xs text-slate-500">match</p>
-                      </div>
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h3 className="text-lg font-bold text-slate-900">Contact Information</h3>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {candidate.primary_professional_email && (
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Mail className="w-5 h-5 text-slate-400" />
+                      <span className="text-slate-600">{candidate.primary_professional_email}</span>
                     </div>
-                  ))}
-                </div>
+                  )}
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                    <Linkedin className="w-5 h-5 text-blue-600" />
+                    <a
+                      href={candidate.linkedin_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      LinkedIn Profile
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Availability Status */}
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h3 className="text-lg font-bold text-slate-900">Availability</h3>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">Status</span>
+                      <Badge className={`${candidate.is_working ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {candidate.is_working ? 'Currently Working' : 'Available'}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">Experience</span>
+                      <span className="font-medium">{formatExperience(candidate.total_experience_duration_months)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600">Location</span>
+                      <span className="font-medium">{candidate.location_country}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h3 className="text-lg font-bold text-slate-900">Quick Actions</h3>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button onClick={handleContact} className="w-full bg-umukozi-orange hover:bg-umukozi-orange-dark">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Send Message
+                  </Button>
+                  <Button onClick={handleSchedule} variant="outline" className="w-full">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Schedule Interview
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download CV
+                  </Button>
+                  <Button variant="outline" className="w-full">
+                    <Share className="w-4 h-4 mr-2" />
+                    Share Profile
+                  </Button>
+                </CardContent>
               </Card>
             </div>
           </div>
         )}
 
-        {/* Messaging Tab */}
-        {activeTab === "messaging" && (
-          <div className="max-w-4xl mx-auto">
-            <Card className="h-[600px] flex flex-col">
-              {/* Messages Header */}
-              <div className="p-4 border-b border-slate-200">
-                <h2 className="text-xl font-bold text-slate-900">Unified Messaging</h2>
-                <p className="text-sm text-slate-600">WhatsApp, LinkedIn, and Email in one place</p>
-              </div>
-              {/* Messages List */}
-              <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.isCandidate ? "justify-start" : "justify-end"}`}>
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                        message.isCandidate ? "bg-slate-100 text-slate-900" : "bg-blue-500 text-white"
-                      }`}
-                    >
-                      <div className="flex items-center mb-1">
-                        {getPlatformIcon(message.platform)}
-                        <span className="text-xs ml-2 opacity-75">{message.timestamp}</span>
+        {/* Experience Tab */}
+        {activeTab === 'experience' && (
+          <div className="space-y-6">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <h2 className="text-2xl font-bold text-slate-900">Work Experience</h2>
+                <p className="text-slate-600">Professional journey and achievements</p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-8">
+                  {candidate.experience.map((exp, index) => (
+                    <div key={index} className="relative pl-8">
+                      <div className="absolute left-0 top-2 w-4 h-4 bg-umukozi-orange rounded-full" />
+                      {index < candidate.experience.length - 1 && (
+                        <div className="absolute left-2 top-6 w-0.5 h-16 bg-slate-200" />
+                      )}
+                      <div className="bg-slate-50 rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="text-xl font-bold text-slate-900">{exp.position_title}</h3>
+                            <p className="text-umukozi-orange font-semibold">{exp.company_name}</p>
+                            <p className="text-slate-500 text-sm">
+                              {exp.date_from} - {exp.date_to || 'Present'}
+                            </p>
+                          </div>
+                          {exp.active_experience && (
+                            <Badge className="bg-green-100 text-green-800">Current</Badge>
+                          )}
+                        </div>
+                        {exp.company_industry && (
+                          <p className="text-slate-600 mb-3">Industry: {exp.company_industry}</p>
+                        )}
+                        <p className="text-slate-700">Duration: {exp.duration_months} months</p>
                       </div>
-                      <p>{message.content}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Education */}
+            {candidate.education && candidate.education.length > 0 && (
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h2 className="text-2xl font-bold text-slate-900">Education</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {candidate.education.map((edu, index) => (
+                      <div key={index} className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
+                        <GraduationCap className="w-6 h-6 text-umukozi-orange" />
+                        <div>
+                          <h3 className="font-semibold text-slate-900">{edu.degree}</h3>
+                          <p className="text-slate-600">{edu.institution_name}</p>
+                          <p className="text-sm text-slate-500">
+                            {edu.date_from_year} - {edu.date_to_year || 'Present'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Certifications */}
+            {candidate.certification_details && candidate.certification_details.length > 0 && (
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <h2 className="text-2xl font-bold text-slate-900">Certifications</h2>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {candidate.certification_details.map((cert, index) => (
+                      <div key={index} className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
+                        <Award className="w-6 h-6 text-umukozi-orange" />
+                        <div>
+                          <h3 className="font-semibold text-slate-900">{cert.title}</h3>
+                          <p className="text-slate-600">{cert.issuer}</p>
+                          <p className="text-sm text-slate-500">{cert.date_from}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Skills Tab */}
+        {activeTab === 'skills' && (
+          <div className="space-y-6">
+            {/* Skills Match Analysis */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <h2 className="text-2xl font-bold text-slate-900">Skills Analysis</h2>
+                <p className="text-slate-600">How well this candidate matches your requirements</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Matched Skills */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      Matched Skills ({candidate.matched_skills.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {candidate.matched_skills.map((skill, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                          <span className="font-medium text-green-800">{skill}</span>
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-              {/* Message Input */}
-              <div className="p-4 border-t border-slate-200">
-                <div className="flex space-x-2">
-                  <Textarea
-                    placeholder="Type your message..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    className="flex-1 min-h-[60px] resize-none"
-                  />
-                  <div className="flex flex-col space-y-2">
-                    <Button size="sm" variant="outline">
-                      <Paperclip className="w-4 h-4" />
-                    </Button>
-                    <Button onClick={handleSendMessage} size="sm">
-                      <Send className="w-4 h-4" />
-                    </Button>
+
+                  {/* Missing Skills */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-red-800 mb-4 flex items-center gap-2">
+                      <XCircle className="w-5 h-5" />
+                      Missing Skills ({candidate.missing_skills.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {candidate.missing_skills.map((skill, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                          <span className="font-medium text-red-800">{skill}</span>
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">
-                  Messages will be sent via the candidate's preferred platform
-                </p>
-              </div>
+              </CardContent>
+            </Card>
+
+            {/* All Skills */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <h2 className="text-2xl font-bold text-slate-900">All Skills</h2>
+                <p className="text-slate-600">Complete skill set and expertise areas</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {candidate.inferred_skills.map((skill, index) => {
+                    const isMatched = candidate.matched_skills.includes(skill)
+                    const isMissing = candidate.missing_skills.includes(skill)
+
+                    return (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg border-2 ${isMatched
+                          ? 'bg-green-50 border-green-200'
+                          : isMissing
+                            ? 'bg-red-50 border-red-200'
+                            : 'bg-slate-50 border-slate-200'
+                          }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-slate-900">{skill}</h3>
+                          {isMatched && <CheckCircle className="w-4 h-4 text-green-600" />}
+                          {isMissing && <XCircle className="w-4 h-4 text-red-600" />}
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${isMatched ? 'bg-green-500' : 'bg-slate-400'
+                              }`}
+                            style={{ width: `${85 + Math.random() * 15}%` }}
+                          />
+                        </div>
+                        <p className="text-sm text-slate-500 mt-1">
+                          {isMatched ? 'Matched' : isMissing ? 'Missing' : 'Available'}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}
 
-        {/* Scheduling Tab */}
-        {activeTab === "scheduling" && (
-          <div className="max-w-5xl mx-auto">
-            <Card className="p-8 flex flex-col lg:flex-row gap-8 items-start">
-              {/* Calendar Picker */}
-              <div className="w-full lg:w-[350px] flex-shrink-0 flex flex-col items-center">
-                <CalendarIcon className="w-12 h-12 text-blue-500 mb-4" />
-                <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">Schedule Interview</h2>
-                <p className="text-slate-600 mb-4 text-center">Choose a date for your interview with {candidate.name}</p>
-                <Calendar
-                  onChange={(value) => {
-                    if (value instanceof Date) setSelectedDate(value);
-                    else if (Array.isArray(value) && value[0] instanceof Date) setSelectedDate(value[0]);
-                  }}
-                  value={selectedDate}
-                  minDate={new Date()}
-                  tileDisabled={({ date, view }) => view === 'month' && date < new Date(new Date().setHours(0,0,0,0))}
-                  className="hiregen-calendar"
-                />
-              </div>
-              {/* Scheduling Form */}
-              <div className="flex-1 w-full">
-                <div className="space-y-6">
-                  {selectedDate && (
-                    <div>
-                      <label className="text-base font-medium text-slate-900 mb-3 block">Available Time Slots</label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {dayTimeSlots.map((slot, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setSelectedTimeSlot(slot)}
-                            className={`p-3 text-left rounded-lg border-2 transition-all ${
-                              selectedTimeSlot === slot
-                                ? "border-blue-500 bg-blue-50 text-blue-700"
-                                : "border-slate-200 hover:border-blue-300"
-                            }`}
-                          >
-                            {slot}
-                          </button>
-                        ))}
+        {/* Contact Tab */}
+        {activeTab === 'contact' && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Contact Actions */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <h2 className="text-2xl font-bold text-slate-900">Contact & Actions</h2>
+                <p className="text-slate-600">Reach out and manage this candidate</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Quick Actions</h3>
+                    <div className="space-y-3">
+                      <Button onClick={handleContact} className="w-full bg-umukozi-orange hover:bg-umukozi-orange-dark h-12">
+                        <MessageCircle className="w-5 h-5 mr-2" />
+                        Send Message
+                      </Button>
+                      <Button onClick={handleSchedule} variant="outline" className="w-full h-12">
+                        <Calendar className="w-5 h-5 mr-2" />
+                        Schedule Interview
+                      </Button>
+                      <Button variant="outline" className="w-full h-12">
+                        <Video className="w-5 h-5 mr-2" />
+                        Video Call
+                      </Button>
+                      <Button variant="outline" className="w-full h-12">
+                        <FileText className="w-5 h-5 mr-2" />
+                        Request CV
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-slate-900">Contact Information</h3>
+                    <div className="space-y-3">
+                      {candidate.primary_professional_email && (
+                        <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                          <Mail className="w-5 h-5 text-slate-400" />
+                          <span className="text-slate-600">{candidate.primary_professional_email}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                        <Linkedin className="w-5 h-5 text-blue-600" />
+                        <a
+                          href={candidate.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          LinkedIn Profile
+                        </a>
                       </div>
                     </div>
-                  )}
-                  <div>
-                    <label className="text-base font-medium text-slate-900 mb-2 block">Interview Type</label>
-                    <div className="flex space-x-4 mb-2">
-                      <button
-                        className={`flex-1 p-3 border-2 rounded-lg flex flex-col items-center ${
-                          interviewType === "video"
-                            ? "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-slate-200 hover:border-blue-300"
-                        }`}
-                        onClick={() => setInterviewType("video")}
-                      >
-                        <VideoIcon className="w-5 h-5 mb-1" />
-                        <span className="text-sm font-medium">Video Call</span>
-                      </button>
-                      <button
-                        className={`flex-1 p-3 border-2 rounded-lg flex flex-col items-center ${
-                          interviewType === "inperson"
-                            ? "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-slate-200 hover:border-blue-300"
-                        }`}
-                        onClick={() => setInterviewType("inperson")}
-                      >
-                        <Building className="w-5 h-5 mb-1" />
-                        <span className="text-sm font-medium">In Person</span>
-                      </button>
-                    </div>
-                    {interviewType === "video" && (
-                      <div className="flex space-x-4 mb-2">
-                        <button
-                          className={`flex-1 p-3 border-2 rounded-lg flex flex-col items-center ${
-                            virtualType === "zoom"
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-slate-200 hover:border-blue-300"
-                          }`}
-                          onClick={() => setVirtualType("zoom")}
-                        >
-                          <Video className="w-5 h-5 mb-1" />
-                          <span className="text-sm font-medium">Zoom</span>
-                        </button>
-                        <button
-                          className={`flex-1 p-3 border-2 rounded-lg flex flex-col items-center ${
-                            virtualType === "googlemeet"
-                              ? "border-blue-500 bg-blue-50 text-blue-700"
-                              : "border-slate-200 hover:border-blue-300"
-                          }`}
-                          onClick={() => setVirtualType("googlemeet")}
-                        >
-                          <VideoIcon className="w-5 h-5 mb-1" />
-                          <span className="text-sm font-medium">Google Meet</span>
-                        </button>
-                      </div>
-                    )}
                   </div>
-                  <div>
-                    <label className="text-base font-medium text-slate-900 mb-2 block">Add a note (optional)</label>
-                    <Textarea placeholder="Any specific topics or preparation notes..." className="min-h-[80px]" />
-                  </div>
-                  <Button
-                    onClick={handleScheduleInterview}
-                    disabled={!selectedTimeSlot || !selectedDate}
-                    className="w-full h-12 bg-blue-500 hover:bg-blue-600 disabled:opacity-50"
-                  >
-                    <CalendarIcon className="w-5 h-5 mr-2" />
-                    Schedule Interview for {selectedTimeSlot && selectedDate ? `${selectedTimeSlot} on ${selectedDate.toLocaleDateString()}` : ""}
-                  </Button>
-                  <p className="text-xs text-slate-500 text-center">
-                    Calendar invite will be sent to both you and the candidate
-                  </p>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+
+            {/* Notes Section */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <h3 className="text-lg font-semibold text-slate-900">Notes & Comments</h3>
+                <p className="text-slate-600">Add your observations and notes about this candidate</p>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  placeholder="Add your notes about this candidate..."
+                  className="min-h-[120px] resize-none"
+                />
+                <div className="flex justify-end mt-4">
+                  <Button variant="outline">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Save Notes
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}
       </main>
+
+      {/* Chat Widget */}
+      <ChatWidget
+        candidateId={candidate?.id}
+        candidateName={candidate?.full_name}
+        candidateData={candidate}
+        isOpen={isChatOpen}
+        onToggle={() => setIsChatOpen(!isChatOpen)}
+      />
     </div>
   )
 }

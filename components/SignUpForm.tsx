@@ -6,16 +6,17 @@ import { Input } from "@/components/ui/input"
 import { toast } from "react-toastify"
 import { apiFetch, parseValidationDetails, normalizeError } from "@/lib/api"
 import baseUrl from "@/lib/config"
-import {Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 
 
 
 type SignedUpPayload = { email: string; userId?: string | number | null }
 type Props = {
   onSignedUp: (payload: SignedUpPayload) => void
+  onSwitchToSignIn?: () => void
 }
 
-export default function SignUpForm({ onSignedUp }: Props) {
+export default function SignUpForm({ onSignedUp, onSwitchToSignIn }: Props) {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [username, setUsername] = useState("")
@@ -26,8 +27,8 @@ export default function SignUpForm({ onSignedUp }: Props) {
   const [department, setDepartment] = useState("")
   const [phone, setPhone] = useState("")
 
-    const [showPassword, setShowPassword] = useState(false)
-    const [showConfirm, setShowConfirm] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -98,78 +99,204 @@ export default function SignUpForm({ onSignedUp }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        placeholder="Full name"
-        value={fullName}
-        onChange={(e) => { setFullName(e.target.value); clearFieldError("full_name"); }}
-        className="h-12 rounded-2xl px-4"
-        required
-      />
-      <Input
-        placeholder="Email"
-        type="email"
-        value={email}
-        onChange={(e) => { setEmail(e.target.value); clearFieldError("email"); }}
-        className="h-12 rounded-2xl px-4"
-        required
-      />
-      <Input
-        placeholder="Username"
-        value={username}
-        onChange={(e) => { setUsername(e.target.value); clearFieldError("username"); }}
-        className="h-12 rounded-2xl px-4"
-        required
-      />
-      {/* Password with visibility toggle */}
-      <div className="relative">
-        {fieldErrors["password"] && <p className="text-red-600 text-sm -mt-2">{fieldErrors["password"]}</p>}
-        <Input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => { setPassword(e.target.value); clearFieldError("password") }}
-          className="h-15 rounded-2xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-base px-5 pr-12"
-          required
-        />
-        <button
-          type="button"
-          aria-label={showPassword ? "Show password" : "Hide password"}
-          onClick={() => setShowPassword((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-        >
-          {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-        </button>
-      </div>
+    <div className="w-full">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-2">Join Umukozi HR</h3>
+          <p className="text-gray-600">Create your professional account</p>
+        </div>
 
-      {/* Confirm password only on signup */}
-      <div className="relative">
-        {fieldErrors["confirm_password"] && <p className="text-red-600 text-sm -mt-2">{fieldErrors["confirm_password"]}</p>}
-        <Input
-          type={showConfirm ? "text" : "password"}
-          placeholder="Confirm password"
-          value={confirmPassword}
-          onChange={(e) => { setConfirmPassword(e.target.value); clearFieldError("confirm_password") }}
-          className="h-15 rounded-2xl border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 text-base px-5 pr-12"
-          required
-        />
-        <button
-          type="button"
-          aria-label={showConfirm ? "Show confirm password" : "Hide confirm password"}
-          onClick={() => setShowConfirm((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
-        >
-          {showConfirm ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-        </button>
-      </div>
-      <Input placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} className="h-12 rounded-2xl px-4" />
-      <Input placeholder="Job title" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="h-12 rounded-2xl px-4" />
-      <Input placeholder="Department" value={department} onChange={(e) => setDepartment(e.target.value)} className="h-12 rounded-2xl px-4" />
-      <Input placeholder="Phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="h-12 rounded-2xl px-4" />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Left Column */}
+            <div className="space-y-4">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Full Name *</label>
+                {fieldErrors["full_name"] && (
+                  <p className="text-sm text-red-600">{fieldErrors["full_name"]}</p>
+                )}
+                <Input
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => { setFullName(e.target.value); clearFieldError("full_name"); }}
+                  className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 ${fieldErrors["full_name"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                    }`}
+                  required
+                />
+              </div>
 
-      <Button type="submit" className="w-full h-12 rounded-2xl" disabled={isLoading}>
-        {isLoading ? "Creating account..." : "Create account"}
-      </Button>
-    </form>
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Email Address *</label>
+                {fieldErrors["email"] && (
+                  <p className="text-sm text-red-600">{fieldErrors["email"]}</p>
+                )}
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); clearFieldError("email"); }}
+                  className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 ${fieldErrors["email"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                    }`}
+                  required
+                />
+              </div>
+
+              {/* Username */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Username *</label>
+                {fieldErrors["username"] && (
+                  <p className="text-sm text-red-600">{fieldErrors["username"]}</p>
+                )}
+                <Input
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => { setUsername(e.target.value); clearFieldError("username"); }}
+                  className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 ${fieldErrors["username"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                    }`}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Password *</label>
+                {fieldErrors["password"] && (
+                  <p className="text-sm text-red-600">{fieldErrors["password"]}</p>
+                )}
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); clearFieldError("password") }}
+                    className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 pr-10 ${fieldErrors["password"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                      }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Show password" : "Hide password"}
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Confirm Password *</label>
+                {fieldErrors["confirm_password"] && (
+                  <p className="text-sm text-red-600">{fieldErrors["confirm_password"]}</p>
+                )}
+                <div className="relative">
+                  <Input
+                    type={showConfirm ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); clearFieldError("confirm_password") }}
+                    className={`h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 pr-10 ${fieldErrors["confirm_password"] ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" : ""
+                      }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    aria-label={showConfirm ? "Show confirm password" : "Hide confirm password"}
+                    onClick={() => setShowConfirm((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showConfirm ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">
+              {/* Company */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Company</label>
+                <Input
+                  placeholder="Your company name"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  className="h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20"
+                />
+              </div>
+
+              {/* Job Title */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Job Title</label>
+                <Input
+                  placeholder="Your job title"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className="h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20"
+                />
+              </div>
+
+              {/* Department */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Department</label>
+                <Input
+                  placeholder="Your department"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20"
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Phone Number</label>
+                <Input
+                  type="tel"
+                  placeholder="Your phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-11 rounded-lg border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-lg bg-umukozi-orange hover:bg-umukozi-orange-dark text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Creating account...</span>
+              </div>
+            ) : (
+              "Create Account"
+            )}
+          </Button>
+
+
+          {/* Footer */}
+          <div className="text-center pt-4">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <button
+                type="button"
+                onClick={onSwitchToSignIn}
+                className="text-umukozi-orange hover:text-umukozi-orange-dark font-medium transition-colors"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }
