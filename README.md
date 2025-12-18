@@ -1,5 +1,5 @@
-# hiregen-ai-webapp
-HireGen-AI Enterprise WebApp
+# UmukoziHR-webapp
+UmukoziHR Enterprise WebApp
 
 ## How to Install Dependencies and Start the Server
 
