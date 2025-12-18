@@ -1,0 +1,24 @@
+{
+    "criteria": {
+        "job_titles": [
+            "Machine Learning"
+        ],
+        "skills_keywords": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL"
+        ],
+        "location_full": "Nigeria",
+        "education_levels": [
+            "Bachelor's",
+            "Master's"
+        ],
+        "industry_keywords": [
+            "technology",
+            "software"
+        ],
+        "experience_years_min": 1,
+        "experience_years_max": 10
+    },
+    "search_mode": "database"
+}
