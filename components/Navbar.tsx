@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -13,6 +14,9 @@ interface User {
   username: string | null;
   company: string | null;
   job_title: string | null;
+  subscription_tier?: string;
+  monthly_search_limit?: number;
+  monthly_searches_used?: number;
 }
 
 export default function Navbar() {
@@ -62,16 +66,27 @@ export default function Navbar() {
     return "U";
   };
 
+  const getTierBadgeColor = (tier?: string) => {
+    switch (tier?.toLowerCase()) {
+      case "business":
+        return "bg-purple-500 text-white";
+      case "pro":
+        return "bg-blue-500 text-white";
+      default:
+        return "bg-slate-200 text-slate-700";
+    }
+  };
+
   const handleProfileClick = () => {
     // Navigate to user profile page
     router.push('/profile');
   };
   return (
-    <header className="bg-gradient-to-r from-white via-slate-50/95 to-white backdrop-blur-xl border-b border-gradient-to-r from-umukozi-orange/20 via-transparent to-umukozi-teal/20 sticky top-0 z-50 shadow-lg shadow-umukozi-orange/5">
+    <header className="bg-linear-to-r from-white via-slate-50/95 to-white backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 shadow-lg shadow-umukozi-orange/5">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         <div className="flex items-center">
           <div className="w-48 h-16 relative group cursor-pointer transition-all duration-300 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-r from-umukozi-orange/5 to-umukozi-teal/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-umukozi-orange/5 to-umukozi-teal/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <Image
               src="/logo.png"
               alt="Umukozi HR Logo"
@@ -80,18 +95,25 @@ export default function Navbar() {
             />
           </div>
         </div>
-        <button
-          onClick={handleProfileClick}
-          tabIndex={0}
-          aria-label="Profile"
-          className="focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 rounded-full transition-all duration-200"
-        >
-          <Avatar className="w-12 h-12 cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/25">
-            <AvatarFallback className="bg-gradient-to-br from-orange-500 to-teal-500 text-white font-semibold text-sm">
-              {isLoading ? "..." : getUserInitials(user)}
-            </AvatarFallback>
-          </Avatar>
-        </button>
+        <div className="flex items-center gap-4">
+          {user?.subscription_tier && (
+            <Badge className={`${getTierBadgeColor(user.subscription_tier)} text-xs font-medium`}>
+              {user.subscription_tier}
+            </Badge>
+          )}
+          <button
+            onClick={handleProfileClick}
+            tabIndex={0}
+            aria-label="Profile"
+            className="focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:ring-offset-2 rounded-full transition-all duration-200"
+          >
+            <Avatar className="w-12 h-12 cursor-pointer transition-all duration-200 hover:shadow-lg hover:shadow-orange-500/25">
+              <AvatarFallback className="bg-linear-to-br from-orange-500 to-teal-500 text-white font-semibold text-sm">
+                {isLoading ? "..." : getUserInitials(user)}
+              </AvatarFallback>
+            </Avatar>
+          </button>
+        </div>
       </div>
     </header>
   );

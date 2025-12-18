@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import baseUrl from "@/lib/config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (temperature) params.append("temperature", temperature.toString());
 
     console.log("Making request to external API:", {
-      url: `https://agent-architecture.onrender.com/api/v1/chat/chat?${params.toString()}`,
+      url: `${baseUrl}/api/v1/chat/chat?${params.toString()}`,
       headers,
       message,
       session_id,
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
     });
 
     const response = await fetch(
-      `https://agent-architecture.onrender.com/api/v1/chat/chat?${params.toString()}`,
+      `${baseUrl}/api/v1/chat/chat?${params.toString()}`,
       {
         method: "POST",
         headers,
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
         status: response.status,
         statusText: response.statusText,
         errorText,
-        url: `https://agent-architecture.onrender.com/api/v1/chat/chat?${params.toString()}`,
+        url: `${baseUrl}/api/v1/chat/chat?${params.toString()}`,
         headers: Object.fromEntries(response.headers.entries()),
       });
       return NextResponse.json(

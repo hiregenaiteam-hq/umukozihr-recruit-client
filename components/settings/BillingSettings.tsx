@@ -12,6 +12,7 @@ interface BillingSettingsProps {
         id: string;
         name: string;
         price: number;
+        currency?: string;
         searches: number | string;
         description: string;
     };
@@ -23,6 +24,13 @@ interface BillingSettingsProps {
     }>;
 }
 
+function formatPrice(price: number, currency?: string): string {
+    if (currency === "GHS") {
+        return `₵${price.toLocaleString()}`;
+    }
+    return `$${price.toLocaleString()}`;
+}
+
 export default function BillingSettings({ currentPlan, searchesUsed, usageHistory }: BillingSettingsProps) {
     const usagePercentage = typeof currentPlan.searches === "number"
         ? (searchesUsed / currentPlan.searches) * 100
@@ -31,7 +39,7 @@ export default function BillingSettings({ currentPlan, searchesUsed, usageHistor
     return (
         <div className="space-y-6">
             {/* Current Plan */}
-            <Card className="border-2 border-umukozi-orange shadow-lg bg-gradient-to-br from-umukozi-orange/5 to-white">
+            <Card className="border-2 border-umukozi-orange shadow-lg bg-linear-to-br from-umukozi-orange/5 to-white">
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -46,9 +54,11 @@ export default function BillingSettings({ currentPlan, searchesUsed, usageHistor
                         </div>
                         <div className="text-right">
                             <p className="text-3xl font-bold text-slate-900 font-inter">
-                                ${currentPlan.price.toLocaleString()}
+                                {currentPlan.price === 0 ? "Free" : formatPrice(currentPlan.price, currentPlan.currency)}
                             </p>
-                            <p className="text-slate-600 font-inter">per month</p>
+                            {currentPlan.price > 0 && (
+                                <p className="text-slate-600 font-inter">per month</p>
+                            )}
                         </div>
                     </div>
                 </CardHeader>
@@ -89,7 +99,7 @@ export default function BillingSettings({ currentPlan, searchesUsed, usageHistor
             </Card>
 
             {/* Payment Method */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/50">
+            <Card className="border-0 shadow-lg bg-linear-to-br from-white to-slate-50/50">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-umukozi-orange/10 rounded-xl">
@@ -104,7 +114,7 @@ export default function BillingSettings({ currentPlan, searchesUsed, usageHistor
                 <CardContent>
                     <div className="flex items-center justify-between p-6 bg-slate-50 rounded-xl border border-slate-200">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded flex items-center justify-center">
+                            <div className="w-12 h-8 bg-linear-to-r from-blue-600 to-blue-700 rounded flex items-center justify-center">
                                 <span className="text-white text-xs font-bold">VISA</span>
                             </div>
                             <div>
@@ -120,7 +130,7 @@ export default function BillingSettings({ currentPlan, searchesUsed, usageHistor
             </Card>
 
             {/* Usage History */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/50">
+            <Card className="border-0 shadow-lg bg-linear-to-br from-white to-slate-50/50">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-umukozi-orange/10 rounded-xl">

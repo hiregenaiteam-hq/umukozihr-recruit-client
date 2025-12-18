@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Users, Shield, Star, ArrowRight } from "lucide-react"
@@ -12,7 +12,7 @@ import MultiStepRegistration from "@/components/auth/MultiStepRegistration"
 import AuthTabSwitcher from "@/components/auth/AuthTabSwitcher"
 import VerificationForm from "@/components/VerificationForm"
 
-export default function AuthPage() {
+function AuthContent() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [pendingVerification, setPendingVerification] = useState(false)
   const [verificationEmail, setVerificationEmail] = useState("")
@@ -115,7 +115,7 @@ export default function AuthPage() {
           </div>
 
           {/* Right Side - Clean Auth Form */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-gradient-to-br from-slate-50/50 to-white">
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-linear-to-br from-slate-50/50 to-white">
             <div className="w-full max-w-md flex flex-col justify-center">
 
               {/* Sweet Auth Container */}
@@ -157,5 +157,17 @@ export default function AuthPage() {
         </>
       )}
     </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <AuthContent />
+    </Suspense>
   )
 }

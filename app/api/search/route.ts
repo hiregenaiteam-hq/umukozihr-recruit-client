@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import responseSamples from "../../../Response-samples.json";
+import baseUrl from "@/lib/config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await fetch(
-      "https://agent-architecture.onrender.com/api/v1/search/search",
+      `${baseUrl}/api/v1/search/search`,
       {
         method: "POST",
         headers,

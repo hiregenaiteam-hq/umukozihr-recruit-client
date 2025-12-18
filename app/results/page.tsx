@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import {
@@ -13,7 +13,7 @@ import {
 import { Candidate, SearchResponse } from "@/components/results/types"
 import { ChatWidget } from "@/components/chat"
 
-export default function ResultsPage() {
+function ResultsContent() {
   const [searchData, setSearchData] = useState<SearchResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
@@ -91,11 +91,11 @@ export default function ResultsPage() {
 
   if (!searchData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-orange-50">
         <Navbar />
         <div className="max-w-4xl mx-auto px-6 py-20 text-center">
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-16 shadow-xl border border-white/20">
-            <div className="w-24 h-24 bg-gradient-to-r from-orange-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
+            <div className="w-24 h-24 bg-linear-to-r from-orange-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
               <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -107,7 +107,7 @@ export default function ResultsPage() {
             <div className="space-y-6">
               <button
                 onClick={() => router.push('/search')}
-                className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-orange-500 to-teal-500 text-white font-medium rounded-xl hover:from-orange-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                className="inline-flex items-center px-10 py-4 bg-linear-to-r from-orange-500 to-teal-500 text-white font-medium rounded-xl hover:from-orange-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -127,7 +127,7 @@ export default function ResultsPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-orange-50">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
@@ -180,7 +180,7 @@ export default function ResultsPage() {
           {filteredCandidates.length === 0 && searchData && (
             <div className="text-center py-20">
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-16 shadow-xl border border-white/20 max-w-2xl mx-auto">
-                <div className="w-24 h-24 bg-gradient-to-r from-orange-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                <div className="w-24 h-24 bg-linear-to-r from-orange-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
                   <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.291A7.962 7.962 0 0012 5c-2.34 0-4.29 1.009-5.824 2.709" />
                   </svg>
@@ -203,7 +203,7 @@ export default function ResultsPage() {
                   )}
                   <button
                     onClick={() => router.push('/search')}
-                    className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-500 to-teal-500 text-white font-medium rounded-xl hover:from-orange-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center px-8 py-3 bg-linear-to-r from-orange-500 to-teal-500 text-white font-medium rounded-xl hover:from-orange-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
                   >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -227,5 +227,20 @@ export default function ResultsPage() {
         onToggle={() => setIsChatOpen(!isChatOpen)}
       />
     </div>
+  )
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/30">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    }>
+      <ResultsContent />
+    </Suspense>
   )
 }

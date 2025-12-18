@@ -393,3 +393,192 @@ export type ChatTool = {
 export async function getAvailableChatTools(): Promise<ChatTool[]> {
   return await apiFetch("/chat/chat/tools");
 }
+
+// ===========================================
+// SUBSCRIPTION & PLAN TYPES
+// ===========================================
+
+export type SubscriptionPlan = {
+  name: string;
+  price: number;
+  currency: string;
+  monthly_searches: number;
+  features: string[];
+};
+
+export type SubscriptionPlansResponse = {
+  plans: {
+    basic: SubscriptionPlan;
+    pro: SubscriptionPlan;
+    business: SubscriptionPlan;
+  };
+};
+
+export type SubscriptionStatus = "active" | "cancelled" | "expired" | "past_due" | "pending";
+
+export type UserSubscription = {
+  id: string;
+  user_id: string;
+  tier: "basic" | "pro" | "business";
+  status: SubscriptionStatus;
+  paystack_subscription_code?: string;
+  paystack_customer_code?: string;
+  monthly_search_limit: number;
+  current_period_start?: string;
+  current_period_end?: string;
+  paid_until?: string;
+  created_at: string;
+  updated_at?: string;
+};
+
+export type UserProfile = {
+  id: string;
+  email: string;
+  username?: string | null;
+  full_name?: string | null;
+  company?: string | null;
+  job_title?: string | null;
+  department?: string | null;
+  phone?: string | null;
+  is_active: boolean;
+  is_verified: boolean;
+  is_premium: boolean;
+  subscription_tier: string;
+  monthly_search_limit: number;
+  monthly_searches_used: number;
+  created_at: string;
+  is_admin?: boolean;
+  admin_role?: string | null;
+};
+
+export type PaystackSubscribeResponse = {
+  authorization_url: string;
+  access_code: string;
+  reference: string;
+};
+
+// ===========================================
+// SUBSCRIPTION API FUNCTIONS
+// ===========================================
+
+/**
+ * Get all available subscription plans from backend
+ */
+export async function getSubscriptionPlans(): Promise<SubscriptionPlansResponse> {
+  return await apiFetch("/api/v1/subscriptions/plans");
+}
+
+/**
+ * Get current user's subscription
+ */
+export async function getMySubscription(): Promise<UserSubscription | null> {
+  try {
+    return await apiFetch("/api/v1/subscriptions/me");
+  } catch (error) {
+    const apiError = error as ApiError;
+    // 404 means no subscription exists
+    if (apiError.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Get current user's profile (includes subscription info)
+ */
+export async function getCurrentUser(): Promise<UserProfile> {
+  return await apiFetch("/api/v1/users/me");
+}
+
+/**
+ * Update user profile
+ */
+export async function updateUserProfile(data: Partial<{
+  username: string;
+  full_name: string;
+  company: string;
+  job_title: string;
+  department: string;
+}>): Promise<UserProfile> {
+  return await apiFetch("/api/v1/users/me", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Initiate Paystack subscription for a tier
+ * Returns URL to redirect user to Paystack checkout
+ */
+export async function initiatePaystackSubscription(
+  tier: "pro" | "business"
+): Promise<PaystackSubscribeResponse> {
+  return await apiFetch(`/api/v1/subscriptions/paystack/subscribe/${tier}`, {
+    method: "POST",
+  });
+}
+
+/**
+ * Get Paystack customer portal link to manage subscription
+ */
+export async function getPaystackManageLink(): Promise<{ url: string }> {
+  return await apiFetch("/api/v1/subscriptions/paystack/manage-link");
+}
+
+/**
+ * Cancel subscription
+ */
+export async function cancelSubscription(subscriptionId: string): Promise<{ success: boolean; message: string }> {
+  return await apiFetch(`/api/v1/subscriptions/${subscriptionId}/cancel`, {
+    method: "POST",
+  });
+}
+
+/**
+ * Get user's subscription history
+ */
+export async function getSubscriptionHistory(): Promise<UserSubscription[]> {
+  return await apiFetch("/api/v1/subscriptions/me/history");
+}
+
+/**
+ * Refresh token
+ */
+export async function refreshAccessToken(refreshToken: string): Promise<LoginResponse> {
+  return await apiFetch("/api/v1/auth/refresh", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  });
+}
+
+/**
+ * Logout user
+ */
+export async function logoutUser(): Promise<void> {
+  try {
+    await apiFetch("/api/v1/auth/logout", { method: "POST" });
+  } finally {
+    // Clear cookies regardless of API response
+    document.cookie = "hg_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("user_data");
+  }
+}
+
+/**
+ * Get user's search usage stats
+ */
+export async function getUserSearchStats(): Promise<{
+  total_searches: number;
+  monthly_searches: number;
+  searches_this_week: number;
+  last_search_date: string | null;
+  average_searches_per_month: number;
+}> {
+  return await apiFetch("/api/v1/search/search/stats/total");
+}

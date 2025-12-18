@@ -12,58 +12,84 @@ import {
   NotificationSettings,
   BillingSettings,
 } from "@/components/settings";
-
-interface UserData {
-  id: string;
-  email: string;
-  username: string | null;
-  full_name: string | null;
-  company: string | null;
-  job_title: string | null;
-  is_active: boolean;
-  is_verified: boolean;
-  is_premium: boolean;
-  subscription_tier: string;
-  monthly_search_limit: number;
-  monthly_searches_used: number;
-  created_at: string;
-}
+import {
+  getCurrentUser,
+  getMySubscription,
+  getSubscriptionPlans,
+  updateUserProfile,
+  type UserProfile,
+  type UserSubscription,
+  type SubscriptionPlansResponse,
+} from "@/lib/api";
 
 export default function SettingsPage() {
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
+  const [plans, setPlans] = useState<SubscriptionPlansResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("account");
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    const loadUserData = () => {
-      try {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      setIsLoading(true);
+      
+      // Try to load from API first
+      const [userData, subscriptionData, plansData] = await Promise.all([
+        getCurrentUser().catch(() => null),
+        getMySubscription().catch(() => null),
+        getSubscriptionPlans().catch(() => null),
+      ]);
+
+      if (userData) {
+        setUser(userData);
+        // Also update localStorage for other components
+        localStorage.setItem('user_data', JSON.stringify(userData));
+      } else {
+        // Fallback to localStorage
         const storedUserData = localStorage.getItem('user_data');
         if (storedUserData) {
-          const userData = JSON.parse(storedUserData);
-          setUser(userData);
+          setUser(JSON.parse(storedUserData));
         } else {
           router.push('/auth');
+          return;
         }
-      } catch (error) {
-        console.error("Failed to load user data:", error);
-        router.push('/auth');
-      } finally {
-        setIsLoading(false);
       }
-    };
 
-    loadUserData();
-  }, [router]);
+      setSubscription(subscriptionData);
+      setPlans(plansData);
+    } catch (error) {
+      console.error("Failed to load data:", error);
+      // Try localStorage fallback
+      const storedUserData = localStorage.getItem('user_data');
+      if (storedUserData) {
+        setUser(JSON.parse(storedUserData));
+      } else {
+        router.push('/auth');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-  const handleAccountSave = async (data: Partial<UserData>) => {
+  const handleAccountSave = async (data: Partial<UserProfile>) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      // Filter out null/undefined values and prepare data for API
+      const updateData: Record<string, string> = {};
+      if (data.username) updateData.username = data.username;
+      if (data.full_name) updateData.full_name = data.full_name;
+      if (data.company) updateData.company = data.company;
+      if (data.job_title) updateData.job_title = data.job_title;
+      if (data.department) updateData.department = data.department;
+      
+      const updatedUser = await updateUserProfile(updateData);
+      
       // Update local storage
-      const updatedUser = { ...user, ...data } as UserData;
       localStorage.setItem('user_data', JSON.stringify(updatedUser));
       setUser(updatedUser);
 
@@ -72,6 +98,12 @@ export default function SettingsPage() {
         description: "Your account information has been saved successfully.",
       });
     } catch (error) {
+      console.error("Failed to update account:", error);
+      toast({
+        title: "Update failed",
+        description: "Failed to save your account information. Please try again.",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -94,26 +126,24 @@ export default function SettingsPage() {
     });
   };
 
-  // Mock data for billing
+  // Build billing data from real subscription info
   const currentPlan = {
-    id: "professional",
-    name: "Professional Plan",
-    price: 399,
-    searches: 50,
-    description: "For SMEs & HR managers",
+    id: user?.subscription_tier || "basic",
+    name: plans?.plans?.[user?.subscription_tier?.toLowerCase() as keyof typeof plans.plans]?.name || user?.subscription_tier || "Basic",
+    price: plans?.plans?.[user?.subscription_tier?.toLowerCase() as keyof typeof plans.plans]?.price || 0,
+    currency: plans?.plans?.[user?.subscription_tier?.toLowerCase() as keyof typeof plans.plans]?.currency || "GHS",
+    searches: user?.monthly_search_limit || 1,
+    description: subscription?.status === "active" ? "Active subscription" : "Free tier",
   };
 
-  const searchesUsed = 23;
+  const searchesUsed = user?.monthly_searches_used || 0;
 
-  const usageHistory = [
-    { date: "Jan 15, 2024", searches: 8, cost: "$16.00" },
-    { date: "Jan 14, 2024", searches: 3, cost: "$6.00" },
-    { date: "Jan 13, 2024", searches: 12, cost: "$24.00" },
-  ];
+  // Usage history will come from real API when available
+  const usageHistory: { date: string; searches: number; cost: string }[] = [];
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-umukozi-orange/10">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-umukozi-orange/10">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
@@ -130,7 +160,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-umukozi-orange/10">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-umukozi-orange/10">
       <Navbar />
 
       {/* Header */}
@@ -142,7 +172,7 @@ export default function SettingsPage() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Account Tab */}
         {activeTab === "account" && (
-          <AccountSettings user={user} onSave={handleAccountSave} />
+          <AccountSettings user={user as any} onSave={handleAccountSave as any} />
         )}
 
         {/* AI Preferences Tab */}
