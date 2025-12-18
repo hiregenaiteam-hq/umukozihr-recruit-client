@@ -143,7 +143,7 @@ export async function loginAndGetToken(
   password: string
 ): Promise<LoginResponse> {
   const params = new URLSearchParams({ username: email.trim(), password });
-  const data: LoginResponse = await apiFetch(`/auths/login`, {
+  const data: LoginResponse = await apiFetch(`/api/v1/auths/login`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params.toString(),
@@ -207,7 +207,7 @@ export async function registerUser(
   data: RegisterUserData
 ): Promise<RegisterUserResponse> {
   try {
-    const response = await apiFetch("/auths/register", {
+    const response = await apiFetch("/api/v1/users/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -312,7 +312,7 @@ export async function getChatHistory(
   params.append("limit", limit.toString());
   params.append("offset", offset.toString());
 
-  return await apiFetch(`/chat/chat/history?${params.toString()}`);
+  return await apiFetch(`/api/v1/chat/chat/history?${params.toString()}`);
 }
 
 export type ChatSession = {
@@ -332,14 +332,14 @@ export async function getChatSessions(
   params.append("limit", limit.toString());
   params.append("offset", offset.toString());
 
-  return await apiFetch(`/chat/chat/sessions?${params.toString()}`);
+  return await apiFetch(`/api/v1/chat/chat/sessions?${params.toString()}`);
 }
 
 export async function clearChatSession(sessionId: string): Promise<void> {
   const params = new URLSearchParams();
   params.append("session_id", sessionId);
 
-  await apiFetch(`/chat/chat/clear-session?${params.toString()}`, {
+  await apiFetch(`/api/v1/chat/chat/clear-session?${params.toString()}`, {
     method: "POST",
   });
 }
@@ -361,7 +361,7 @@ export async function analyzeSearchHistory(
   params.append("analysis_type", analysisType);
   params.append("time_range", timeRange);
 
-  return await apiFetch(`/chat/chat/analyze-search?${params.toString()}`, {
+  return await apiFetch(`/api/v1/chat/chat/analyze-search?${params.toString()}`, {
     method: "POST",
   });
 }
@@ -380,7 +380,7 @@ export type ChatAgentStatus = {
 };
 
 export async function getChatAgentStatus(): Promise<ChatAgentStatus> {
-  return await apiFetch("/chat/chat/status");
+  return await apiFetch("/api/v1/chat/chat/status");
 }
 
 export type ChatTool = {
@@ -391,7 +391,7 @@ export type ChatTool = {
 };
 
 export async function getAvailableChatTools(): Promise<ChatTool[]> {
-  return await apiFetch("/chat/chat/tools");
+  return await apiFetch("/api/v1/chat/chat/tools");
 }
 
 // ===========================================
@@ -488,7 +488,7 @@ export async function getMySubscription(): Promise<UserSubscription | null> {
  * Get current user's profile (includes subscription info)
  */
 export async function getCurrentUser(): Promise<UserProfile> {
-  return await apiFetch("/api/v1/users/me");
+  return await apiFetch("/api/v1/auths/me");
 }
 
 /**
@@ -501,7 +501,7 @@ export async function updateUserProfile(data: Partial<{
   job_title: string;
   department: string;
 }>): Promise<UserProfile> {
-  return await apiFetch("/api/v1/users/me", {
+  return await apiFetch("/api/v1/auths/me", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -547,7 +547,7 @@ export async function getSubscriptionHistory(): Promise<UserSubscription[]> {
  * Refresh token
  */
 export async function refreshAccessToken(refreshToken: string): Promise<LoginResponse> {
-  return await apiFetch("/api/v1/auth/refresh", {
+  return await apiFetch("/api/v1/auths/refresh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token: refreshToken }),
@@ -559,7 +559,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<LoginRes
  */
 export async function logoutUser(): Promise<void> {
   try {
-    await apiFetch("/api/v1/auth/logout", { method: "POST" });
+    await apiFetch("/api/v1/auths/logout", { method: "POST" });
   } finally {
     // Clear cookies regardless of API response
     document.cookie = "hg_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

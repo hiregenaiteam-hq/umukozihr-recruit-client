@@ -105,7 +105,7 @@ export default function VerificationForm({
     try {
       const payload: any = { email: verificationEmail.trim(), otp: code }
       if (userId) payload.user_id = userId
-      await apiFetch(`/users/verify-email`, {
+      await apiFetch(`/api/v1/users/verify-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -137,7 +137,7 @@ export default function VerificationForm({
     }
     setResendLoading(true)
     try {
-      await apiFetch(`/users/resend-verification`, {
+      await apiFetch(`/api/v1/users/resend-verification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: verificationEmail.trim() }),
