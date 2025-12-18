@@ -1,4 +1,4 @@
-.hiregen-calendar {
+.umukozihr-calendar {
   border-radius: 1rem;
   border: 1px solid #e2e8f0;
   font-family: 'Inter', sans-serif;
@@ -7,32 +7,32 @@
   max-width: 340px;
   background: #fff;
 }
-.hiregen-calendar .react-calendar__tile {
+.umukozihr-calendar .react-calendar__tile {
   border-radius: 0.75rem;
   font-size: 1rem;
   padding: 0.7em 0.2em;
   transition: background 0.2s, color 0.2s;
 }
-.hiregen-calendar .react-calendar__tile--active,
-.hiregen-calendar .react-calendar__tile--now {
+.umukozihr-calendar .react-calendar__tile--active,
+.umukozihr-calendar .react-calendar__tile--now {
   background: #2563eb !important;
   color: #fff !important;
 }
-.hiregen-calendar .react-calendar__tile--now:not(.react-calendar__tile--active) {
+.umukozihr-calendar .react-calendar__tile--now:not(.react-calendar__tile--active) {
   background: #e0e7ff !important;
   color: #2563eb !important;
 }
-.hiregen-calendar .react-calendar__tile:enabled:hover,
-.hiregen-calendar .react-calendar__tile:enabled:focus {
+.umukozihr-calendar .react-calendar__tile:enabled:hover,
+.umukozihr-calendar .react-calendar__tile:enabled:focus {
   background: #3b82f6 !important;
   color: #fff !important;
 }
-.hiregen-calendar .react-calendar__tile:disabled {
+.umukozihr-calendar .react-calendar__tile:disabled {
   background: #f1f5f9 !important;
   color: #cbd5e1 !important;
   cursor: not-allowed;
 }
-.hiregen-calendar .react-calendar__navigation button {
+.umukozihr-calendar .react-calendar__navigation button {
   color: #2563eb;
   font-weight: 600;
   font-size: 1rem;
@@ -40,11 +40,11 @@
   margin: 0 0.1em;
   padding: 0.3em 0.6em;
 }
-.hiregen-calendar .react-calendar__navigation button:disabled {
+.umukozihr-calendar .react-calendar__navigation button:disabled {
   color: #cbd5e1;
   background: transparent;
 }
-.hiregen-calendar .react-calendar__month-view__weekdays {
+.umukozihr-calendar .react-calendar__month-view__weekdays {
   text-align: center;
   text-transform: uppercase;
   font-size: 0.85em;
@@ -52,6 +52,6 @@
   font-weight: 500;
   letter-spacing: 0.03em;
 }
-.hiregen-calendar .react-calendar__month-view__days__day--neighboringMonth {
+.umukozihr-calendar .react-calendar__month-view__days__day--neighboringMonth {
   color: #cbd5e1;
 } 

@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "HireGen - AI-First Hiring Platform",
+  title: "UmukoziHR - AI-First Hiring Platform",
   description:
     "Hiring shouldn't feel like guesswork. Describe what you need. Our AI finds the top 1% talent in minutes.",
     generator: 'v0.dev'

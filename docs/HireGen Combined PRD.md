@@ -1,11 +1,11 @@
-# HireGen PRD - AI-First Hiring Platform
+# UmukoziHR PRD - AI-First Hiring Platform
 ## "Hiring shouldn't feel like guesswork"
 
 ### Core Product Vision
 
 **The Problem**: Traditional hiring is broken. Companies spend weeks/months sourcing candidates, dealing with agencies that cost tens of thousands, referrals that miss, and candidates that oversell. It's gambling with your most critical business decisions.
 
-**The Solution**: HireGen uses a swarm of AI agents to eliminate the guesswork. Describe what you need in plain English, and our AI finds, scores, and presents the top 1% of talent in minutes, not weeks.
+**The Solution**: UmukoziHR uses a swarm of AI agents to eliminate the guesswork. Describe what you need in plain English, and our AI finds, scores, and presents the top 1% of talent in minutes, not weeks.
 
 **Key Differentiator**: No forms, no job description templates, no ATS complexity. Just natural language input and AI-powered results.
 
@@ -59,7 +59,7 @@ Auth → Search → Results → Profile → [Convert]
 
 **Visual Elements**:
 - **Background**: Subtle gradient with floating geometric shapes (representing AI agents)
-- **Logo**: HireGen wordmark with AI-inspired accent
+- **Logo**: UmukoziHR wordmark with AI-inspired accent
 - **CTA**: "Start Finding Talent" (not "Sign Up")
 - **Testimonial**: Single rotating quote from real users
 
@@ -76,7 +76,7 @@ Auth → Search → Results → Profile → [Convert]
 **Core Principle**: Make the complex simple. One input field replaces entire job boards.
 
 **Layout Architecture**:
-- **Header**: Clean, minimal - HireGen logo + user avatar
+- **Header**: Clean, minimal - UmukoziHR logo + user avatar
 - **Main Focus**: Large, prominent search interface
 - **Secondary**: Optional filters (collapsed by default)
 
@@ -290,7 +290,7 @@ Auth → Search → Results → Profile → [Convert]
 **Mission**: Make hiring feel like science, not guesswork
 
 **Visual DNA**:
-- **Primary**: HireGen Blue (#4285F4) - Intelligence, trust, precision
+- **Primary**: UmukoziHR Blue (#4285F4) - Intelligence, trust, precision
 - **Secondary**: 
   - Success Green (#00C853) - Successful hires, positive outcomes
   - Warning Amber (#FF8F00) - Attention, urgency in hiring
@@ -392,7 +392,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 
 
 
-# HireGen Frontend PRD
+# UmukoziHR Frontend PRD
 ## The Magic of Effortless Hiring
 
 ### Core Philosophy & Brand DNA
@@ -402,7 +402,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 **The Psychology**: We're not building software - we're crafting a sanctuary where overwhelmed hiring managers find peace, clarity, and confidence. Every interaction should feel like having a brilliant assistant who just *gets it*.
 
 **Visual DNA**:
-- **Primary**: HireGen Blue (#4285F4) - The color of trust and intelligence
+- **Primary**: UmukoziHR Blue (#4285F4) - The color of trust and intelligence
 - **Secondary Palette**: 
   - Deep Sapphire (#1A237E) - Authority without aggression
   - Whisper Gray (#F8F9FA) - Calm, breathable space
@@ -450,7 +450,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 - **Internal Spacing**: 48px top/bottom, 40px left/right
 
 **Logo & Brand Moment**:
-- **HireGen Logo**: 72px height, centered, 56px from top
+- **UmukoziHR Logo**: 72px height, centered, 56px from top
 - **Brand Promise**: "Hiring shouldn't feel like guesswork"
   - Font: Inter, 18px, #6C757D
   - Line Height: 1.5
@@ -477,7 +477,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 - **Active Text**: Inter, 16px, #212529, -0.01em letter spacing
 
 **Primary CTA**:
-- **Text**: "Continue with HireGen"
+- **Text**: "Continue with UmukoziHR"
 - **Dimensions**: 340px width × 56px height
 - **Background**: Linear gradient 135deg from #4285F4 to #1A237E
 - **Typography**: SF Pro Display, 17px, Semibold, White
@@ -505,7 +505,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 
 **Header Specification**:
 - **Background**: rgba(255,255,255,0.8) with backdrop-blur(20px)
-- **HireGen Logo**: 44px height, 32px from left
+- **UmukoziHR Logo**: 44px height, 32px from left
 - **User Avatar**: 44px diameter, 32px from right, subtle shadow
 - **Border**: 1px solid rgba(0,0,0,0.05) on bottom
 
@@ -820,7 +820,7 @@ This PRD represents a fundamental shift from traditional hiring tools to AI-firs
 - **Celebration**: Subtle confetti animation
 - **Confirmation**:
   - Large success icon (#00C853)
-  - "Welcome to HireGen!" headline
+  - "Welcome to UmukoziHR!" headline
   - Clear next steps with CTAs
   - Smooth transition from payment form
 
