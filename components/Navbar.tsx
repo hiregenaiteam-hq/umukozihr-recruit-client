@@ -88,7 +88,7 @@ export default function Navbar() {
           <div className="w-48 h-16 relative group cursor-pointer transition-all duration-300 hover:scale-105">
             <div className="absolute inset-0 bg-linear-to-r from-umukozi-orange/5 to-umukozi-teal/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <Image
-              src="\public\logo.png"
+              src="/logo.png"
               alt="Umukozi HR Logo"
               fill
               className="object-contain transition-all duration-300 group-hover:brightness-110 rounded-[25%]"

@@ -67,7 +67,7 @@ function AuthContent() {
               {/* Logo - Top Left of Page */}
               <div className="absolute top-4 left-4 z-50">
                 <img
-                  src="\public\logo.png?v=1"
+                  src="/logo.png"
                   alt="Umukozi HR Logo"
                   className="w-48 h-16 object-contain rounded-[25%]"
                   key="auth-logo"
@@ -121,7 +121,7 @@ function AuthContent() {
               {/* Mobile Logo - Only shows on smaller screens */}
               <div className="lg:hidden flex justify-center mb-8">
                 <img
-                  src="\public\logo.png"
+                  src="/logo.png"
                   alt="Umukozi HR Logo"
                   className="w-48 h-16 object-contain rounded-[25%]"
                 />
