@@ -49,7 +49,7 @@ const steps: OnboardingStep[] = [
     icon: Sparkles,
     illustration: (
       <div className="relative w-full h-64 flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-umukozi-orange/20 to-umukozi-teal/20 rounded-3xl"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-umukozi-orange/20 to-umukozi-teal/20 rounded-3xl"></div>
         <div className="relative flex items-center gap-8">
           <div className="w-20 h-20 bg-umukozi-orange rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
             <Search className="w-10 h-10 text-white" />
@@ -136,7 +136,7 @@ const steps: OnboardingStep[] = [
               key={index}
               className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-umukozi-orange to-umukozi-teal rounded-full flex items-center justify-center text-white font-medium">
+              <div className="w-10 h-10 bg-linear-to-br from-umukozi-orange to-umukozi-teal rounded-full flex items-center justify-center text-white font-medium">
                 {candidate.name[0]}
               </div>
               <div className="flex-1">
@@ -175,12 +175,12 @@ const steps: OnboardingStep[] = [
       <div className="relative w-full h-64 bg-slate-900 rounded-2xl p-4 shadow-lg">
         <div className="space-y-3">
           <div className="flex justify-end">
-            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-[200px]">
+            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-50">
               <span className="text-sm">Compare these two candidates for me</span>
             </div>
           </div>
           <div className="flex justify-start">
-            <div className="bg-slate-800 text-slate-100 px-4 py-2 rounded-2xl rounded-bl-md max-w-[250px]">
+            <div className="bg-slate-800 text-slate-100 px-4 py-2 rounded-2xl rounded-bl-md max-w-62.5">
               <span className="text-sm">
                 Based on your requirements, Kwame has stronger backend skills while Ama
                 excels in frontend...
@@ -188,7 +188,7 @@ const steps: OnboardingStep[] = [
             </div>
           </div>
           <div className="flex justify-end">
-            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-[200px]">
+            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-50">
               <span className="text-sm">What questions should I ask Kwame?</span>
             </div>
           </div>
