@@ -277,7 +277,7 @@ export default function PremiumSearchPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,140,0,0.05)_1px,transparent_0)] bg-[length:24px_24px] opacity-20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,140,0,0.05)_1px,transparent_0)] bg-size-[24px_24px] opacity-20"></div>
       <div className="relative">
         <Navbar />
 
@@ -307,9 +307,9 @@ export default function PremiumSearchPage() {
 
             {/* Right Side - Step Content */}
             <div className="flex-1">
-              <Card className="p-8 umukozi-card-clean min-h-[600px] relative overflow-visible">
+              <Card className="p-8 umukozi-card-clean min-h-150 relative overflow-visible">
                 {/* Subtle background pattern */}
-                <div className="absolute inset-0 bg-gradient-to-br from-umukozi-orange/3 via-transparent to-umukozi-teal/3 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-linear-to-br from-umukozi-orange/3 via-transparent to-umukozi-teal/3 pointer-events-none"></div>
                 <div className="relative">
                   {/* Clean Progress Indicator */}
                   <div className="mb-8">

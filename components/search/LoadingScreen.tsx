@@ -208,12 +208,12 @@ export default function LoadingScreen({ searchCriteria, searchMode = "hybrid" }:
     const CurrentStepIcon = searchSteps[currentStep]?.icon || Search
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-orange-50 flex items-center justify-center p-6">
             <div className="max-w-4xl w-full">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center animate-pulse">
+                        <div className="w-16 h-16 bg-linear-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center animate-pulse">
                             <Search className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-4xl font-light text-slate-800">
@@ -278,7 +278,7 @@ export default function LoadingScreen({ searchCriteria, searchMode = "hybrid" }:
                                 </div>
                                 <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                                     <div
-                                        className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all duration-500 ease-out relative"
+                                        className="h-full bg-linear-to-r from-orange-500 to-orange-600 rounded-full transition-all duration-500 ease-out relative"
                                         style={{ width: `${progress}%` }}
                                     >
                                         <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
