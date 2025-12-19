@@ -55,7 +55,9 @@ export default function PremiumSearchPage() {
   const [industries, setIndustries] = useState<string[]>([])
   const [educations, setEducations] = useState<string[]>([])
   const [location, setLocation] = useState<string>("")
-  // Remove search mode - always use database search
+  
+  // Search mode: database (fast, internal DB), live (real-time scraper), hybrid (both)
+  const [searchMode, setSearchMode] = useState<"database" | "live" | "hybrid">("hybrid")
 
   // experience
   const [expMin, setExpMin] = useState<number>(EXPERIENCE_RANGE.DEFAULT_MIN)
@@ -115,10 +117,10 @@ export default function PremiumSearchPage() {
         experience_years_min: Number(expMin),
         experience_years_max: Number(expMax),
       },
-      search_mode: "database",
+      search_mode: searchMode,
       // use_hardcoded_response: true, // Use hardcoded response for testing
     }
-  }, [jobTitles, skills, location, educations, industries, expMin, expMax])
+  }, [jobTitles, skills, location, educations, industries, expMin, expMax, searchMode])
 
   const handleEditSection = (section: string) => {
     switch (section) {
@@ -267,6 +269,7 @@ export default function PremiumSearchPage() {
           location,
           industries
         }}
+        searchMode={searchMode}
       />
     )
   }
@@ -509,6 +512,57 @@ export default function PremiumSearchPage() {
                         title="Review Your Search"
                         description="Review your criteria and find the perfect candidates for your team"
                       />
+
+                      {/* Search Mode Selection */}
+                      <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                        <h3 className="text-lg font-medium text-slate-900 mb-4 font-inter">Search Mode</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <button
+                            onClick={() => setSearchMode("database")}
+                            className={`p-4 rounded-xl border-2 transition-all text-left ${
+                              searchMode === "database"
+                                ? "border-umukozi-orange bg-umukozi-orange/10"
+                                : "border-gray-200 hover:border-umukozi-orange/50"
+                            }`}
+                          >
+                            <div className="font-medium text-slate-900">Database</div>
+                            <div className="text-sm text-gray-600 mt-1">Fast search from our talent pool</div>
+                          </button>
+                          <button
+                            onClick={() => setSearchMode("live")}
+                            className={`p-4 rounded-xl border-2 transition-all text-left ${
+                              searchMode === "live"
+                                ? "border-umukozi-orange bg-umukozi-orange/10"
+                                : "border-gray-200 hover:border-umukozi-orange/50"
+                            }`}
+                          >
+                            <div className="font-medium text-slate-900 flex items-center gap-2">
+                              Live Search
+                              <span className="text-xs bg-umukozi-teal text-white px-2 py-0.5 rounded-full">Real-time</span>
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">Real-time talent discovery from the web</div>
+                          </button>
+                          <button
+                            onClick={() => setSearchMode("hybrid")}
+                            className={`p-4 rounded-xl border-2 transition-all text-left ${
+                              searchMode === "hybrid"
+                                ? "border-umukozi-orange bg-umukozi-orange/10"
+                                : "border-gray-200 hover:border-umukozi-orange/50"
+                            }`}
+                          >
+                            <div className="font-medium text-slate-900 flex items-center gap-2">
+                              Hybrid
+                              <span className="text-xs bg-umukozi-orange text-white px-2 py-0.5 rounded-full">Recommended</span>
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">Best of both: database + live sources</div>
+                          </button>
+                        </div>
+                        {searchMode === "live" && (
+                          <p className="mt-3 text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                            Live search may take longer but finds the freshest talent from across the web.
+                          </p>
+                        )}
+                      </div>
 
                       <SearchSummary
                         jobTitles={jobTitles}

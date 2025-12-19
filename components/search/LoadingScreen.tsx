@@ -10,42 +10,123 @@ interface LoadingScreenProps {
         location: string
         industries: string[]
     }
+    searchMode?: "database" | "live" | "hybrid"
 }
 
-const searchSteps = [
-    {
-        icon: Brain,
-        title: "Analyzing Requirements",
-        description: "Processing your job criteria and skill requirements",
-        duration: 2000
-    },
-    {
-        icon: Search,
-        title: "Database Search",
-        description: "Scanning our talent database for matching profiles",
-        duration: 3000
-    },
-    {
-        icon: Target,
-        title: "Skill Matching",
-        description: "Matching candidates based on skills and experience",
-        duration: 2500
-    },
-    {
-        icon: Zap,
-        title: "AI Analysis",
-        description: "Running AI algorithms to calculate match scores",
-        duration: 2000
-    },
-    {
-        icon: Users,
-        title: "Finalizing Results",
-        description: "Preparing your personalized candidate recommendations",
-        duration: 1500
-    }
-]
+const getSearchSteps = (mode: "database" | "live" | "hybrid") => {
+    const baseSteps = [
+        {
+            icon: Brain,
+            title: "Analyzing Requirements",
+            description: "Processing your job criteria and skill requirements",
+            duration: 2000
+        }
+    ]
 
-export default function LoadingScreen({ searchCriteria }: LoadingScreenProps) {
+    if (mode === "database") {
+        return [
+            ...baseSteps,
+            {
+                icon: Search,
+                title: "Database Search",
+                description: "Scanning our talent database for matching profiles",
+                duration: 3000
+            },
+            {
+                icon: Target,
+                title: "Skill Matching",
+                description: "Matching candidates based on skills and experience",
+                duration: 2500
+            },
+            {
+                icon: Zap,
+                title: "AI Analysis",
+                description: "Running AI algorithms to calculate match scores",
+                duration: 2000
+            },
+            {
+                icon: Users,
+                title: "Finalizing Results",
+                description: "Preparing your personalized candidate recommendations",
+                duration: 1500
+            }
+        ]
+    }
+
+    if (mode === "live") {
+        return [
+            ...baseSteps,
+            {
+                icon: Zap,
+                title: "Live Web Scraping",
+                description: "Searching across LinkedIn, job boards, and professional networks",
+                duration: 8000
+            },
+            {
+                icon: Search,
+                title: "Profile Discovery",
+                description: "Discovering fresh talent profiles in real-time",
+                duration: 6000
+            },
+            {
+                icon: Target,
+                title: "Deep Analysis",
+                description: "Analyzing profiles and extracting relevant information",
+                duration: 5000
+            },
+            {
+                icon: Users,
+                title: "Compiling Results",
+                description: "Preparing comprehensive candidate profiles",
+                duration: 3000
+            }
+        ]
+    }
+
+    // hybrid
+    return [
+        ...baseSteps,
+        {
+            icon: Search,
+            title: "Database Search",
+            description: "Scanning our talent database for matching profiles",
+            duration: 2500
+        },
+        {
+            icon: Zap,
+            title: "Live Web Search",
+            description: "Expanding search to live sources and professional networks",
+            duration: 6000
+        },
+        {
+            icon: Target,
+            title: "Combined Analysis",
+            description: "Merging and ranking results from all sources",
+            duration: 4000
+        },
+        {
+            icon: Users,
+            title: "Finalizing Results",
+            description: "Preparing your comprehensive candidate list",
+            duration: 2000
+        }
+    ]
+}
+
+const getModeLabel = (mode: "database" | "live" | "hybrid") => {
+    switch (mode) {
+        case "database":
+            return { label: "Database Search", color: "bg-blue-500", estimate: "30-60 seconds" }
+        case "live":
+            return { label: "Live Search", color: "bg-green-500", estimate: "1-2 minutes" }
+        case "hybrid":
+            return { label: "Hybrid Search", color: "bg-orange-500", estimate: "1-2 minutes" }
+    }
+}
+
+export default function LoadingScreen({ searchCriteria, searchMode = "hybrid" }: LoadingScreenProps) {
+    const searchSteps = getSearchSteps(searchMode)
+    const modeInfo = getModeLabel(searchMode)
     const [currentStep, setCurrentStep] = useState(0)
     const [progress, setProgress] = useState(0)
     const [candidatesFound, setCandidatesFound] = useState(0)
@@ -140,8 +221,16 @@ export default function LoadingScreen({ searchCriteria }: LoadingScreenProps) {
                         </h1>
                     </div>
                     <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                        Our AI is actively searching and analyzing profiles in real-time
+                        {searchMode === "live" 
+                            ? "Our AI is actively scraping the web for fresh talent profiles"
+                            : searchMode === "hybrid"
+                            ? "Combining database and live web search for comprehensive results"
+                            : "Our AI is actively searching and analyzing profiles in real-time"}
                     </p>
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                        <div className={`w-2 h-2 rounded-full ${modeInfo.color} animate-pulse`}></div>
+                        <span className="text-sm font-medium text-slate-700">{modeInfo.label}</span>
+                    </div>
                 </div>
 
                 <div className="grid lg:grid-cols-2 gap-8">
@@ -328,7 +417,9 @@ export default function LoadingScreen({ searchCriteria }: LoadingScreenProps) {
                         {/* Estimated Time */}
                         <div className="text-center p-4 bg-white/40 backdrop-blur-sm rounded-xl border border-white/20">
                             <p className="text-sm text-slate-600">
-                                Usually takes 30-60 seconds • {Math.max(0, 60 - Math.round(progress * 0.6))}s remaining
+                                {searchMode === "live" || searchMode === "hybrid" 
+                                    ? `Live search typically takes ${modeInfo.estimate}`
+                                    : `Usually takes ${modeInfo.estimate}`}
                             </p>
                         </div>
                     </div>

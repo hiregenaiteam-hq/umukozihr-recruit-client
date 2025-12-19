@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import baseUrl from "@/lib/config";
 
+// Longer timeout for live search mode which uses real-time scraping
+const TIMEOUT_MS = {
+  database: 30000,  // 30s for database
+  live: 120000,     // 2min for live scraping
+  hybrid: 90000,    // 1.5min for hybrid
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const searchMode = body.search_mode || "database";
+    const timeoutMs = TIMEOUT_MS[searchMode as keyof typeof TIMEOUT_MS] || TIMEOUT_MS.database;
 
     // Check if we should use hardcoded response (for testing/development)
     // const useHardcodedResponse =
@@ -42,14 +51,21 @@ export async function POST(request: NextRequest) {
       headers["Cookie"] = cookieHeader;
     }
 
+    // Use AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     const response = await fetch(
       `${baseUrl}/api/v1/search/search`,
       {
         method: "POST",
         headers,
         body: JSON.stringify(body),
+        signal: controller.signal,
       }
     );
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -62,6 +78,13 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    // Handle timeout specifically
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json(
+        { error: "Search timed out. Please try a more specific search or use database mode." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json(
       {
         error: "Failed to search candidates",
