@@ -91,7 +91,7 @@ export default function Navbar() {
               src="/logo.png"
               alt="Umukozi HR Logo"
               fill
-              className="object-contain transition-all duration-300 group-hover:brightness-110"
+              className="object-contain transition-all duration-300 group-hover:brightness-110 rounded-[25%]"
             />
           </div>
         </div>

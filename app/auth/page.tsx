@@ -69,7 +69,7 @@ function AuthContent() {
                 <img
                   src="/logo.png?v=1"
                   alt="Umukozi HR Logo"
-                  className="w-48 h-16 object-contain"
+                  className="w-48 h-16 object-contain rounded-[25%]"
                   key="auth-logo"
                 />
               </div>
