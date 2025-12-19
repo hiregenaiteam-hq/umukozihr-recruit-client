@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
   "/images",
   "/api/public",
   "/logo.png",
+  "/umukozi-logo.png",
   "/icon.png",
   "/apple-icon.png",
 ];
@@ -43,5 +44,5 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   // Protect everything under / (except the exempted PUBLIC_PATHS checked above)
-  matcher: ["/((?!_next|favicon.ico|assets|images|api/public|logo.png|icon.png|apple-icon.png).*)"],
+  matcher: ["/((?!_next|favicon.ico|assets|images|api/public|logo.png|umukozi-logo.png|icon.png|apple-icon.png).*)"],
 };

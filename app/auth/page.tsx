@@ -2,7 +2,6 @@
 
 import React, { Suspense, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Image from "next/image"
 import { Users, Shield, Star, ArrowRight } from "lucide-react"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -11,6 +10,7 @@ import SignInForm from "@/components/SignInForm"
 import MultiStepRegistration from "@/components/auth/MultiStepRegistration"
 import AuthTabSwitcher from "@/components/auth/AuthTabSwitcher"
 import VerificationForm from "@/components/VerificationForm"
+import BrandLogo from "@/components/BrandLogo"
 
 function AuthContent() {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -65,13 +65,8 @@ function AuthContent() {
 
             <div className="relative z-10 flex flex-col justify-center px-16 py-12 w-full h-full">
               {/* Logo - Top Left of Page */}
-              <div className="absolute top-4 left-4 z-50">
-                <img
-                  src="/logo.png"
-                  alt="Umukozi HR Logo"
-                  className="w-48 h-16 object-contain rounded-[25%]"
-                  key="auth-logo"
-                />
+              <div className="absolute top-6 left-6 z-50">
+                <BrandLogo size="lg" />
               </div>
 
               {/* Main Content */}
@@ -120,11 +115,7 @@ function AuthContent() {
 
               {/* Mobile Logo - Only shows on smaller screens */}
               <div className="lg:hidden flex justify-center mb-8">
-                <img
-                  src="/logo.png"
-                  alt="Umukozi HR Logo"
-                  className="w-48 h-16 object-contain rounded-[25%]"
-                />
+                <BrandLogo size="lg" />
               </div>
 
               {/* Sweet Auth Container */}

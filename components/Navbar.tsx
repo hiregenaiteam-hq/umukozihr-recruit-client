@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import Image from "next/image";
+import BrandLogo from "@/components/BrandLogo";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -84,17 +84,9 @@ export default function Navbar() {
   return (
     <header className="bg-linear-to-r from-white via-slate-50/95 to-white backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 shadow-lg shadow-umukozi-orange/5">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="w-48 h-16 relative group cursor-pointer transition-all duration-300 hover:scale-105">
-            <div className="absolute inset-0 bg-linear-to-r from-umukozi-orange/5 to-umukozi-teal/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Image
-              src="/logo.png"
-              alt="Umukozi HR Logo"
-              fill
-              className="object-contain transition-all duration-300 group-hover:brightness-110 rounded-[25%]"
-            />
-          </div>
-        </div>
+        <Link href="/search" className="group cursor-pointer transition-all duration-300 hover:scale-105">
+          <BrandLogo size="md" />
+        </Link>
         <div className="flex items-center gap-4">
           {user?.subscription_tier && (
             <Badge className={`${getTierBadgeColor(user.subscription_tier)} text-xs font-medium`}>
