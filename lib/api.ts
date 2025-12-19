@@ -142,7 +142,12 @@ export async function loginAndGetToken(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const params = new URLSearchParams({ username: email.trim(), password });
+  // OAuth2 password grant requires grant_type=password
+  const params = new URLSearchParams({
+    grant_type: "password",
+    username: email.trim(),
+    password,
+  });
   const data: LoginResponse = await apiFetch(`/api/v1/auths/login`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },

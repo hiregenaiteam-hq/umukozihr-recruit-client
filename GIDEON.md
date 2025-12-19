@@ -34,19 +34,31 @@
 | `/api/v1/users/verify-email` | POST | **422/200** | Working (validates OTP correctly) |
 | `/api/v1/users/resend-verification` | POST | **200** | Working |
 
-### ❌ CRITICAL ISSUES (Requires Backend Fix)
+### ❌ CRITICAL ISSUES (Backend Internal Errors)
 
 | Endpoint | Method | Issue | HTTP Code |
 |----------|--------|-------|-----------|
 | `/api/v1/auths/login` | POST | **Internal Server Error** | 500 |
-| `/api/v1/users/` | POST | **Internal Server Error** on user creation | 500 |
+| `/api/v1/users/` | POST | **Internal Server Error** (after validation passes) | 500 |
 
-**Impact:** Users cannot login or register. This blocks ALL authenticated functionality including:
-- User dashboard access
-- Talent searches (require auth)
-- Subscription purchases
-- AI chat with context
-- Saved candidates
+**Investigation Results:**
+```bash
+# User creation with disposable email returns 422 (validation works!)
+curl -X POST .../users/ -d '{"email":"test@test.com"...}'
+→ 422: "Disposable email addresses are not allowed"
+
+# User creation with valid email returns 500 (backend error after validation)
+curl -X POST .../users/ -d '{"email":"user@gmail.com"...}'
+→ 500: Internal Server Error
+
+# Login returns 500
+curl -X POST .../auths/login -d "grant_type=password&username=...&password=..."
+→ 500: Internal Server Error
+```
+
+**Root Cause:** Backend validation layer works correctly. The 500 errors occur AFTER validation passes, indicating an internal issue (likely database connection, missing tables, or configuration problem).
+
+**Impact:** Users cannot login or register. This blocks ALL authenticated functionality.
 
 ### ⚠️ WARNINGS
 
