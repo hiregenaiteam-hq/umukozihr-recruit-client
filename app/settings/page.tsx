@@ -11,6 +11,7 @@ import {
   AIPreferences,
   NotificationSettings,
   BillingSettings,
+  HelpDocumentation,
 } from "@/components/settings";
 import {
   getCurrentUser,
@@ -228,6 +229,11 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* Help & Documentation Tab */}
+        {activeTab === "help" && (
+          <HelpDocumentation />
         )}
       </main>
     </div>

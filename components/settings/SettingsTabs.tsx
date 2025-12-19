@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Zap, Bell, CreditCard, Shield, Palette } from "lucide-react";
+import { User, Zap, Bell, CreditCard, Shield, Palette, BookOpen } from "lucide-react";
 
 interface SettingsTabsProps {
     activeTab: string;
@@ -16,13 +16,14 @@ export default function SettingsTabs({ activeTab, onTabChange }: SettingsTabsPro
         { id: "billing", label: "Billing", icon: CreditCard },
         { id: "security", label: "Security", icon: Shield },
         { id: "appearance", label: "Appearance", icon: Palette },
+        { id: "help", label: "Help & Docs", icon: BookOpen },
     ];
 
     return (
         <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
             <div className="max-w-7xl mx-auto px-6">
                 <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-                    <TabsList className="grid w-full grid-cols-6 bg-slate-50 border-0 h-auto p-1">
+                    <TabsList className="grid w-full grid-cols-7 bg-slate-50 border-0 h-auto p-1">
                         {tabs.map((tab) => (
                             <TabsTrigger
                                 key={tab.id}
