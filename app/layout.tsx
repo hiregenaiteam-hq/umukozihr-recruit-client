@@ -16,14 +16,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'UmukoziHR - AI-First Hiring Platform',
     description: 'Hiring shouldn\'t feel like guesswork. Describe what you need. Our AI finds the top 1% talent in minutes.',
-    images: ['/logo.png'],
+    images: ['/public/logo.png'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'UmukoziHR - AI-First Hiring Platform',
     description: 'Hiring shouldn\'t feel like guesswork. Describe what you need. Our AI finds the top 1% talent in minutes.',
-    images: ['/logo.png'],
+    images: ['/public/logo.png'],
   },
 }
 
