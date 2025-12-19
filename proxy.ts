@@ -10,7 +10,7 @@ const PUBLIC_PATHS = [
   "/api/public",
 ];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // allow public assets and the auth page through
