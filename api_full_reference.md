@@ -120,6 +120,7 @@ POST
 /api/v1/search/search
 Search Talents
 
+
 Execute talent search using specified mode (database, live, or hybrid).
 
 Args: search_request: Search request with criteria and configuration background_tasks: FastAPI background tasks request: FastAPI request object for session extraction db: Database session
@@ -311,7 +312,7 @@ Schema
   ],
   "total_results": 0,
   "search_duration": 0,
-  "timestamp": "2025-08-08T12:31:07.380Z",
+  "timestamp": "2025-12-19T02:17:53.429Z",
   "search_summary": "string",
   "recommendations": [
     "string"
@@ -508,7 +509,7 @@ Schema
   ],
   "total_results": 0,
   "search_duration": 0,
-  "timestamp": "2025-08-08T12:31:07.395Z",
+  "timestamp": "2025-12-19T02:17:53.441Z",
   "search_summary": "string",
   "recommendations": [
     "string"
@@ -735,7 +736,7 @@ Schema
   ],
   "total_results": 0,
   "search_duration": 0,
-  "timestamp": "2025-08-08T12:31:07.413Z",
+  "timestamp": "2025-12-19T02:17:53.454Z",
   "search_summary": "string",
   "recommendations": [
     "string"
@@ -905,8 +906,8 @@ Schema
           ],
           "is_working": true,
           "is_decision_maker": true,
-          "imported_at": "2025-08-08T12:31:07.429Z",
-          "updated_at": "2025-08-08T12:31:07.429Z"
+          "imported_at": "2025-12-19T02:17:53.466Z",
+          "updated_at": "2025-12-19T02:17:53.466Z"
         },
         "rank_position": 1,
         "relevance_score": 100,
@@ -965,7 +966,7 @@ Schema
     "recommendations": [
       "string"
     ],
-    "created_at": "2025-08-08T12:31:07.429Z"
+    "created_at": "2025-12-19T02:17:53.466Z"
   },
   "top_candidates_analysis": "string",
   "candidate_diversity_score": 100,
@@ -979,7 +980,7 @@ Schema
   "search_optimization_tips": [
     "string"
   ],
-  "generated_at": "2025-08-08T12:31:07.429Z",
+  "generated_at": "2025-12-19T02:17:53.466Z",
   "report_version": "1.0"
 }
 No links
@@ -1083,10 +1084,13 @@ Schema
 No links
 
 GET
-/api/v1/search/test-simple
-Test Simple
+/api/v1/search/search/stats/total
+Get User Total Searches
 
-Completely isolated test endpoint with no dependencies.
+
+Get the total number of database searches performed by the current user.
+
+Returns: Dictionary with total searches count
 
 Parameters
 Try it out
@@ -1103,8 +1107,15 @@ application/json
 Controls Accept header.
 Example Value
 Schema
-"string"
+{
+  "additionalProp1": {}
+}
 No links
+
+GET
+/api/v1/search/test-simple
+Test Simple
+
 agents
 
 
@@ -1135,7 +1146,7 @@ Schema
   "additionalProp1": {
     "name": "string",
     "status": "healthy",
-    "last_activity": "2025-08-08T12:31:07.454Z",
+    "last_activity": "2025-12-19T02:17:53.489Z",
     "total_requests": 0,
     "successful_requests": 0,
     "failed_requests": 0,
@@ -1147,7 +1158,7 @@ Schema
   "additionalProp2": {
     "name": "string",
     "status": "healthy",
-    "last_activity": "2025-08-08T12:31:07.454Z",
+    "last_activity": "2025-12-19T02:17:53.489Z",
     "total_requests": 0,
     "successful_requests": 0,
     "failed_requests": 0,
@@ -1159,7 +1170,7 @@ Schema
   "additionalProp3": {
     "name": "string",
     "status": "healthy",
-    "last_activity": "2025-08-08T12:31:07.454Z",
+    "last_activity": "2025-12-19T02:17:53.489Z",
     "total_requests": 0,
     "successful_requests": 0,
     "failed_requests": 0,
@@ -1202,7 +1213,7 @@ Schema
 {
   "name": "string",
   "status": "healthy",
-  "last_activity": "2025-08-08T12:31:07.463Z",
+  "last_activity": "2025-12-19T02:17:53.493Z",
   "total_requests": 0,
   "successful_requests": 0,
   "failed_requests": 0,
@@ -1259,7 +1270,7 @@ Example Value
 Schema
 {
   "overall_status": "healthy",
-  "timestamp": "2025-08-08T12:31:07.468Z",
+  "timestamp": "2025-12-19T02:17:53.497Z",
   "total_agents": 0,
   "healthy_agents": 0,
   "unhealthy_agents": 0,
@@ -1486,146 +1497,13 @@ POST
 /api/v1/agents/agents/config
 Update Agent Config
 
-Update agent configuration.
-
-Args: config_updates: Configuration updates
-
-Returns: Updated configuration
-
-Parameters
-Try it out
-No parameters
-
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "additionalProp1": {}
-}
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "additionalProp1": {}
-}
-No links
-422	
-Validation Error
-
-Media type
-
-application/json
-Example Value
-Schema
-{
-  "detail": [
-    {
-      "loc": [
-        "string",
-        0
-      ],
-      "msg": "string",
-      "type": "string"
-    }
-  ]
-}
-No links
 
 GET
 /api/v1/agents/agents/workflows
 Get Active Workflows
 
-Get currently active agent workflows.
-
-Args: user_id: Optional user ID filter
-
-Returns: List of active workflows
-
-Parameters
-Try it out
-Name	Description
-user_id
-string | (string | null)
-(query)
-Filter by user ID
-
-user_id
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-[
-  {
-    "additionalProp1": {}
-  }
-]
-No links
-422	
-Validation Error
-
-Media type
-
-application/json
-Example Value
-Schema
-{
-  "detail": [
-    {
-      "loc": [
-        "string",
-        0
-      ],
-      "msg": "string",
-      "type": "string"
-    }
-  ]
-}
-No links
 monitoring
 
-
-GET
-/api/v1/monitoring/health
-Health Check
-
-Comprehensive health check endpoint.
-
-Returns: Health status of all system components
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-"string"
-No links
 
 GET
 /api/v1/monitoring/metrics
@@ -1882,6 +1760,68 @@ GET
 /api/v1/monitoring/logs
 Get Logs
 
+Get recent log entries.
+
+Args: level: Minimum log level to retrieve limit: Maximum number of log entries component: Filter by component user_id: Current user ID
+
+Returns: Recent log entries
+
+Parameters
+Try it out
+Name	Description
+level
+string
+(query)
+Default value : INFO
+
+INFO
+pattern: ^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$
+limit
+integer
+(query)
+Default value : 100
+
+100
+maximum: 1000
+minimum: 1
+component
+string | (string | null)
+(query)
+component
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+"string"
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
 users
 
 
@@ -1889,11 +1829,137 @@ POST
 /api/v1/users/
 Create User
 
+Parameters
+Try it out
+No parameters
+
+Request body
+
+application/json
+Example Value
+Schema
+{
+  "email": "string",
+  "username": "string",
+  "password": "stringst",
+  "full_name": "string",
+  "company": "string",
+  "job_title": "string",
+  "department": "string",
+  "phone": "string"
+}
+Responses
+Code	Description	Links
+201	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "id": "string",
+  "email": "string",
+  "username": "string",
+  "full_name": "string",
+  "company": "string",
+  "job_title": "string",
+  "is_active": true,
+  "is_verified": true,
+  "is_premium": true,
+  "subscription_tier": "string",
+  "monthly_search_limit": 0,
+  "monthly_searches_used": 0,
+  "created_at": "2025-12-19T02:17:53.548Z",
+  "is_admin": false,
+  "admin_role": "string"
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
 
 GET
 /api/v1/users/users/{user_id}
 Get User
 
+Parameters
+Try it out
+Name	Description
+user_id *
+string
+(path)
+user_id
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "id": "string",
+  "email": "string",
+  "username": "string",
+  "full_name": "string",
+  "company": "string",
+  "job_title": "string",
+  "is_active": true,
+  "is_verified": true,
+  "is_premium": true,
+  "subscription_tier": "string",
+  "monthly_search_limit": 0,
+  "monthly_searches_used": 0,
+  "created_at": "2025-12-19T02:17:53.553Z",
+  "is_admin": false,
+  "admin_role": "string"
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
 
 PUT
 /api/v1/users/{user_id}
@@ -1915,7 +1981,8 @@ Schema
   "username": "string",
   "full_name": "string",
   "company": "string",
-  "job_title": "string"
+  "job_title": "string",
+  "department": "string"
 }
 Responses
 Code	Description	Links
@@ -1941,7 +2008,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.557Z"
+  "created_at": "2025-12-19T02:17:53.559Z",
+  "is_admin": false,
+  "admin_role": "string"
 }
 No links
 422	
@@ -2260,24 +2329,7 @@ application/json
 Controls Accept header.
 Example Value
 Schema
-{
-  "id": "string",
-  "email": "string",
-  "username": "string",
-  "full_name": "string",
-  "company": "string",
-  "job_title": "string",
-  "is_active": true,
-  "is_verified": true,
-  "is_premium": true,
-  "subscription_tier": "string",
-  "monthly_search_limit": 0,
-  "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.602Z",
-  "subscription": {
-    "additionalProp1": {}
-  }
-}
+"string"
 No links
 422	
 Validation Error
@@ -2351,7 +2403,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.614Z",
+  "created_at": "2025-12-19T02:17:53.600Z",
+  "is_admin": false,
+  "admin_role": "string",
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "bearer",
@@ -2438,7 +2492,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.626Z",
+  "created_at": "2025-12-19T02:17:53.610Z",
+  "is_admin": false,
+  "admin_role": "string",
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "bearer",
@@ -2500,7 +2556,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.631Z"
+  "created_at": "2025-12-19T02:17:53.615Z",
+  "is_admin": false,
+  "admin_role": "string"
 }
 No links
 
@@ -2509,18 +2567,6 @@ DELETE
 Delete Account
 
 
-Delete the current user's account and all associated data.
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-204	
-Successful Response
-
-No links
 subscriptions
 
 
@@ -2529,64 +2575,6 @@ POST
 Create Subscription
 
 
-Parameters
-Try it out
-No parameters
-
-Request body
-
-application/json
-Example Value
-Schema
-{
-  "tier": "basic",
-  "is_auto_renew": false
-}
-Responses
-Code	Description	Links
-201	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "id": "string",
-  "tier": "string",
-  "is_auto_renew": true,
-  "price_per_month": 0,
-  "start_date": "2025-08-08T12:31:07.637Z",
-  "end_date": "2025-08-08T12:31:07.637Z",
-  "last_payment_date": "2025-08-08T12:31:07.637Z",
-  "next_payment_date": "2025-08-08T12:31:07.637Z",
-  "created_at": "2025-08-08T12:31:07.637Z",
-  "updated_at": "2025-08-08T12:31:07.637Z"
-}
-No links
-422	
-Validation Error
-
-Media type
-
-application/json
-Example Value
-Schema
-{
-  "detail": [
-    {
-      "loc": [
-        "string",
-        0
-      ],
-      "msg": "string",
-      "type": "string"
-    }
-  ]
-}
-No links
 
 GET
 /api/v1/subscriptions/me
@@ -2613,12 +2601,12 @@ Schema
   "tier": "string",
   "is_auto_renew": true,
   "price_per_month": 0,
-  "start_date": "2025-08-08T12:31:07.644Z",
-  "end_date": "2025-08-08T12:31:07.644Z",
-  "last_payment_date": "2025-08-08T12:31:07.644Z",
-  "next_payment_date": "2025-08-08T12:31:07.644Z",
-  "created_at": "2025-08-08T12:31:07.644Z",
-  "updated_at": "2025-08-08T12:31:07.644Z"
+  "start_date": "2025-12-19T02:17:53.619Z",
+  "end_date": "2025-12-19T02:17:53.619Z",
+  "last_payment_date": "2025-12-19T02:17:53.619Z",
+  "next_payment_date": "2025-12-19T02:17:53.619Z",
+  "created_at": "2025-12-19T02:17:53.619Z",
+  "updated_at": "2025-12-19T02:17:53.619Z"
 }
 No links
 
@@ -2648,12 +2636,12 @@ Schema
     "tier": "string",
     "is_auto_renew": true,
     "price_per_month": 0,
-    "start_date": "2025-08-08T12:31:07.647Z",
-    "end_date": "2025-08-08T12:31:07.647Z",
-    "last_payment_date": "2025-08-08T12:31:07.647Z",
-    "next_payment_date": "2025-08-08T12:31:07.647Z",
-    "created_at": "2025-08-08T12:31:07.647Z",
-    "updated_at": "2025-08-08T12:31:07.647Z"
+    "start_date": "2025-12-19T02:17:53.621Z",
+    "end_date": "2025-12-19T02:17:53.621Z",
+    "last_payment_date": "2025-12-19T02:17:53.621Z",
+    "next_payment_date": "2025-12-19T02:17:53.621Z",
+    "created_at": "2025-12-19T02:17:53.621Z",
+    "updated_at": "2025-12-19T02:17:53.621Z"
   }
 ]
 No links
@@ -2696,12 +2684,12 @@ Schema
   "tier": "string",
   "is_auto_renew": true,
   "price_per_month": 0,
-  "start_date": "2025-08-08T12:31:07.653Z",
-  "end_date": "2025-08-08T12:31:07.653Z",
-  "last_payment_date": "2025-08-08T12:31:07.653Z",
-  "next_payment_date": "2025-08-08T12:31:07.653Z",
-  "created_at": "2025-08-08T12:31:07.653Z",
-  "updated_at": "2025-08-08T12:31:07.653Z"
+  "start_date": "2025-12-19T02:17:53.626Z",
+  "end_date": "2025-12-19T02:17:53.626Z",
+  "last_payment_date": "2025-12-19T02:17:53.626Z",
+  "next_payment_date": "2025-12-19T02:17:53.626Z",
+  "created_at": "2025-12-19T02:17:53.626Z",
+  "updated_at": "2025-12-19T02:17:53.626Z"
 }
 No links
 422	
@@ -2754,12 +2742,12 @@ Schema
   "tier": "string",
   "is_auto_renew": true,
   "price_per_month": 0,
-  "start_date": "2025-08-08T12:31:07.663Z",
-  "end_date": "2025-08-08T12:31:07.663Z",
-  "last_payment_date": "2025-08-08T12:31:07.663Z",
-  "next_payment_date": "2025-08-08T12:31:07.663Z",
-  "created_at": "2025-08-08T12:31:07.663Z",
-  "updated_at": "2025-08-08T12:31:07.663Z"
+  "start_date": "2025-12-19T02:17:53.631Z",
+  "end_date": "2025-12-19T02:17:53.631Z",
+  "last_payment_date": "2025-12-19T02:17:53.631Z",
+  "next_payment_date": "2025-12-19T02:17:53.631Z",
+  "created_at": "2025-12-19T02:17:53.631Z",
+  "updated_at": "2025-12-19T02:17:53.631Z"
 }
 No links
 422	
@@ -2811,12 +2799,12 @@ Schema
   "tier": "string",
   "is_auto_renew": true,
   "price_per_month": 0,
-  "start_date": "2025-08-08T12:31:07.669Z",
-  "end_date": "2025-08-08T12:31:07.669Z",
-  "last_payment_date": "2025-08-08T12:31:07.669Z",
-  "next_payment_date": "2025-08-08T12:31:07.669Z",
-  "created_at": "2025-08-08T12:31:07.669Z",
-  "updated_at": "2025-08-08T12:31:07.669Z"
+  "start_date": "2025-12-19T02:17:53.636Z",
+  "end_date": "2025-12-19T02:17:53.636Z",
+  "last_payment_date": "2025-12-19T02:17:53.636Z",
+  "next_payment_date": "2025-12-19T02:17:53.636Z",
+  "created_at": "2025-12-19T02:17:53.636Z",
+  "updated_at": "2025-12-19T02:17:53.636Z"
 }
 No links
 422	
@@ -2840,6 +2828,149 @@ Schema
   ]
 }
 No links
+
+POST
+/api/v1/subscriptions/paystack/subscribe/{tier}
+Subscribe With Paystack
+
+
+Initialize a Paystack subscription for the specified tier.
+
+Args: tier: Subscription tier ('pro' or 'business') current_user: Authenticated user paystack_service: Paystack service instance db: Database session
+
+Returns: Paystack transaction initialization data with authorization URL
+
+Raises: HTTPException: If tier is invalid or user already has active subscription
+
+Parameters
+Try it out
+Name	Description
+tier *
+string
+(path)
+tier
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/subscriptions/limits
+Get Search Limits
+
+
+Get current user's search limits and usage.
+
+Returns: Dict containing tier info, limits, and current usage
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
+
+POST
+/api/v1/subscriptions/paystack/manage-link
+Get Subscription Management Link
+
+
+Generate a link for users to manage their active subscription.
+
+Returns: Management link data from Paystack
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
+
+GET
+/api/v1/subscriptions/plans
+Get Available Plans
+
+Get information about available subscription plans.
+
+Returns: Plan details and pricing
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
 search-cache
 
 
@@ -2851,18 +2982,17 @@ Get User Search History
 Get user's search history
 
 Parameters
-Try it out
+Cancel
 Name	Description
 limit
 integer
 (query)
 Number of search history items to return
 
-Default value : 20
-
 20
 maximum: 100
 minimum: 1
+Execute
 Responses
 Code	Description	Links
 200	
@@ -3059,6 +3189,25 @@ POST
 Cleanup Expired Cache
 
 
+Clean up expired cache entries (admin only)
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+"string"
+No links
 
 GET
 /api/v1/cache/cache-info
@@ -3116,6 +3265,7 @@ No links
 POST
 /api/v1/core-signal/search-talents
 Search Talents
+
 
 Search for talents based on criteria and return their IDs. The actual talent details will be fetched and saved in the background.
 
@@ -3189,69 +3339,12 @@ POST
 /api/v1/core-signal/fetch-talent-details
 Fetch Talent Details
 
-Fetch detailed information for specific talent IDs and save to database. This endpoint processes the request in the background.
 
-Parameters
-Try it out
-No parameters
-
-Request body
-
-application/json
-Example Value
-Schema
-[
-  0
-]
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-{
-  "search_id": 0,
-  "total_ids": 0,
-  "processed_count": 0,
-  "successful_count": 0,
-  "failed_count": 0,
-  "failed_ids": [
-    0
-  ],
-  "status": "string",
-  "message": "string"
-}
-No links
-422	
-Validation Error
-
-Media type
-
-application/json
-Example Value
-Schema
-{
-  "detail": [
-    {
-      "loc": [
-        "string",
-        0
-      ],
-      "msg": "string",
-      "type": "string"
-    }
-  ]
-}
-No links
 
 GET
 /api/v1/core-signal/search-status/{search_id}
 Get Search Status
+
 
 Get the status of a search/fetch operation
 
@@ -3311,6 +3404,7 @@ No links
 GET
 /api/v1/core-signal/talents
 Get Talents
+
 
 Get all talent profiles with pagination
 
@@ -3393,6 +3487,7 @@ GET
 /api/v1/core-signal/talents/{talent_id}
 Get Talent By Id
 
+
 Get detailed information for a specific talent
 
 Parameters
@@ -3458,7 +3553,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.744Z"
+  "imported_at": "2025-12-19T02:17:53.694Z"
 }
 No links
 422	
@@ -3486,6 +3581,7 @@ No links
 DELETE
 /api/v1/core-signal/talents/{talent_id}
 Delete Talent
+
 
 Delete a talent profile
 
@@ -3534,6 +3630,7 @@ No links
 GET
 /api/v1/core-signal/search-history
 Get Search History
+
 
 Get search history with pagination
 
@@ -3602,6 +3699,7 @@ POST
 /api/v1/core-signal/collect-by-id/{talent_id}
 Collect By Id
 
+
 Collect and save a talent profile by employee ID.
 
 Parameters
@@ -3667,7 +3765,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.764Z"
+  "imported_at": "2025-12-19T02:17:53.710Z"
 }
 No links
 422	
@@ -3695,6 +3793,7 @@ No links
 POST
 /api/v1/core-signal/collect-by-shorthand-name
 Collect By Shorthand Name
+
 
 Collect and save a talent profile by LinkedIn shorthand name extracted from a URL.
 
@@ -3761,7 +3860,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.771Z"
+  "imported_at": "2025-12-19T02:17:53.716Z"
 }
 No links
 422	
@@ -3789,6 +3888,7 @@ No links
 POST
 /api/v1/core-signal/search-database
 Search Database
+
 
 Search for talents in the database based on headline keywords, skills, and location filters. Returns detailed profile information for matching talents.
 
@@ -3869,7 +3969,7 @@ Schema
     ],
     "is_working": true,
     "is_decision_maker": true,
-    "imported_at": "2025-08-08T12:31:07.782Z"
+    "imported_at": "2025-12-19T02:17:53.726Z"
   }
 ]
 No links
@@ -3898,6 +3998,7 @@ No links
 GET
 /api/v1/core-signal/search-database/by-linkedin
 Get Profile By Linkedin Url
+
 
 Retrieve detailed profile information by LinkedIn URL. Searches the database for a profile matching the provided LinkedIn URL.
 
@@ -3966,7 +4067,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.790Z"
+  "imported_at": "2025-12-19T02:17:53.734Z"
 }
 No links
 422	
@@ -4022,6 +4123,7 @@ Talent Search
 POST
 /api/v1/core-signal/search-talents
 Search Talents
+
 
 Search for talents based on criteria and return their IDs. The actual talent details will be fetched and saved in the background.
 
@@ -4097,6 +4199,7 @@ POST
 /api/v1/core-signal/fetch-talent-details
 Fetch Talent Details
 
+
 Fetch detailed information for specific talent IDs and save to database. This endpoint processes the request in the background.
 
 Parameters
@@ -4163,6 +4266,7 @@ GET
 /api/v1/core-signal/search-status/{search_id}
 Get Search Status
 
+
 Get the status of a search/fetch operation
 
 Parameters
@@ -4223,6 +4327,7 @@ Talent Management
 GET
 /api/v1/core-signal/talents
 Get Talents
+
 
 Get all talent profiles with pagination
 
@@ -4305,6 +4410,7 @@ GET
 /api/v1/core-signal/talents/{talent_id}
 Get Talent By Id
 
+
 Get detailed information for a specific talent
 
 Parameters
@@ -4370,7 +4476,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.830Z"
+  "imported_at": "2025-12-19T02:17:53.767Z"
 }
 No links
 422	
@@ -4398,6 +4504,7 @@ No links
 DELETE
 /api/v1/core-signal/talents/{talent_id}
 Delete Talent
+
 
 Delete a talent profile
 
@@ -4449,17 +4556,16 @@ GET
 /api/v1/core-signal/search-history
 Get Search History
 
+
 Get search history with pagination
 
 Parameters
-Try it out
+Cancel
 Name	Description
 skip
 integer
 (query)
 Number of records to skip
-
-Default value : 0
 
 0
 minimum: 0
@@ -4468,11 +4574,10 @@ integer
 (query)
 Number of records to return
 
-Default value : 100
-
 100
 maximum: 1000
 minimum: 1
+Execute
 Responses
 Code	Description	Links
 200	
@@ -4517,6 +4622,7 @@ Talent Collection
 POST
 /api/v1/core-signal/collect-by-id/{talent_id}
 Collect By Id
+
 
 Collect and save a talent profile by employee ID.
 
@@ -4583,7 +4689,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.849Z"
+  "imported_at": "2025-12-19T02:17:53.783Z"
 }
 No links
 422	
@@ -4611,6 +4717,7 @@ No links
 POST
 /api/v1/core-signal/collect-by-shorthand-name
 Collect By Shorthand Name
+
 
 Collect and save a talent profile by LinkedIn shorthand name extracted from a URL.
 
@@ -4677,7 +4784,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.857Z"
+  "imported_at": "2025-12-19T02:17:53.789Z"
 }
 No links
 422	
@@ -4707,6 +4814,7 @@ Database Search
 POST
 /api/v1/core-signal/search-database
 Search Database
+
 
 Search for talents in the database based on headline keywords, skills, and location filters. Returns detailed profile information for matching talents.
 
@@ -4787,7 +4895,7 @@ Schema
     ],
     "is_working": true,
     "is_decision_maker": true,
-    "imported_at": "2025-08-08T12:31:07.871Z"
+    "imported_at": "2025-12-19T02:17:53.796Z"
   }
 ]
 No links
@@ -4816,6 +4924,7 @@ No links
 GET
 /api/v1/core-signal/search-database/by-linkedin
 Get Profile By Linkedin Url
+
 
 Retrieve detailed profile information by LinkedIn URL. Searches the database for a profile matching the provided LinkedIn URL.
 
@@ -4884,7 +4993,7 @@ Schema
   ],
   "is_working": true,
   "is_decision_maker": true,
-  "imported_at": "2025-08-08T12:31:07.882Z"
+  "imported_at": "2025-12-19T02:17:53.803Z"
 }
 No links
 422	
@@ -4953,6 +5062,65 @@ Schema
 {
   "additionalProp1": {}
 }
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+POST
+/api/v1/chat/chat/stream
+Chat Stream Endpoint
+
+
+Fixed streaming chat endpoint
+
+Parameters
+Try it out
+Name	Description
+message *
+string
+(query)
+message
+session_id
+string | (string | null)
+(query)
+session_id
+temperature
+number
+(query)
+Default value : 0.7
+
+0.7
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+"string"
 No links
 422	
 Validation Error
@@ -5217,7 +5385,7 @@ Schema
 {
   "name": "string",
   "status": "healthy",
-  "last_activity": "2025-08-08T12:31:07.919Z",
+  "last_activity": "2025-12-19T02:17:53.844Z",
   "total_requests": 0,
   "successful_requests": 0,
   "failed_requests": 0,
@@ -5310,6 +5478,1425 @@ Schema
   }
 ]
 No links
+webhooks
+
+
+POST
+/api/v1/webhooks/paystack
+Paystack Webhook
+
+Handle Paystack webhook events for subscription management.
+
+Paystack sends various events related to subscriptions, charges, and invoices. This endpoint processes these events and updates the database accordingly.
+
+Expected events:
+
+subscription.create: New subscription created
+charge.success: Successful payment/charge
+charge.failed: Failed payment attempt
+subscription.not_renew: Subscription won't renew
+subscription.disable: Subscription cancelled/expired
+invoice.create: Invoice created (3 days before billing)
+invoice.payment_failed: Invoice payment failed
+Security:
+
+HMAC SHA512 signature verification using PAYSTACK_SECRET_KEY
+Validates webhook authenticity
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": "string",
+  "additionalProp2": "string",
+  "additionalProp3": "string"
+}
+No links
+
+GET
+/api/v1/webhooks/paystack/test
+Test Paystack Webhook
+
+Test endpoint to verify webhook URL is accessible. Paystack may call this during webhook URL validation.
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": "string",
+  "additionalProp2": "string",
+  "additionalProp3": "string"
+}
+No links
+Admin
+
+
+GET
+/api/v1/admin/subscriptions/overview
+Get Subscription Overview
+
+
+Get subscription dashboard overview. Includes MRR, churn, tier distribution, and monthly changes.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_subscribers": 0,
+  "active_subscribers": 0,
+  "canceled_subscribers": 0,
+  "suspended_subscribers": 0,
+  "expired_subscribers": 0,
+  "by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "mrr": 0,
+  "revenue_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "churn_rate": 0,
+  "new_this_month": 0,
+  "canceled_this_month": 0,
+  "upgrades_this_month": 0
+}
+No links
+
+GET
+/api/v1/admin/subscriptions
+List Subscriptions
+
+
+List all subscriptions with filtering, search, and pagination.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+tier
+string | (string | null)
+(query)
+Filter by tier (basic, pro, business)
+
+tier
+status
+string | (string | null)
+(query)
+Filter by status (active, canceled, suspended, expired)
+
+status
+search
+string | (string | null)
+(query)
+Search by email, name, or subscription ID
+
+search
+page
+integer
+(query)
+Page number
+
+Default value : 1
+
+1
+minimum: 1
+limit
+integer
+(query)
+Items per page
+
+Default value : 50
+
+50
+maximum: 100
+minimum: 1
+sort_by
+string
+(query)
+Sort field
+
+Default value : created_at
+
+created_at
+order
+string
+(query)
+Sort order
+
+Default value : desc
+
+desc
+pattern: ^(asc|desc)$
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total": 0,
+  "page": 0,
+  "limit": 0,
+  "pages": 0,
+  "subscriptions": [
+    {
+      "id": "string",
+      "user": {
+        "id": "string",
+        "email": "string",
+        "full_name": "string"
+      },
+      "tier": "string",
+      "status": "string",
+      "price_per_month": 0,
+      "currency": "string",
+      "start_date": "2025-12-19T02:17:53.871Z",
+      "end_date": "2025-12-19T02:17:53.871Z",
+      "paid_until": "2025-12-19T02:17:53.871Z",
+      "is_auto_renew": true,
+      "last_payment_date": "2025-12-19T02:17:53.871Z",
+      "next_payment_date": "2025-12-19T02:17:53.871Z",
+      "has_valid_access": true,
+      "days_remaining": 0,
+      "created_at": "2025-12-19T02:17:53.871Z"
+    }
+  ]
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/subscriptions/{subscription_id}
+Get Subscription Detail
+
+
+Get detailed subscription information including history and usage stats.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+subscription_id *
+string
+(path)
+subscription_id
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "subscription": {
+    "id": "string",
+    "user": {
+      "id": "string",
+      "email": "string",
+      "full_name": "string"
+    },
+    "tier": "string",
+    "status": "string",
+    "price_per_month": 0,
+    "currency": "string",
+    "start_date": "2025-12-19T02:17:53.877Z",
+    "end_date": "2025-12-19T02:17:53.877Z",
+    "paid_until": "2025-12-19T02:17:53.877Z",
+    "is_auto_renew": true,
+    "last_payment_date": "2025-12-19T02:17:53.877Z",
+    "next_payment_date": "2025-12-19T02:17:53.877Z",
+    "has_valid_access": true,
+    "days_remaining": 0,
+    "created_at": "2025-12-19T02:17:53.877Z"
+  },
+  "history": [
+    {
+      "id": "string",
+      "action": "string",
+      "from_tier": "string",
+      "to_tier": "string",
+      "from_status": "string",
+      "to_status": "string",
+      "amount": 0,
+      "currency": "string",
+      "reason": "string",
+      "created_at": "2025-12-19T02:17:53.877Z"
+    }
+  ],
+  "usage_stats": {
+    "total_searches": 0,
+    "monthly_searches": 0,
+    "searches_this_week": 0,
+    "last_search_date": "2025-12-19T02:17:53.877Z",
+    "average_searches_per_month": 0
+  }
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/users/overview
+Get User Overview
+
+
+Get user dashboard overview. Includes total users, verification stats, engagement metrics.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_users": 0,
+  "verified_users": 0,
+  "unverified_users": 0,
+  "active_last_30_days": 0,
+  "new_this_month": 0,
+  "by_subscription": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "top_searchers": [
+    {
+      "additionalProp1": {}
+    }
+  ],
+  "low_engagement": [
+    {
+      "additionalProp1": {}
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/users
+List Users
+
+
+List all users with filtering, search, and pagination.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+search
+string | (string | null)
+(query)
+Search by email, name, or ID
+
+search
+tier
+string | (string | null)
+(query)
+Filter by subscription tier
+
+tier
+verified
+boolean | (boolean | null)
+(query)
+Filter by verification status
+
+
+--
+has_subscription
+boolean | (boolean | null)
+(query)
+Filter by subscription existence
+
+
+--
+min_searches
+integer | (integer | null)
+(query)
+Minimum search count
+
+min_searches
+max_searches
+integer | (integer | null)
+(query)
+Maximum search count
+
+max_searches
+page
+integer
+(query)
+Page number
+
+Default value : 1
+
+1
+minimum: 1
+limit
+integer
+(query)
+Items per page
+
+Default value : 50
+
+50
+maximum: 100
+minimum: 1
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total": 0,
+  "page": 0,
+  "limit": 0,
+  "pages": 0,
+  "users": [
+    {
+      "id": "string",
+      "email": "string",
+      "full_name": "string",
+      "is_verified": true,
+      "is_active": true,
+      "total_searches": 0,
+      "monthly_searches_used": 0,
+      "subscription": {
+        "tier": "string",
+        "status": "string",
+        "has_valid_access": true,
+        "paid_until": "2025-12-19T02:17:53.895Z"
+      },
+      "created_at": "2025-12-19T02:17:53.895Z",
+      "last_login": "2025-12-19T02:17:53.895Z"
+    }
+  ]
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/users/{user_id}
+Get User Detail
+
+
+Get detailed user information including subscription and usage stats.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+user_id *
+string
+(path)
+user_id
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/analytics/quick-stats
+Get Quick Stats
+
+
+Get quick stats for admin dashboard. Optimized for fast loading and caching.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_users": 0,
+  "active_subscriptions": 0,
+  "mrr": 0,
+  "total_searches_today": 0,
+  "failed_payments_today": 0,
+  "new_signups_today": 0
+}
+No links
+
+GET
+/api/v1/admin/analytics/revenue
+Get Revenue Analytics
+
+
+Get revenue analytics for specified period. Includes MRR, ARR, daily revenue, and payment success rate.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+start_date
+string | (string | null)
+(query)
+Start date (ISO format)
+
+start_date
+end_date
+string | (string | null)
+(query)
+End date (ISO format)
+
+end_date
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_revenue": 0,
+  "currency": "string",
+  "period": {
+    "additionalProp1": "string",
+    "additionalProp2": "string",
+    "additionalProp3": "string"
+  },
+  "mrr": 0,
+  "arr": 0,
+  "revenue_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "daily_revenue": [
+    {
+      "additionalProp1": {}
+    }
+  ],
+  "payment_success_rate": 0,
+  "failed_payments": 0,
+  "successful_payments": 0
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/analytics/usage
+Get Usage Analytics
+
+
+Get platform usage analytics. Includes total searches, distribution, and engagement metrics.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_searches": 0,
+  "searches_this_month": 0,
+  "average_searches_per_user": 0,
+  "searches_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "search_distribution": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "peak_hours": [
+    {
+      "additionalProp1": 0,
+      "additionalProp2": 0,
+      "additionalProp3": 0
+    }
+  ],
+  "popular_skills": [
+    {
+      "additionalProp1": {}
+    }
+  ]
+}
+No links
+Admin - Subscriptions
+
+
+GET
+/api/v1/admin/subscriptions/overview
+Get Subscription Overview
+
+
+Get subscription dashboard overview. Includes MRR, churn, tier distribution, and monthly changes.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_subscribers": 0,
+  "active_subscribers": 0,
+  "canceled_subscribers": 0,
+  "suspended_subscribers": 0,
+  "expired_subscribers": 0,
+  "by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "mrr": 0,
+  "revenue_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "churn_rate": 0,
+  "new_this_month": 0,
+  "canceled_this_month": 0,
+  "upgrades_this_month": 0
+}
+No links
+
+GET
+/api/v1/admin/subscriptions
+List Subscriptions
+
+
+List all subscriptions with filtering, search, and pagination.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+tier
+string | (string | null)
+(query)
+Filter by tier (basic, pro, business)
+
+tier
+status
+string | (string | null)
+(query)
+Filter by status (active, canceled, suspended, expired)
+
+status
+search
+string | (string | null)
+(query)
+Search by email, name, or subscription ID
+
+search
+page
+integer
+(query)
+Page number
+
+Default value : 1
+
+1
+minimum: 1
+limit
+integer
+(query)
+Items per page
+
+Default value : 50
+
+50
+maximum: 100
+minimum: 1
+sort_by
+string
+(query)
+Sort field
+
+Default value : created_at
+
+created_at
+order
+string
+(query)
+Sort order
+
+Default value : desc
+
+desc
+pattern: ^(asc|desc)$
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total": 0,
+  "page": 0,
+  "limit": 0,
+  "pages": 0,
+  "subscriptions": [
+    {
+      "id": "string",
+      "user": {
+        "id": "string",
+        "email": "string",
+        "full_name": "string"
+      },
+      "tier": "string",
+      "status": "string",
+      "price_per_month": 0,
+      "currency": "string",
+      "start_date": "2025-12-19T02:17:53.928Z",
+      "end_date": "2025-12-19T02:17:53.928Z",
+      "paid_until": "2025-12-19T02:17:53.928Z",
+      "is_auto_renew": true,
+      "last_payment_date": "2025-12-19T02:17:53.928Z",
+      "next_payment_date": "2025-12-19T02:17:53.928Z",
+      "has_valid_access": true,
+      "days_remaining": 0,
+      "created_at": "2025-12-19T02:17:53.928Z"
+    }
+  ]
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/subscriptions/{subscription_id}
+Get Subscription Detail
+
+
+Get detailed subscription information including history and usage stats.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+subscription_id *
+string
+(path)
+subscription_id
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "subscription": {
+    "id": "string",
+    "user": {
+      "id": "string",
+      "email": "string",
+      "full_name": "string"
+    },
+    "tier": "string",
+    "status": "string",
+    "price_per_month": 0,
+    "currency": "string",
+    "start_date": "2025-12-19T02:17:53.934Z",
+    "end_date": "2025-12-19T02:17:53.934Z",
+    "paid_until": "2025-12-19T02:17:53.934Z",
+    "is_auto_renew": true,
+    "last_payment_date": "2025-12-19T02:17:53.934Z",
+    "next_payment_date": "2025-12-19T02:17:53.934Z",
+    "has_valid_access": true,
+    "days_remaining": 0,
+    "created_at": "2025-12-19T02:17:53.934Z"
+  },
+  "history": [
+    {
+      "id": "string",
+      "action": "string",
+      "from_tier": "string",
+      "to_tier": "string",
+      "from_status": "string",
+      "to_status": "string",
+      "amount": 0,
+      "currency": "string",
+      "reason": "string",
+      "created_at": "2025-12-19T02:17:53.934Z"
+    }
+  ],
+  "usage_stats": {
+    "total_searches": 0,
+    "monthly_searches": 0,
+    "searches_this_week": 0,
+    "last_search_date": "2025-12-19T02:17:53.934Z",
+    "average_searches_per_month": 0
+  }
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+Admin - Users
+
+
+GET
+/api/v1/admin/users/overview
+Get User Overview
+
+
+Get user dashboard overview. Includes total users, verification stats, engagement metrics.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_users": 0,
+  "verified_users": 0,
+  "unverified_users": 0,
+  "active_last_30_days": 0,
+  "new_this_month": 0,
+  "by_subscription": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "top_searchers": [
+    {
+      "additionalProp1": {}
+    }
+  ],
+  "low_engagement": [
+    {
+      "additionalProp1": {}
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/users
+List Users
+
+
+List all users with filtering, search, and pagination.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+search
+string | (string | null)
+(query)
+Search by email, name, or ID
+
+search
+tier
+string | (string | null)
+(query)
+Filter by subscription tier
+
+tier
+verified
+boolean | (boolean | null)
+(query)
+Filter by verification status
+
+
+--
+has_subscription
+boolean | (boolean | null)
+(query)
+Filter by subscription existence
+
+
+--
+min_searches
+integer | (integer | null)
+(query)
+Minimum search count
+
+min_searches
+max_searches
+integer | (integer | null)
+(query)
+Maximum search count
+
+max_searches
+page
+integer
+(query)
+Page number
+
+Default value : 1
+
+1
+minimum: 1
+limit
+integer
+(query)
+Items per page
+
+Default value : 50
+
+50
+maximum: 100
+minimum: 1
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total": 0,
+  "page": 0,
+  "limit": 0,
+  "pages": 0,
+  "users": [
+    {
+      "id": "string",
+      "email": "string",
+      "full_name": "string",
+      "is_verified": true,
+      "is_active": true,
+      "total_searches": 0,
+      "monthly_searches_used": 0,
+      "subscription": {
+        "tier": "string",
+        "status": "string",
+        "has_valid_access": true,
+        "paid_until": "2025-12-19T02:17:53.955Z"
+      },
+      "created_at": "2025-12-19T02:17:53.955Z",
+      "last_login": "2025-12-19T02:17:53.955Z"
+    }
+  ]
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/users/{user_id}
+Get User Detail
+
+
+Get detailed user information including subscription and usage stats.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+user_id *
+string
+(path)
+user_id
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "additionalProp1": {}
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+Admin - Analytics
+
+
+GET
+/api/v1/admin/analytics/quick-stats
+Get Quick Stats
+
+
+Get quick stats for admin dashboard. Optimized for fast loading and caching.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_users": 0,
+  "active_subscriptions": 0,
+  "mrr": 0,
+  "total_searches_today": 0,
+  "failed_payments_today": 0,
+  "new_signups_today": 0
+}
+No links
+
+GET
+/api/v1/admin/analytics/revenue
+Get Revenue Analytics
+
+
+Get revenue analytics for specified period. Includes MRR, ARR, daily revenue, and payment success rate.
+
+Requires: Admin access
+
+Parameters
+Try it out
+Name	Description
+start_date
+string | (string | null)
+(query)
+Start date (ISO format)
+
+start_date
+end_date
+string | (string | null)
+(query)
+End date (ISO format)
+
+end_date
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_revenue": 0,
+  "currency": "string",
+  "period": {
+    "additionalProp1": "string",
+    "additionalProp2": "string",
+    "additionalProp3": "string"
+  },
+  "mrr": 0,
+  "arr": 0,
+  "revenue_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "daily_revenue": [
+    {
+      "additionalProp1": {}
+    }
+  ],
+  "payment_success_rate": 0,
+  "failed_payments": 0,
+  "successful_payments": 0
+}
+No links
+422	
+Validation Error
+
+Media type
+
+application/json
+Example Value
+Schema
+{
+  "detail": [
+    {
+      "loc": [
+        "string",
+        0
+      ],
+      "msg": "string",
+      "type": "string"
+    }
+  ]
+}
+No links
+
+GET
+/api/v1/admin/analytics/usage
+Get Usage Analytics
+
+
+Get platform usage analytics. Includes total searches, distribution, and engagement metrics.
+
+Requires: Admin access
+
+Parameters
+Try it out
+No parameters
+
+Responses
+Code	Description	Links
+200	
+Successful Response
+
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+{
+  "total_searches": 0,
+  "searches_this_month": 0,
+  "average_searches_per_user": 0,
+  "searches_by_tier": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "search_distribution": {
+    "additionalProp1": 0,
+    "additionalProp2": 0,
+    "additionalProp3": 0
+  },
+  "peak_hours": [
+    {
+      "additionalProp1": 0,
+      "additionalProp2": 0,
+      "additionalProp3": 0
+    }
+  ],
+  "popular_skills": [
+    {
+      "additionalProp1": {}
+    }
+  ]
+}
+No links
 legacy-auth
 
 
@@ -5361,7 +6948,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.933Z",
+  "created_at": "2025-12-19T02:17:53.983Z",
+  "is_admin": false,
+  "admin_role": "string",
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "bearer",
@@ -5448,7 +7037,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.942Z",
+  "created_at": "2025-12-19T02:17:53.990Z",
+  "is_admin": false,
+  "admin_role": "string",
   "access_token": "string",
   "refresh_token": "string",
   "token_type": "bearer",
@@ -5510,7 +7101,9 @@ Schema
   "subscription_tier": "string",
   "monthly_search_limit": 0,
   "monthly_searches_used": 0,
-  "created_at": "2025-08-08T12:31:07.947Z"
+  "created_at": "2025-12-19T02:17:53.994Z",
+  "is_admin": false,
+  "admin_role": "string"
 }
 No links
 
@@ -5527,9 +7120,16 @@ No parameters
 
 Responses
 Code	Description	Links
-204	
+200	
 Successful Response
 
+Media type
+
+application/json
+Controls Accept header.
+Example Value
+Schema
+"string"
 No links
 default
 
@@ -5538,3660 +7138,66 @@ GET
 /health
 Health Check
 
-Health check endpoint for monitoring.
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-"string"
-No links
 
 GET
 /
 Root
 
-Root endpoint with basic information.
-
-Parameters
-Try it out
-No parameters
-
-Responses
-Code	Description	Links
-200	
-Successful Response
-
-Media type
-
-application/json
-Controls Accept header.
-Example Value
-Schema
-"string"
-No links
 
 Schemas
-AgentHealthCheckCollapse allobject
-Model for comprehensive agent health check.
-
-overall_statusCollapse allstring
-Overall system status
-
-EnumCollapse allarray
-#0"healthy"
-#1"degraded"
-#2"unhealthy"
-timestampCollapse allstringdate-time
-Health check timestamp
-
-total_agentsCollapse allinteger
-Total number of agents
-
-healthy_agentsCollapse allinteger
-Number of healthy agents
-
-unhealthy_agentsCollapse allinteger
-Number of unhealthy agents
-
-check_durationCollapse allnumber
-Health check duration in seconds
-
-agent_detailsCollapse allobject
-Detailed agent health information
-
-Additional propertiesCollapse allobject
-Additional propertiesallowed
-system_infoCollapse allobject
-System information
-
-Additional propertiesallowed
-AgentStatusCollapse allobject
-Model for agent status information.
-
-nameCollapse allstring
-Agent name
-
-statusCollapse allstring
-Agent status
-
-EnumCollapse allarray
-#0"healthy"
-#1"degraded"
-#2"unhealthy"
-#3"offline"
-last_activityCollapse allstringdate-time
-Last activity timestamp
-
-total_requestsCollapse allinteger
-Total requests processed
-
-successful_requestsCollapse allinteger
-Successful requests
-
-failed_requestsCollapse allinteger
-Failed requests
-
-average_response_timeCollapse allnumber
-Average response time in seconds
-
-current_loadCollapse allinteger
-Current concurrent requests
-
-max_concurrent_requestsCollapse allinteger
-Maximum concurrent requests
-
-versionCollapse allstring
-Agent version
-
-AggregationResultCollapse allobject
-Model for aggregated search results from multiple sources.
-
-search_idCollapse allstring
-Unique search identifier
-
-user_idCollapse allstring
-User who performed the search
-
-session_idCollapse allstring
-Session identifier
-
-search_criteria_summaryCollapse allstring
-Summary of search criteria
-
-total_resultsCollapse allinteger≥ 0
-Total number of results
-
-database_results_countCollapse allinteger≥ 0
-Results from database search
-
-live_search_results_countCollapse allinteger≥ 0
-Results from live search
-
-ranked_profilesCollapse allarray<object>
-Ranked talent profiles
-
-ItemsCollapse allobject
-Model for a ranked talent profile with scoring details.
-
-profileCollapse allobject
-The talent profile
-
-idCollapse allinteger
-Unique talent ID
-
-parent_idCollapse all(integer | null)
-Parent profile ID if applicable
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-full_nameCollapse allstring
-Full name
-
-first_nameCollapse all(string | null)
-First name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-last_nameCollapse all(string | null)
-Last name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-headlineCollapse allstring
-Professional headline
-
-summaryCollapse all(string | null)
-Professional summary
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-picture_urlCollapse all(string | null)
-Profile picture URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-linkedin_urlCollapse allstring
-LinkedIn profile URL
-
-location_countryCollapse all(string | null)
-Country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Full location string
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_regionsCollapse allarray<string>
-Geographic regions
-
-Itemsstring
-inferred_skillsCollapse allarray<string>
-Inferred skills
-
-Itemsstring
-interestsCollapse allarray<string>
-Professional interests
-
-Itemsstring
-connections_countCollapse all(integer | null)
-Number of LinkedIn connections
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-followers_countCollapse all(integer | null)
-Number of LinkedIn followers
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_titleCollapse all(string | null)
-Current job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_company_idCollapse all(integer | null)
-Current company ID
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_descriptionCollapse all(string | null)
-Current job description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_departmentCollapse all(string | null)
-Current department
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_management_levelCollapse all(string | null)
-Current management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-total_experience_duration_monthsCollapse all(integer | null)
-Total experience in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experienceCollapse allarray<object>
-Work experience entries
-
-ItemsCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
-educationCollapse allarray<object>
-Education entries
-
-ItemsCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-certificationsCollapse allarray<object>
-Certification entries
-
-ItemsCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
-
-is_workingCollapse all(boolean | null)
-Currently employed
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-is_decision_makerCollapse all(boolean | null)
-Is a decision maker
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-imported_atCollapse all(string | null)
-When the profile was imported
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-updated_atCollapse all(string | null)
-Last update timestamp
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-rank_positionCollapse allinteger≥ 1
-Rank position in results
-
-relevance_scoreCollapse allnumber[0, 100]
-Overall relevance score
-
-skill_match_scoreCollapse allnumber[0, 100]
-Skills matching score
-
-experience_scoreCollapse allnumber[0, 100]
-Experience level score
-
-location_scoreCollapse allnumber[0, 100]
-Location matching score
-
-job_title_scoreCollapse allnumber[0, 100]
-Job title matching score
-
-matched_skillsCollapse allarray<object>
-List of matched skills
-
-ItemsCollapse allobject
-Model for skill matching information.
-
-searched_skillCollapse allstring
-The skill that was searched for
-
-matched_skillCollapse all(string | null)
-The matching skill found in profile
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-match_scoreCollapse allnumber[0, 100]
-Match score percentage
-
-match_typeCollapse allstring
-Type of match
-
-EnumCollapse allarray
-#0"exact"
-#1"partial"
-#2"similar"
-missing_skillsCollapse allarray<string>
-Skills from criteria not found
-
-Itemsstring
-ranking_explanationCollapse allstring
-Human-readable ranking explanation
-
-key_achievementsCollapse allarray<string>
-Key achievements from experience
-
-Itemsstring
-relevant_experienceCollapse allarray<string>
-Most relevant experience entries
-
-Itemsstring
-certificationsCollapse allarray<string>
-Relevant certifications
-
-Itemsstring
-education_summaryCollapse allstring
-Education summary
-
-Default""
-career_progressionCollapse allstring
-Career progression analysis
-
-Default""
-source_typeCollapse allstring
-Source of the profile
-
-EnumCollapse allarray
-#0"database"
-#1"live"
-#2"hybrid"
-source_detailsCollapse all(object | null)
-Additional source information
-
-Any ofCollapse all(object | null)
-#0Collapse allobject
-Additional propertiesallowed
-#1null
-total_execution_timeCollapse allnumber≥ 0
-Total execution time in seconds
-
-database_search_timeCollapse all(number | null)
-Database search time
-
-Any ofCollapse all(number | null)
-#0number
-#1null
-live_search_timeCollapse all(number | null)
-Live search time
-
-Any ofCollapse all(number | null)
-#0number
-#1null
-ranking_timeCollapse allnumber≥ 0
-Ranking processing time
-
-average_relevance_scoreCollapse allnumber[0, 100]
-Average relevance score
-
-top_scoreCollapse allnumber[0, 100]
-Highest relevance score
-
-score_distributionCollapse allobject
-Distribution of scores by range
-
-Additional propertiesinteger
-skill_coverage_analysisCollapse allobject
-Analysis of skill coverage
-
-Additional propertiesallowed
-location_distributionCollapse allobject
-Distribution by location
-
-Additional propertiesinteger
-recommendationsCollapse allarray<string>
-Recommendations for improving search
-
-Itemsstring
-created_atCollapse allstringdate-time
-Creation timestamp
-
+AgentHealthCheckExpand allobject
+AgentStatusExpand allobject
+AggregationResultExpand allobject
 Body_login_api_v1_auths_login_postExpand allobject
-Body_login_v1_auth_login_postCollapse allobject
-grant_typeCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringmatches ^password$
-#1null
-usernamestring
-passwordstringpassword
-scopeCollapse allstring
-Default""
-client_idCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-client_secretCollapse allstring | (string | null)password
-Any ofCollapse all(string | null)
-#0string
-#1null
-BulkProcessResponseCollapse allobject
-Response model for bulk processing
-
-search_idinteger
-total_idsinteger
-processed_countinteger
-successful_countinteger
-failed_countinteger
-failed_idsCollapse allarray<integer>
-Itemsinteger
-statusstring
-messagestring
-CertificationEntryCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
-
-CompanyTypeCollapse allstring
-Company type enumeration.
-
-EnumCollapse allarray
-#0"Startup"
-#1"Privately Held"
-#2"Public Company"
-#3"Nonprofit"
-#4"Government Agency"
-#5"Educational Institution"
-DatabaseSearchRequestCollapse allobject
-headline_keywordsCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-skillsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_country_iso2Collapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-ExampleCollapse allobject
-headline_keywords"AI Engineer, Machine Learning"
-location_country"Ghana"
-location_country_iso2"GH"
-location_full"Accra, Greater Accra Region, Ghana"
-skillsCollapse allarray
-#0"python"
-#1"tensorflow"
-#2"machine learning"
-DepartmentCollapse allstring
-Department enumeration.
-
-EnumCollapse allarray
-#0"Engineering and Technical"
-#1"Sales"
-#2"Marketing"
-#3"Human Resources"
-#4"Finance"
-#5"Operations"
-#6"Product"
-#7"Design"
-#8"Legal"
-#9"Other"
-EducationEntryCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-EmailVerificationRequestCollapse allobject
-emailstringemail
-ExperienceEntryCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
+Body_login_v1_auth_login_postExpand allobject
+BulkProcessResponseExpand allobject
+CertificationEntryExpand allobject
+CompanyTypeExpand allstring
+DatabaseSearchRequestExpand allobject
+DepartmentExpand allstring
+EducationEntryExpand allobject
+EmailVerificationRequestExpand allobject
+ExperienceEntryExpand allobject
 HTTPValidationErrorExpand allobject
-ManagementLevelCollapse allstring
-Management level enumeration.
-
-EnumCollapse allarray
-#0"Intern"
-#1"Specialist"
-#2"Senior Specialist"
-#3"Team Lead"
-#4"Manager"
-#5"Senior Manager"
-#6"Director"
-#7"VP"
-#8"C-Level"
+ManagementLevelExpand allstring
 OTPVerificationRequestExpand allobject
+PaginatedSubscriptionsExpand allobject
+PaginatedUsersExpand allobject
 PasswordResetRequestExpand allobject
-PasswordResetVerifyCollapse allobject
-emailstringemail
-otpstring
-current_passwordstring
-new_passwordstring≥ 8 characters
-confirm_passwordstring
-SearchModeCollapse allstring
-Search mode enumeration.
-
-EnumCollapse allarray
-#0"database"
-#1"live"
-#2"hybrid"
-SearchQueryRequestCollapse allobject
-Request model for talent search
-
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titlesCollapse allarray<string>
-List of job titles to search for
-
-Itemsstring
-skills_keywordsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-ExampleCollapse allobject
-job_titlesCollapse allarray
-#0"AI ENGINEER"
-#1"MACHINE LEARNING"
-#2"AI RESEARCHER"
-location_country"Ghana"
-location_full"Accra"
-skills_keywordsCollapse allarray
-#0"python"
-#1"tensorflow"
-#2"machine learning"
-SearchReportCollapse allobject
-Model for comprehensive search report.
-
-report_idCollapse allstring
-Unique report identifier
-
-search_idCollapse allstring
-Associated search identifier
-
-user_idCollapse allstring
-User who requested the report
-
-executive_summaryCollapse allstring
-Executive summary of search results
-
-key_findingsCollapse allarray<string>
-Key findings from the search
-
-Itemsstring
-aggregation_resultCollapse allobject
-Aggregated search results
-
-search_idCollapse allstring
-Unique search identifier
-
-user_idCollapse allstring
-User who performed the search
-
-session_idCollapse allstring
-Session identifier
-
-search_criteria_summaryCollapse allstring
-Summary of search criteria
-
-total_resultsCollapse allinteger≥ 0
-Total number of results
-
-database_results_countCollapse allinteger≥ 0
-Results from database search
-
-live_search_results_countCollapse allinteger≥ 0
-Results from live search
-
-ranked_profilesCollapse allarray<object>
-Ranked talent profiles
-
-ItemsCollapse allobject
-Model for a ranked talent profile with scoring details.
-
-profileCollapse allobject
-The talent profile
-
-idCollapse allinteger
-Unique talent ID
-
-parent_idCollapse all(integer | null)
-Parent profile ID if applicable
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-full_nameCollapse allstring
-Full name
-
-first_nameCollapse all(string | null)
-First name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-last_nameCollapse all(string | null)
-Last name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-headlineCollapse allstring
-Professional headline
-
-summaryCollapse all(string | null)
-Professional summary
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-picture_urlCollapse all(string | null)
-Profile picture URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-linkedin_urlCollapse allstring
-LinkedIn profile URL
-
-location_countryCollapse all(string | null)
-Country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Full location string
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_regionsCollapse allarray<string>
-Geographic regions
-
-Itemsstring
-inferred_skillsCollapse allarray<string>
-Inferred skills
-
-Itemsstring
-interestsCollapse allarray<string>
-Professional interests
-
-Itemsstring
-connections_countCollapse all(integer | null)
-Number of LinkedIn connections
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-followers_countCollapse all(integer | null)
-Number of LinkedIn followers
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_titleCollapse all(string | null)
-Current job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_company_idCollapse all(integer | null)
-Current company ID
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_descriptionCollapse all(string | null)
-Current job description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_departmentCollapse all(string | null)
-Current department
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_management_levelCollapse all(string | null)
-Current management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-total_experience_duration_monthsCollapse all(integer | null)
-Total experience in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experienceCollapse allarray<object>
-Work experience entries
-
-ItemsCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
-educationCollapse allarray<object>
-Education entries
-
-ItemsCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-certificationsCollapse allarray<object>
-Certification entries
-
-ItemsCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
-
-is_workingCollapse all(boolean | null)
-Currently employed
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-is_decision_makerCollapse all(boolean | null)
-Is a decision maker
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-imported_atCollapse all(string | null)
-When the profile was imported
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-updated_atCollapse all(string | null)
-Last update timestamp
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-rank_positionCollapse allinteger≥ 1
-Rank position in results
-
-relevance_scoreCollapse allnumber[0, 100]
-Overall relevance score
-
-skill_match_scoreCollapse allnumber[0, 100]
-Skills matching score
-
-experience_scoreCollapse allnumber[0, 100]
-Experience level score
-
-location_scoreCollapse allnumber[0, 100]
-Location matching score
-
-job_title_scoreCollapse allnumber[0, 100]
-Job title matching score
-
-matched_skillsCollapse allarray<object>
-List of matched skills
-
-ItemsCollapse allobject
-Model for skill matching information.
-
-searched_skillCollapse allstring
-The skill that was searched for
-
-matched_skillCollapse all(string | null)
-The matching skill found in profile
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-match_scoreCollapse allnumber[0, 100]
-Match score percentage
-
-match_typeCollapse allstring
-Type of match
-
-EnumCollapse allarray
-#0"exact"
-#1"partial"
-#2"similar"
-missing_skillsCollapse allarray<string>
-Skills from criteria not found
-
-Itemsstring
-ranking_explanationCollapse allstring
-Human-readable ranking explanation
-
-key_achievementsCollapse allarray<string>
-Key achievements from experience
-
-Itemsstring
-relevant_experienceCollapse allarray<string>
-Most relevant experience entries
-
-Itemsstring
-certificationsCollapse allarray<string>
-Relevant certifications
-
-Itemsstring
-education_summaryCollapse allstring
-Education summary
-
-Default""
-career_progressionCollapse allstring
-Career progression analysis
-
-Default""
-source_typeCollapse allstring
-Source of the profile
-
-EnumCollapse allarray
-#0"database"
-#1"live"
-#2"hybrid"
-source_detailsCollapse all(object | null)
-Additional source information
-
-Any ofCollapse all(object | null)
-#0Collapse allobject
-Additional propertiesallowed
-#1null
-total_execution_timeCollapse allnumber≥ 0
-Total execution time in seconds
-
-database_search_timeCollapse all(number | null)
-Database search time
-
-Any ofCollapse all(number | null)
-#0number
-#1null
-live_search_timeCollapse all(number | null)
-Live search time
-
-Any ofCollapse all(number | null)
-#0number
-#1null
-ranking_timeCollapse allnumber≥ 0
-Ranking processing time
-
-average_relevance_scoreCollapse allnumber[0, 100]
-Average relevance score
-
-top_scoreCollapse allnumber[0, 100]
-Highest relevance score
-
-score_distributionCollapse allobject
-Distribution of scores by range
-
-Additional propertiesinteger
-skill_coverage_analysisCollapse allobject
-Analysis of skill coverage
-
-Additional propertiesallowed
-location_distributionCollapse allobject
-Distribution by location
-
-Additional propertiesinteger
-recommendationsCollapse allarray<string>
-Recommendations for improving search
-
-Itemsstring
-created_atCollapse allstringdate-time
-Creation timestamp
-
-top_candidates_analysisCollapse allstring
-Analysis of top candidates
-
-candidate_diversity_scoreCollapse allnumber[0, 100]
-Diversity score of candidates
-
-market_insightsCollapse allobject
-Market insights from search
-
-Additional propertiesallowed
-talent_availabilityCollapse allstring
-Assessment of talent availability
-
-hiring_recommendationsCollapse allarray<string>
-Hiring recommendations
-
-Itemsstring
-search_optimization_tipsCollapse allarray<string>
-Tips for optimizing future searches
-
-Itemsstring
-generated_atCollapse allstringdate-time
-Report generation time
-
-report_versionCollapse allstring
-Report format version
-
-Default"1.0"
+PasswordResetVerifyExpand allobject
+QuickStatsExpand allobject
+RevenueAnalyticsExpand allobject
+SearchModeExpand allstring
+SearchQueryRequestExpand allobject
+SearchReportExpand allobject
 SearchRequestExpand allobject
 SearchRequestExpand allobject
-SearchResultsCollapse allobject
-Search results model.
-
-search_idCollapse allstring
-Unique search ID
-
-user_idCollapse allstring
-User ID who performed the search
-
-search_requestCollapse allobject
-Original search request
-
-user_idCollapse allstring
-User ID making the request
-
-session_idCollapse all(string | null)
-Session ID for the request (auto-extracted from cookies if not provided)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-search_modeCollapse allstring
-Search mode to use
-
-EnumCollapse allarray
-#0"database"
-#1"live"
-#2"hybrid"
-criteriaCollapse allobject
-Search criteria
-
-job_titlesCollapse allarray<string>
-Target job titles
-
-Itemsstring
-skills_keywordsCollapse allarray<string>
-Required or preferred skills
-
-Itemsstring
-location_fullCollapse all(string | null)
-Full location string
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Country filter
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_country_iso2Collapse all(string | null)
-Country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-experience_years_minCollapse all(integer | null)
-Minimum years of experience
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experience_years_maxCollapse all(integer | null)
-Maximum years of experience
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-management_levelCollapse all(string | null)
-Target management level
-
-Any ofCollapse all(string | null)
-#0 ManagementLevelCollapse allstring
-Management level enumeration.
-
-EnumCollapse allarray
-#0"Intern"
-#1"Specialist"
-#2"Senior Specialist"
-#3"Team Lead"
-#4"Manager"
-#5"Senior Manager"
-#6"Director"
-#7"VP"
-#8"C-Level"
-#1null
-departmentCollapse all(string | null)
-Target department
-
-Any ofCollapse all(string | null)
-#0 DepartmentCollapse allstring
-Department enumeration.
-
-EnumCollapse allarray
-#0"Engineering and Technical"
-#1"Sales"
-#2"Marketing"
-#3"Human Resources"
-#4"Finance"
-#5"Operations"
-#6"Product"
-#7"Design"
-#8"Legal"
-#9"Other"
-#1null
-company_typeCollapse all(string | null)
-Preferred company type
-
-Any ofCollapse all(string | null)
-#0 CompanyTypeCollapse allstring
-Company type enumeration.
-
-EnumCollapse allarray
-#0"Startup"
-#1"Privately Held"
-#2"Public Company"
-#3"Nonprofit"
-#4"Government Agency"
-#5"Educational Institution"
-#1null
-company_size_minCollapse all(integer | null)
-Minimum company size
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_size_maxCollapse all(integer | null)
-Maximum company size
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-is_currently_employedCollapse all(boolean | null)
-Filter by employment status
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-exclude_keywordsCollapse allarray<string>
-Keywords to exclude
-
-Itemsstring
-max_resultsCollapse allinteger[1, 200]
-Maximum number of results
-
-Default50
-include_detailed_profilesCollapse allboolean
-Include full profile details
-
-Defaultfalse
-save_searchCollapse allboolean
-Save search for future reference
-
-Defaulttrue
-search_descriptionCollapse all(string | null)
-Human-readable search description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-resultsCollapse allarray<object>
-Ranked search results
-
-ItemsCollapse allobject
-Talent profile with ranking information.
-
-idinteger
-full_namestring
-headlinestring
-linkedin_urlstring
-picture_urlCollapse all(string | null)
-Profile picture URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-primary_professional_emailCollapse all(string | null)
-Primary professional email
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_titleCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-inferred_skillsCollapse allarray<string>
-Itemsstring
-total_experience_duration_monthsCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-is_workingCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-relevance_scoreCollapse allnumber
-Overall relevance score (0-100)
-
-skill_match_scoreCollapse allnumber
-Skill matching score (0-100)
-
-experience_scoreCollapse allnumber
-Experience relevance score (0-100)
-
-location_scoreCollapse allnumber
-Location compatibility score (0-100)
-
-ranking_explanationCollapse allstring
-Explanation of the ranking
-
-matched_skillsCollapse allarray<string>
-Skills that matched the search
-
-Itemsstring
-missing_skillsCollapse allarray<string>
-Skills that were not found
-
-Itemsstring
-key_achievementsCollapse allarray<string>
-Key achievements from experience
-
-Itemsstring
-relevant_experienceCollapse allarray<string>
-Most relevant experience entries
-
-Itemsstring
-certificationsCollapse allarray<string>
-Relevant certifications
-
-Itemsstring
-education_summaryCollapse allstring
-Education summary
-
-Default""
-career_progressionCollapse allstring
-Career progression analysis
-
-Default""
-experienceCollapse allarray<object>
-Detailed work experience
-
-ItemsCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
-educationCollapse allarray<object>
-Education history
-
-ItemsCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-certification_detailsCollapse allarray<object>
-Detailed certifications
-
-ItemsCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
-
-total_resultsCollapse allinteger
-Total number of results found
-
-search_durationCollapse allnumber
-Search duration in seconds
-
-timestampCollapse allstringdate-time
-Search timestamp
-
-search_summaryCollapse allstring
-AI-generated summary of the search
-
-recommendationsCollapse allarray<string>
-Search improvement recommendations
-
-Itemsstring
-SkillMatchCollapse allobject
-Model for skill matching information.
-
-searched_skillCollapse allstring
-The skill that was searched for
-
-matched_skillCollapse all(string | null)
-The matching skill found in profile
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-match_scoreCollapse allnumber[0, 100]
-Match score percentage
-
-match_typeCollapse allstring
-Type of match
-
-EnumCollapse allarray
-#0"exact"
-#1"partial"
-#2"similar"
-SubscriptionCreateCollapse allobject
-tierCollapse allstring
-Enumeration of available subscription tiers.
-
-EnumCollapse allarray
-#0"basic"
-#1"pro"
-#2"business"
-is_auto_renewCollapse allboolean
-Defaultfalse
-SubscriptionResponseCollapse allobject
-idstring
-tierstring
-is_auto_renewboolean
-price_per_monthnumber
-start_dateCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-end_dateCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-last_payment_dateCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-next_payment_dateCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-created_atCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-updated_atCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-SubscriptionStatusCollapse allstring
-Enumeration of subscription statuses.
-
-EnumCollapse allarray
-#0"active"
-#1"canceled"
-#2"expired"
-#3"suspended"
-SubscriptionTierCollapse allstring
-Enumeration of available subscription tiers.
-
-EnumCollapse allarray
-#0"basic"
-#1"pro"
-#2"business"
-SubscriptionUpdateCollapse allobject
-tierCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0 SubscriptionTierExpand allstring
-#1null
-statusCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0 SubscriptionStatusExpand allstring
-#1null
-is_auto_renewCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-TalentDetailResponseCollapse allobject
-Detailed response model for talent profile
-
-idinteger
-parent_idCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-full_nameCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-first_nameCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-last_nameCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-headlineCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-summaryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-picture_urlCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-linkedin_urlCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_regionsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-inferred_skillsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-interestsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-connections_countCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-followers_countCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_titleCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_descriptionCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_departmentCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_management_levelCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-total_experience_duration_monthsCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experienceCollapse all(array<object> | null)
-Any ofCollapse all(array<object> | null)
-#0Collapse allarray<object>
-ItemsCollapse allobject
-Additional propertiesallowed
-#1null
-educationCollapse all(array<object> | null)
-Any ofCollapse all(array<object> | null)
-#0Collapse allarray<object>
-ItemsCollapse allobject
-Additional propertiesallowed
-#1null
-certificationsCollapse all(array<object> | null)
-Any ofCollapse all(array<object> | null)
-#0Collapse allarray<object>
-ItemsCollapse allobject
-Additional propertiesallowed
-#1null
-is_workingCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-is_decision_makerCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-imported_atCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-TalentProfileCollapse allobject
-Complete talent profile model.
-
-idCollapse allinteger
-Unique talent ID
-
-parent_idCollapse all(integer | null)
-Parent profile ID if applicable
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-full_nameCollapse allstring
-Full name
-
-first_nameCollapse all(string | null)
-First name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-last_nameCollapse all(string | null)
-Last name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-headlineCollapse allstring
-Professional headline
-
-summaryCollapse all(string | null)
-Professional summary
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-picture_urlCollapse all(string | null)
-Profile picture URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-linkedin_urlCollapse allstring
-LinkedIn profile URL
-
-location_countryCollapse all(string | null)
-Country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Full location string
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_regionsCollapse allarray<string>
-Geographic regions
-
-Itemsstring
-inferred_skillsCollapse allarray<string>
-Inferred skills
-
-Itemsstring
-interestsCollapse allarray<string>
-Professional interests
-
-Itemsstring
-connections_countCollapse all(integer | null)
-Number of LinkedIn connections
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-followers_countCollapse all(integer | null)
-Number of LinkedIn followers
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_titleCollapse all(string | null)
-Current job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_company_idCollapse all(integer | null)
-Current company ID
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-active_experience_descriptionCollapse all(string | null)
-Current job description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_departmentCollapse all(string | null)
-Current department
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_management_levelCollapse all(string | null)
-Current management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-total_experience_duration_monthsCollapse all(integer | null)
-Total experience in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experienceCollapse allarray<object>
-Work experience entries
-
-ItemsCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
-educationCollapse allarray<object>
-Education entries
-
-ItemsCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-certificationsCollapse allarray<object>
-Certification entries
-
-ItemsCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
-
-is_workingCollapse all(boolean | null)
-Currently employed
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-is_decision_makerCollapse all(boolean | null)
-Is a decision maker
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-imported_atCollapse all(string | null)
-When the profile was imported
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-updated_atCollapse all(string | null)
-Last update timestamp
-
-Any ofCollapse all(string | null)
-#0stringdate-time
-#1null
-TalentProfileResponseCollapse allobject
-Response model for individual talent profile
-
-idinteger
-full_nameCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-headlineCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_titleCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_company_idCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-linkedin_urlCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-summaryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-inferred_skillsCollapse all(array<string> | null)
-Any ofCollapse all(array<string> | null)
-#0Collapse allarray<string>
-Itemsstring
-#1null
-connections_countCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-followers_countCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-total_experience_duration_monthsCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-is_workingCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-TalentSearchCriteriaCollapse allobject
-Criteria for searching talents.
-
-job_titlesCollapse allarray<string>
-Target job titles
-
-Itemsstring
-skills_keywordsCollapse allarray<string>
-Required or preferred skills
-
-Itemsstring
-location_fullCollapse all(string | null)
-Full location string
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Country filter
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_country_iso2Collapse all(string | null)
-Country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-experience_years_minCollapse all(integer | null)
-Minimum years of experience
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-experience_years_maxCollapse all(integer | null)
-Maximum years of experience
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-management_levelCollapse all(string | null)
-Target management level
-
-Any ofCollapse all(string | null)
-#0 ManagementLevelExpand allstring
-#1null
-departmentCollapse all(string | null)
-Target department
-
-Any ofCollapse all(string | null)
-#0 DepartmentExpand allstring
-#1null
-company_typeCollapse all(string | null)
-Preferred company type
-
-Any ofCollapse all(string | null)
-#0 CompanyTypeExpand allstring
-#1null
-company_size_minCollapse all(integer | null)
-Minimum company size
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_size_maxCollapse all(integer | null)
-Maximum company size
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-is_currently_employedCollapse all(boolean | null)
-Filter by employment status
-
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-exclude_keywordsCollapse allarray<string>
-Keywords to exclude
-
-Itemsstring
-TalentSearchResponseCollapse allobject
-Response model for talent search
-
-search_idinteger
-talent_idsCollapse allarray<integer>
-Itemsinteger
-total_countinteger
-statusstring
-messagestring
-UserCreateCollapse allobject
-Model for user creation request.
-
-emailCollapse allstringemail
-User email address
-
-usernameCollapse all(string | null)
-Username (3-30 chars, alphanumeric, hyphens, underscores, dots)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-passwordCollapse allstring≥ 8 characters
-User password
-
-full_nameCollapse all(string | null)
-Full name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-companyCollapse all(string | null)
-Company name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titleCollapse all(string | null)
-Job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-departmentCollapse all(string | null)
-Department
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-phoneCollapse all(string | null)
-Phone number
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-UserResponseCollapse allobject
-Model for user response data.
-
-idCollapse allstring
-User ID
-
-emailCollapse allstring
-User email address
-
-usernameCollapse all(string | null)
-Username
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-full_nameCollapse all(string | null)
-Full name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-companyCollapse all(string | null)
-Company name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titleCollapse all(string | null)
-Job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-is_activeCollapse allboolean
-Whether user is active
-
-is_verifiedCollapse allboolean
-Whether email is verified
-
-is_premiumCollapse allboolean
-Whether user has premium subscription
-
-subscription_tierCollapse allstring
-Subscription tier
-
-monthly_search_limitCollapse allinteger
-Monthly search limit
-
-monthly_searches_usedCollapse allinteger
-Monthly searches used
-
-created_atCollapse allstringdate-time
-Account creation timestamp
-
-UserUpdateCollapse allobject
-Model for user update request.
-
-usernameCollapse all(string | null)
-Username (3-30 chars, alphanumeric, hyphens, underscores, dots)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-full_nameCollapse all(string | null)
-Full name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-companyCollapse all(string | null)
-Company name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titleCollapse all(string | null)
-Job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-UserWithSubscriptionResponseCollapse allobject
-Model for user response with subscription information.
-
-idCollapse allstring
-User ID
-
-emailCollapse allstring
-User email address
-
-usernameCollapse all(string | null)
-Username
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-full_nameCollapse all(string | null)
-Full name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-companyCollapse all(string | null)
-Company name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titleCollapse all(string | null)
-Job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-is_activeCollapse allboolean
-Whether user is active
-
-is_verifiedCollapse allboolean
-Whether email is verified
-
-is_premiumCollapse allboolean
-Whether user has premium subscription
-
-subscription_tierCollapse allstring
-Subscription tier
-
-monthly_search_limitCollapse allinteger
-Monthly search limit
-
-monthly_searches_usedCollapse allinteger
-Monthly searches used
-
-created_atCollapse allstringdate-time
-Account creation timestamp
-
-subscriptionCollapse all(object | null)
-User subscription details
-
-Any ofCollapse all(object | null)
-#0Collapse allobject
-Additional propertiesallowed
-#1null
-UserWithTokenCollapse allobject
-Model for user response with authentication tokens.
-
-idCollapse allstring
-User ID
-
-emailCollapse allstring
-User email address
-
-usernameCollapse all(string | null)
-Username
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-full_nameCollapse all(string | null)
-Full name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-companyCollapse all(string | null)
-Company name
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-job_titleCollapse all(string | null)
-Job title
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-is_activeCollapse allboolean
-Whether user is active
-
-is_verifiedCollapse allboolean
-Whether email is verified
-
-is_premiumCollapse allboolean
-Whether user has premium subscription
-
-subscription_tierCollapse allstring
-Subscription tier
-
-monthly_search_limitCollapse allinteger
-Monthly search limit
-
-monthly_searches_usedCollapse allinteger
-Monthly searches used
-
-created_atCollapse allstringdate-time
-Account creation timestamp
-
-access_tokenCollapse allstring
-JWT access token
-
-refresh_tokenCollapse allstring
-JWT refresh token
-
-token_typeCollapse allstring
-Token type
-
-Default"bearer"
-session_idCollapse all(string | null)
-Session ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-ValidationErrorCollapse allobject
-locCollapse allarray<(string | integer)>
-ItemsCollapse all(string | integer)
-Any ofCollapse all(string | integer)
-#0string
-#1integer
-msgstring
-typestring
-RankedTalentProfileCollapse allobject
-Model for a ranked talent profile with scoring details.
-
-profileCollapse allany
-The talent profile
-
-$ref#/components/schemas/TalentProfile
-rank_positionCollapse allinteger≥ 1
-Rank position in results
-
-relevance_scoreCollapse allnumber[0, 100]
-Overall relevance score
-
-skill_match_scoreCollapse allnumber[0, 100]
-Skills matching score
-
-experience_scoreCollapse allnumber[0, 100]
-Experience level score
-
-location_scoreCollapse allnumber[0, 100]
-Location matching score
-
-job_title_scoreCollapse allnumber[0, 100]
-Job title matching score
-
-matched_skillsCollapse allarray<any>
-List of matched skills
-
-ItemsCollapse allany
-$ref#/components/schemas/SkillMatch
-missing_skillsCollapse allarray<string>
-Skills from criteria not found
-
-Itemsstring
-ranking_explanationCollapse allstring
-Human-readable ranking explanation
-
-key_achievementsCollapse allarray<string>
-Key achievements from experience
-
-Itemsstring
-relevant_experienceCollapse allarray<string>
-Most relevant experience entries
-
-Itemsstring
-certificationsCollapse allarray<string>
-Relevant certifications
-
-Itemsstring
-education_summaryCollapse allstring
-Education summary
-
-Default""
-career_progressionCollapse allstring
-Career progression analysis
-
-Default""
-source_typeCollapse allstring
-Source of the profile
-
-EnumCollapse allarray
-#0"database"
-#1"live"
-#2"hybrid"
-source_detailsCollapse all(object | null)
-Additional source information
-
-Any ofCollapse all(object | null)
-#0Collapse allobject
-Additional propertiesallowed
-#1null
-RankedTalentProfileCollapse allobject
-Talent profile with ranking information.
-
-idinteger
-full_namestring
-headlinestring
-linkedin_urlstring
-picture_urlCollapse all(string | null)
-Profile picture URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-primary_professional_emailCollapse all(string | null)
-Primary professional email
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_fullCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-location_countryCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-active_experience_titleCollapse all(string | null)
-Any ofCollapse all(string | null)
-#0string
-#1null
-inferred_skillsCollapse allarray<string>
-Itemsstring
-total_experience_duration_monthsCollapse all(integer | null)
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-is_workingCollapse all(boolean | null)
-Any ofCollapse all(boolean | null)
-#0boolean
-#1null
-relevance_scoreCollapse allnumber
-Overall relevance score (0-100)
-
-skill_match_scoreCollapse allnumber
-Skill matching score (0-100)
-
-experience_scoreCollapse allnumber
-Experience relevance score (0-100)
-
-location_scoreCollapse allnumber
-Location compatibility score (0-100)
-
-ranking_explanationCollapse allstring
-Explanation of the ranking
-
-matched_skillsCollapse allarray<string>
-Skills that matched the search
-
-Itemsstring
-missing_skillsCollapse allarray<string>
-Skills that were not found
-
-Itemsstring
-key_achievementsCollapse allarray<string>
-Key achievements from experience
-
-Itemsstring
-relevant_experienceCollapse allarray<string>
-Most relevant experience entries
-
-Itemsstring
-certificationsCollapse allarray<string>
-Relevant certifications
-
-Itemsstring
-education_summaryCollapse allstring
-Education summary
-
-Default""
-career_progressionCollapse allstring
-Career progression analysis
-
-Default""
-experienceCollapse allarray<object>
-Detailed work experience
-
-ItemsCollapse allobject
-Individual work experience entry.
-
-active_experienceCollapse allboolean
-Whether this is the current active position
-
-position_titleCollapse allstring
-Job title/position
-
-departmentCollapse all(string | null)
-Department or functional area
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-management_levelCollapse all(string | null)
-Management level
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-locationCollapse all(string | null)
-Work location
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-descriptionCollapse all(string | null)
-Job description and responsibilities
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Start date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Start month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-End date (formatted string)
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-End month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-duration_monthsCollapse all(integer | null)
-Duration in months
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_nameCollapse allstring
-Company name
-
-company_idCollapse all(integer | null)
-Company ID in database
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_typeCollapse all(string | null)
-Type of company
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_size_rangeCollapse all(string | null)
-Company size range
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_employees_countCollapse all(integer | null)
-Number of employees
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-company_industryCollapse all(string | null)
-Company industry
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_websiteCollapse all(string | null)
-Company website
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_linkedin_urlCollapse all(string | null)
-Company LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_countryCollapse all(string | null)
-Company headquarters country
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-company_hq_cityCollapse all(string | null)
-Company headquarters city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this experience in the profile
-
-educationCollapse allarray<object>
-Education history
-
-ItemsCollapse allobject
-Individual education entry.
-
-degreeCollapse allstring
-Degree and field of study
-
-descriptionCollapse all(string | null)
-Additional description
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_nameCollapse allstring
-Educational institution name
-
-institution_urlCollapse all(string | null)
-Institution LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_country_iso2Collapse all(string | null)
-Institution country ISO2 code
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-institution_cityCollapse all(string | null)
-Institution city
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Start year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_yearCollapse all(integer | null)
-End year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-activities_and_societiesCollapse all(string | null)
-Activities and societies
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-order_in_profileCollapse allinteger
-Order of this education in the profile
-
-certification_detailsCollapse allarray<object>
-Detailed certifications
-
-ItemsCollapse allobject
-Individual certification entry.
-
-titleCollapse allstring
-Certification title
-
-issuerCollapse allstring
-Issuing organization
-
-issuer_urlCollapse all(string | null)
-Issuer LinkedIn URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-credential_idCollapse all(string | null)
-Credential ID
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-certificate_urlCollapse all(string | null)
-Certificate URL
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_fromCollapse all(string | null)
-Issue date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_from_yearCollapse all(integer | null)
-Issue year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_from_monthCollapse all(integer | null)
-Issue month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_toCollapse all(string | null)
-Expiration date
-
-Any ofCollapse all(string | null)
-#0string
-#1null
-date_to_yearCollapse all(integer | null)
-Expiration year
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-date_to_monthCollapse all(integer | null)
-Expiration month
-
-Any ofCollapse all(integer | null)
-#0integer
-#1null
-order_in_profileCollapse allinteger
-Order of this certification in the profile
+SearchResultsExpand allobject
+SkillMatchExpand allobject
+SubscriptionCreateExpand allobject
+SubscriptionDetailResponseExpand allobject
+SubscriptionHistoryItemExpand allobject
+SubscriptionListItemExpand allobject
+SubscriptionOverviewExpand allobject
+SubscriptionResponseExpand allobject
+SubscriptionStatusExpand allstring
+SubscriptionTierExpand allstring
+SubscriptionUpdateExpand allobject
+SubscriptionUserSummaryExpand allobject
+TalentDetailResponseExpand allobject
+TalentProfileExpand allobject
+TalentProfileResponseExpand allobject
+TalentSearchCriteriaExpand allobject
+TalentSearchResponseExpand allobject
+UsageAnalyticsExpand allobject
+UsageStatsExpand allobject
+UserCreateExpand allobject
+UserListItemExpand allobject
+UserOverviewExpand allobject
+UserResponseExpand allobject
+UserSubscriptionSummaryExpand allobject
+UserUpdateExpand allobject
+UserWithTokenExpand allobject
+ValidationErrorExpand allobject
+RankedTalentProfileExpand allobject
+RankedTalentProfileExpand allobject
