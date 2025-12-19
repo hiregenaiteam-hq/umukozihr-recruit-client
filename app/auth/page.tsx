@@ -118,6 +118,15 @@ function AuthContent() {
           <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative bg-linear-to-br from-slate-50/50 to-white">
             <div className="w-full max-w-md flex flex-col justify-center">
 
+              {/* Mobile Logo - Only shows on smaller screens */}
+              <div className="lg:hidden flex justify-center mb-8">
+                <img
+                  src="/logo.png"
+                  alt="Umukozi HR Logo"
+                  className="w-48 h-16 object-contain rounded-[25%]"
+                />
+              </div>
+
               {/* Sweet Auth Container */}
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-200/50 p-10 flex flex-col">
                 {/* Tab Switcher */}

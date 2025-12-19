@@ -13,15 +13,6 @@ export const metadata: Metadata = {
   description:
     "Hiring shouldn't feel like guesswork. Describe what you need. Our AI finds the top 1% talent in minutes.",
   generator: 'v0.dev',
-  icons: {
-    icon: [
-      { url: '/logo.png', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/logo.png', type: 'image/png' },
-    ],
-    shortcut: '/logo.png',
-  },
   openGraph: {
     title: 'UmukoziHR - AI-First Hiring Platform',
     description: 'Hiring shouldn\'t feel like guesswork. Describe what you need. Our AI finds the top 1% talent in minutes.',
