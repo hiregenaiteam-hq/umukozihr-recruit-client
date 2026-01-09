@@ -28,7 +28,19 @@ function AuthContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover draggable theme="colored" />
+      <ToastContainer 
+        position="top-right" 
+        autoClose={4000} 
+        hideProgressBar={false} 
+        newestOnTop 
+        closeOnClick 
+        pauseOnFocusLoss
+        pauseOnHover 
+        draggable 
+        theme="colored"
+        toastClassName="relative"
+        limit={3}
+      />
 
       {pendingVerification ? (
         <div className="w-full flex items-center justify-center p-6">
