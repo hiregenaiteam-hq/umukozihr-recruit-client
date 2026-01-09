@@ -35,9 +35,22 @@ export async function apiFetch(
       /* non-json */
     }
     if (!res.ok) {
-      const err: ApiError = new Error(
-        data?.message || data?.error || `Request failed (${res.status})`
-      );
+      // Extract error message from various backend response formats
+      let errorMessage = `Request failed (${res.status})`;
+      if (data) {
+        if (typeof data.detail === 'string') {
+          errorMessage = data.detail;
+        } else if (Array.isArray(data.detail) && data.detail.length > 0) {
+          // Handle validation errors array
+          const firstError = data.detail[0];
+          errorMessage = firstError?.msg || firstError?.message || JSON.stringify(firstError);
+        } else if (data.message) {
+          errorMessage = data.message;
+        } else if (data.error) {
+          errorMessage = data.error;
+        }
+      }
+      const err: ApiError = new Error(errorMessage);
       err.status = res.status;
       err.details = data;
       throw err;
@@ -62,26 +75,48 @@ export function normalizeError(e: unknown): {
   description: string;
 } {
   const err = e as ApiError;
+  
+  // Extract the actual error message from the error or its details
+  const extractMessage = (): string => {
+    // First check if error has a meaningful message (not just "Request failed")
+    if (err?.message && !err.message.startsWith('Request failed')) {
+      return err.message;
+    }
+    // Try to extract from details
+    const details = err?.details as any;
+    if (details) {
+      if (typeof details.detail === 'string') return details.detail;
+      if (Array.isArray(details.detail) && details.detail.length > 0) {
+        const first = details.detail[0];
+        return first?.msg || first?.message || JSON.stringify(first);
+      }
+      if (details.message) return details.message;
+      if (details.error) return details.error;
+    }
+    return err?.message || "Something went wrong. Please try again.";
+  };
+
+  const message = extractMessage();
+
   if (err?.status === 400)
     return {
       title: "Invalid data",
-      description: err.message || "Please review the form and try again.",
+      description: message,
     };
   if (err?.status === 401)
     return {
       title: "Invalid credentials",
-      description: err.message || "Username or password is incorrect.",
+      description: message,
     };
   if (err?.status === 409)
     return {
       title: "Account exists",
-      description:
-        err.message || "An account with these details already exists.",
+      description: message,
     };
   if (err?.status === 422)
     return {
       title: "Validation error",
-      description: err.message || "Please correct the highlighted fields.",
+      description: message,
     };
   if (err?.status === 500)
     return {
@@ -90,8 +125,7 @@ export function normalizeError(e: unknown): {
     };
   return {
     title: "Error",
-    description:
-      (err as any)?.message || "Something went wrong. Please try again.",
+    description: message,
   };
 }
 
@@ -225,9 +259,25 @@ export async function registerUser(
     };
   } catch (error) {
     const apiError = error as ApiError;
+    // Extract the best error message
+    let errorMessage = "Registration failed. Please try again.";
+    
+    // Check for detail in the error details
+    const details = apiError.details as any;
+    if (details) {
+      if (typeof details.detail === 'string') {
+        errorMessage = details.detail;
+      } else if (Array.isArray(details.detail) && details.detail.length > 0) {
+        const firstError = details.detail[0];
+        errorMessage = firstError?.msg || firstError?.message || errorMessage;
+      }
+    } else if (apiError.message && !apiError.message.startsWith('Request failed')) {
+      errorMessage = apiError.message;
+    }
+    
     return {
       success: false,
-      message: apiError.message || "Registration failed. Please try again.",
+      message: errorMessage,
     };
   }
 }

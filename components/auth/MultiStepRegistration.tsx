@@ -101,6 +101,8 @@ export default function MultiStepRegistration({ onSignedUp }: MultiStepRegistrat
 
     const handleStep2Next = async () => {
         setIsLoading(true)
+        setFieldErrors({})
+        
         try {
             const response = await registerUser({
                 full_name: formData.fullName,
@@ -120,11 +122,27 @@ export default function MultiStepRegistration({ onSignedUp }: MultiStepRegistrat
                     userId: response.user?.id
                 })
             } else {
-                toast.error(response.message || "Registration failed. Please try again.")
+                // Show the actual error message from the backend
+                const errorMsg = response.message || "Registration failed. Please try again."
+                toast.error(errorMsg)
+                
+                // Map common error messages to field errors for better UX
+                if (errorMsg.toLowerCase().includes('email already exists') || 
+                    errorMsg.toLowerCase().includes('email is already')) {
+                    setFieldErrors({ email: errorMsg })
+                    setCurrentStep(1) // Go back to step 1 where email is
+                } else if (errorMsg.toLowerCase().includes('username')) {
+                    setFieldErrors({ username: errorMsg })
+                    setCurrentStep(1)
+                } else if (errorMsg.toLowerCase().includes('phone')) {
+                    setFieldErrors({ phone: errorMsg })
+                }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Registration error:", error)
-            toast.error("Registration failed. Please try again.")
+            // Extract message from error if available
+            const errorMsg = error?.message || "Registration failed. Please try again."
+            toast.error(errorMsg)
         } finally {
             setIsLoading(false)
         }
@@ -181,6 +199,9 @@ export default function MultiStepRegistration({ onSignedUp }: MultiStepRegistrat
                             onUpdate={updateFormData}
                             onNext={handleStep2Next}
                             onBack={handleBack}
+                            fieldErrors={fieldErrors}
+                            clearFieldError={clearFieldError}
+                            isLoading={isLoading}
                         />
                     )}
                 </div>

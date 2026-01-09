@@ -14,16 +14,27 @@ interface RegistrationStep2Props {
     onUpdate: (data: Partial<RegistrationStep2Props['data']>) => void
     onNext: () => void
     onBack: () => void
+    fieldErrors?: Record<string, string>
+    clearFieldError?: (field: string) => void
+    isLoading?: boolean
 }
 
 export default function RegistrationStep2({
     data,
     onUpdate,
     onNext,
-    onBack
+    onBack,
+    fieldErrors = {},
+    clearFieldError,
+    isLoading = false
 }: RegistrationStep2Props) {
     const handleNext = () => {
         onNext()
+    }
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onUpdate({ phone: e.target.value })
+        if (clearFieldError) clearFieldError('phone')
     }
 
     return (
@@ -69,13 +80,17 @@ export default function RegistrationStep2({
             {/* Phone */}
             <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 block">Phone Number</label>
+                {fieldErrors.phone && (
+                    <p className="text-sm text-red-600">{fieldErrors.phone}</p>
+                )}
                 <Input
                     type="tel"
-                    placeholder="Your phone number"
+                    placeholder="Your phone number (e.g. +233...)"
                     value={data.phone}
-                    onChange={(e) => onUpdate({ phone: e.target.value })}
-                    className="h-12 rounded-xl border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 text-base px-4 transition-all duration-200 hover:border-umukozi-orange/60"
+                    onChange={handlePhoneChange}
+                    className={`h-12 rounded-xl border-gray-300 focus:border-umukozi-orange focus:ring-umukozi-orange/20 text-base px-4 transition-all duration-200 hover:border-umukozi-orange/60 ${fieldErrors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''}`}
                 />
+                <p className="text-xs text-gray-500">Include country code (e.g. +233 for Ghana, +250 for Rwanda)</p>
             </div>
 
             {/* Navigation Buttons */}
@@ -84,15 +99,24 @@ export default function RegistrationStep2({
                     type="button"
                     onClick={onBack}
                     variant="outline"
+                    disabled={isLoading}
                     className="flex-1 h-12 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
                     Back
                 </Button>
                 <Button
                     onClick={handleNext}
-                    className="flex-1 h-12 rounded-xl bg-umukozi-orange hover:bg-umukozi-orange-dark text-white font-semibold text-base transition-all duration-200 hover:shadow-md"
+                    disabled={isLoading}
+                    className="flex-1 h-12 rounded-xl bg-umukozi-orange hover:bg-umukozi-orange-dark text-white font-semibold text-base transition-all duration-200 hover:shadow-md disabled:opacity-50"
                 >
-                    Complete Registration
+                    {isLoading ? (
+                        <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <span>Creating account...</span>
+                        </div>
+                    ) : (
+                        "Complete Registration"
+                    )}
                 </Button>
             </div>
         </div>
