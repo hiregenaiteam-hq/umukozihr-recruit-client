@@ -2,21 +2,157 @@ import baseUrl from "./config";
 
 export type ApiError = Error & { status?: number; details?: unknown };
 
+// Token refresh state to prevent multiple simultaneous refresh attempts
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+/**
+ * Decode JWT token payload (without verification)
+ */
+function decodeJwtPayload(token: string): { exp?: number; sub?: string } | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if token is expired or about to expire (within 60 seconds)
+ */
+function isTokenExpired(token: string, bufferSeconds = 60): boolean {
+  const payload = decodeJwtPayload(token);
+  if (!payload?.exp) return true;
+  const expiresAt = payload.exp * 1000; // Convert to milliseconds
+  const now = Date.now();
+  return now >= (expiresAt - bufferSeconds * 1000);
+}
+
+/**
+ * Attempt to refresh the access token using refresh token
+ */
+async function tryRefreshToken(): Promise<string | null> {
+  const refreshToken = getCookie("refresh_token");
+  if (!refreshToken) {
+    console.log("No refresh token available");
+    return null;
+  }
+
+  try {
+    const response = await fetch(`${baseUrl}/api/v1/auths/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!response.ok) {
+      console.log("Token refresh failed:", response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    const newToken = data?.access_token || data?.token;
+    
+    if (newToken) {
+      // Update all token cookies
+      setCookie("hg_token", newToken, 7);
+      setCookie("access_token", newToken, 7);
+      if (data.refresh_token) {
+        setCookie("refresh_token", data.refresh_token, 7);
+      }
+      console.log("Token refreshed successfully");
+      return newToken;
+    }
+    return null;
+  } catch (error) {
+    console.error("Token refresh error:", error);
+    return null;
+  }
+}
+
+/**
+ * Ensure we have a valid token, refreshing if needed
+ * Uses a singleton pattern to prevent multiple simultaneous refresh attempts
+ */
+export async function ensureValidToken(): Promise<string | null> {
+  const currentToken = getCookie("hg_token");
+  
+  if (!currentToken) {
+    return null;
+  }
+
+  // Check if token is still valid (with 60 second buffer)
+  if (!isTokenExpired(currentToken, 60)) {
+    return currentToken;
+  }
+
+  // Token is expired or about to expire, need to refresh
+  console.log("Token expired or expiring soon, attempting refresh...");
+
+  // If already refreshing, wait for that promise
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  // Start refresh
+  isRefreshing = true;
+  refreshPromise = tryRefreshToken().finally(() => {
+    isRefreshing = false;
+    refreshPromise = null;
+  });
+
+  return refreshPromise;
+}
+
+/**
+ * Clear all auth cookies and redirect to login
+ */
+export function clearAuthAndRedirect(redirectPath = "/auth") {
+  document.cookie = "hg_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  localStorage.removeItem("user_data");
+  
+  // Only redirect if in browser and not already on auth page
+  if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+    window.location.href = `${redirectPath}?next=${encodeURIComponent(window.location.pathname)}`;
+  }
+}
+
 export async function apiFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
-  timeoutMs = 15000
+  timeoutMs = 15000,
+  skipTokenRefresh = false
 ) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
+  
   try {
     const url =
       typeof input === "string" && input.startsWith("/")
         ? `${baseUrl}${input}`
         : input;
 
-    // Get token from cookies and add Authorization header
-    const token = getCookie("hg_token");
+    // Ensure we have a valid token before making the request
+    let token = getCookie("hg_token");
+    if (token && !skipTokenRefresh) {
+      const validToken = await ensureValidToken();
+      if (validToken) {
+        token = validToken;
+      } else if (isTokenExpired(token, 0)) {
+        // Token is completely expired and refresh failed
+        clearAuthAndRedirect();
+        const err: ApiError = new Error("Your session has expired. Please sign in again.");
+        err.status = 401;
+        throw err;
+      }
+    }
+    
     const headers = new Headers(init?.headers);
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
@@ -34,7 +170,25 @@ export async function apiFetch(
     } catch {
       /* non-json */
     }
+    
     if (!res.ok) {
+      // Handle 401 - try token refresh and retry once
+      if (res.status === 401 && !skipTokenRefresh) {
+        console.log("Got 401, attempting token refresh...");
+        const newToken = await tryRefreshToken();
+        if (newToken) {
+          // Retry the request with new token
+          clearTimeout(id);
+          return apiFetch(input, init, timeoutMs, true); // Skip refresh on retry
+        } else {
+          // Refresh failed, redirect to login
+          clearAuthAndRedirect();
+          const err: ApiError = new Error("Your session has expired. Please sign in again.");
+          err.status = 401;
+          throw err;
+        }
+      }
+      
       // Extract error message from various backend response formats
       let errorMessage = `Request failed (${res.status})`;
       if (data) {

@@ -32,7 +32,7 @@ import {
 import { X, Check, Sparkles } from "lucide-react"
 
 // IMPORTANT: uses apiFetch util provided by your codebase. Update the import path if needed.
-import { apiFetch, normalizeError, parseValidationDetails, getCookie } from "@/lib/api"
+import { apiFetch, normalizeError, parseValidationDetails, getCookie, ensureValidToken, clearAuthAndRedirect } from "@/lib/api"
 
 
 
@@ -169,15 +169,19 @@ export default function PremiumSearchPage() {
       // Log the payload for debugging
       console.log("Submitting search with payload:", payload)
 
-      // Use local API route to avoid CORS issues
-      const token = getCookie("hg_token")
+      // Ensure we have a valid token before making the request
+      const token = await ensureValidToken()
+      
+      if (!token) {
+        setToast({ type: "error", message: "Your session has expired. Please sign in again." })
+        clearAuthAndRedirect()
+        return
+      }
+      
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
-        "Accept": "application/json"
-      }
-
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`
       }
 
       const response = await fetch("/api/search", {
