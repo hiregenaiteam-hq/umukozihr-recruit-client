@@ -123,21 +123,31 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp 
     } catch (err: any) {
       // --- precise detection for your server error shape ---
       // apiFetch throws an ApiError where .details contains parsed response JSON.
+      console.log("Login error caught:", err)
+      console.log("Error details:", err?.details)
+      console.log("Error status:", err?.status)
+      
       const details = err?.details ?? err // fallback
       const message = details?.message ?? details?.detail ?? err?.message ?? ""
       const statusVal = details?.status ?? null
       
+      console.log("Parsed - message:", message, "statusVal:", statusVal)
+      
       // Extract email from multiple possible locations in the response
       const emailFromServer = details?.email ?? details?.data?.email ?? email // fallback to user input
+      console.log("Email from server:", emailFromServer)
 
       // Check for "email not verified" error - be flexible with message matching
-      const isEmailNotVerified =
-        typeof message === "string" &&
-        (/email not verified/i.test(message) || /not verified/i.test(message) || /verification/i.test(message)) &&
-        (statusVal === "unauthorized" || err?.status === 401 || err?.status === 403)
+      const messageMatches = typeof message === "string" && 
+        (/email not verified/i.test(message) || /not verified/i.test(message) || /verification/i.test(message))
+      const statusMatches = statusVal === "unauthorized" || err?.status === 401 || err?.status === 403
+      
+      console.log("Message matches:", messageMatches, "Status matches:", statusMatches)
+      
+      const isEmailNotVerified = messageMatches && statusMatches
 
       if (isEmailNotVerified) {
-        console.log("Email not verified detected, redirecting to verification. Email:", emailFromServer)
+        console.log(">>> REDIRECTING TO VERIFICATION PAGE. Email:", emailFromServer)
         toast.info("Your email is not verified. Please check your inbox for the verification code.")
         onNotVerified?.({ email: emailFromServer, userId: details?.user_id ?? details?.id ?? null, message })
         setIsLoading(false)
