@@ -834,6 +834,7 @@ export async function verifyPasswordReset(data: {
   otp: string;
   new_password: string;
   confirm_password: string;
+  current_password?: string; // Optional - empty for forgot password flow
 }): Promise<{ success: boolean; message: string }> {
   try {
     await apiFetch(
@@ -844,6 +845,7 @@ export async function verifyPasswordReset(data: {
         body: JSON.stringify({
           email: data.email.trim(),
           otp: data.otp.trim(),
+          current_password: data.current_password || "", // Empty for forgot password
           new_password: data.new_password,
           confirm_password: data.confirm_password,
         }),
