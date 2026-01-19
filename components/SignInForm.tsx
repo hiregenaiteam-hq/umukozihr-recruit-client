@@ -124,33 +124,36 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp 
       // --- precise detection for your server error shape ---
       // apiFetch throws an ApiError where .details contains parsed response JSON.
       const details = err?.details ?? err // fallback
-      const message = details?.message ?? err?.message ?? ""
+      const message = details?.message ?? details?.detail ?? err?.message ?? ""
       const statusVal = details?.status ?? null
-      const emailFromServer = details?.email ?? details?.data?.email ?? null
+      
+      // Extract email from multiple possible locations in the response
+      const emailFromServer = details?.email ?? details?.data?.email ?? email // fallback to user input
 
+      // Check for "email not verified" error - be flexible with message matching
       const isEmailNotVerified =
         typeof message === "string" &&
-        /email not verified/i.test(message) &&
+        (/email not verified/i.test(message) || /not verified/i.test(message) || /verification/i.test(message)) &&
         (statusVal === "unauthorized" || err?.status === 401 || err?.status === 403)
 
       if (isEmailNotVerified) {
-        const email = emailFromServer
-        toast.info("Your email is not verified. A new verification code was sent.")
-        onNotVerified?.({ email, userId: details?.user_id ?? details?.id ?? null, message })
+        console.log("Email not verified detected, redirecting to verification. Email:", emailFromServer)
+        toast.info("Your email is not verified. Please check your inbox for the verification code.")
+        onNotVerified?.({ email: emailFromServer, userId: details?.user_id ?? details?.id ?? null, message })
         setIsLoading(false)
         return
       }
 
-
       // parse field-level validation errors (if present)
-      const parsed = parseValidationDetails(e)
+      const parsed = parseValidationDetails(err)
       if (Object.keys(parsed).length > 0) {
         setFieldErrors(parsed)
         // show a combined toast with all messages (or just first message if you prefer)
         toast.error(Object.values(parsed).join(" — "))
+      } else {
+        // otherwise fallback
+        toast.error(message || "Sign in failed.")
       }
-      // otherwise fallback
-      toast.error(message || "Sign in failed.")
     } finally {
       setIsLoading(false)
     }
