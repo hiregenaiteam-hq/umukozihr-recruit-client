@@ -107,7 +107,15 @@ export default function PremiumSearchPage() {
 
   // Build payload
   const payload = useMemo(() => {
+    // Get user_id and session_id from storage/cookies
+    const userData = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user_data') || '{}') : {}
+    const sessionId = typeof document !== 'undefined' ? getCookie('session_id') : ''
+    
     return {
+      user_id: userData?.id || "",
+      session_id: sessionId || "",
+      search_mode: searchMode,
+      max_results: 50,
       criteria: {
         job_titles: jobTitles,
         skills_keywords: skills,
@@ -117,8 +125,9 @@ export default function PremiumSearchPage() {
         experience_years_min: Number(expMin),
         experience_years_max: Number(expMax),
       },
-      search_mode: searchMode,
-      // use_hardcoded_response: true, // Use hardcoded response for testing
+      include_detailed_profiles: false,
+      save_search: true,
+      search_description: `Search for ${jobTitles.join(', ')} in ${location || 'any location'}`
     }
   }, [jobTitles, skills, location, educations, industries, expMin, expMax, searchMode])
 
