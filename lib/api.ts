@@ -797,3 +797,65 @@ export async function getUserSearchStats(): Promise<{
 }> {
   return await apiFetch("/api/v1/search/search/stats/total");
 }
+
+// ===========================================
+// PASSWORD RESET API FUNCTIONS
+// ===========================================
+
+/**
+ * Request password reset - sends OTP to user's email
+ */
+export async function requestPasswordReset(email: string): Promise<{ success: boolean; message: string }> {
+  try {
+    await apiFetch(
+      "/api/v1/users/reset-password-request",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      },
+      15000,
+      true // Skip token refresh - user isn't logged in
+    );
+    return { success: true, message: "Password reset code sent to your email." };
+  } catch (error) {
+    const apiError = error as ApiError;
+    const details = apiError.details as any;
+    const message = details?.detail || details?.message || apiError.message || "Failed to send reset code.";
+    return { success: false, message };
+  }
+}
+
+/**
+ * Verify password reset OTP and set new password
+ */
+export async function verifyPasswordReset(data: {
+  email: string;
+  otp: string;
+  new_password: string;
+  confirm_password: string;
+}): Promise<{ success: boolean; message: string }> {
+  try {
+    await apiFetch(
+      "/api/v1/users/reset-password-verify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email.trim(),
+          otp: data.otp.trim(),
+          new_password: data.new_password,
+          confirm_password: data.confirm_password,
+        }),
+      },
+      15000,
+      true // Skip token refresh - user isn't logged in
+    );
+    return { success: true, message: "Password reset successfully. You can now sign in." };
+  } catch (error) {
+    const apiError = error as ApiError;
+    const details = apiError.details as any;
+    const message = details?.detail || details?.message || apiError.message || "Failed to reset password.";
+    return { success: false, message };
+  }
+}

@@ -10,13 +10,21 @@ import SignInForm from "@/components/SignInForm"
 import MultiStepRegistration from "@/components/auth/MultiStepRegistration"
 import AuthTabSwitcher from "@/components/auth/AuthTabSwitcher"
 import VerificationForm from "@/components/VerificationForm"
+import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm"
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm"
 import BrandLogo from "@/components/BrandLogo"
+
+type ForgotPasswordMode = "none" | "request" | "reset"
 
 function AuthContent() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [pendingVerification, setPendingVerification] = useState(false)
   const [verificationEmail, setVerificationEmail] = useState("")
   const [pendingUserId, setPendingUserId] = useState<string | number | null>(null)
+  
+  // Forgot password state
+  const [forgotPasswordMode, setForgotPasswordMode] = useState<ForgotPasswordMode>("none")
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("")
 
   const router = useRouter()
   const params = useSearchParams()
@@ -25,6 +33,27 @@ function AuthContent() {
   useEffect(() => {
     // any top-level UI effects
   }, [isSignUp])
+
+  // Handle forgot password flow
+  const handleForgotPassword = () => {
+    setForgotPasswordMode("request")
+  }
+
+  const handleResetCodeSent = (email: string) => {
+    setResetPasswordEmail(email)
+    setForgotPasswordMode("reset")
+  }
+
+  const handlePasswordResetSuccess = () => {
+    setForgotPasswordMode("none")
+    setResetPasswordEmail("")
+    setIsSignUp(false) // Ensure we're on sign-in tab
+  }
+
+  const handleBackToSignIn = () => {
+    setForgotPasswordMode("none")
+    setResetPasswordEmail("")
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -60,6 +89,26 @@ function AuthContent() {
                 setPendingUserId(null)
               }}
             />
+          </div>
+        </div>
+      ) : forgotPasswordMode !== "none" ? (
+        /* Forgot Password Flow */
+        <div className="w-full flex items-center justify-center p-6">
+          <div className="w-full max-w-md">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-200/50 p-10">
+              {forgotPasswordMode === "request" ? (
+                <ForgotPasswordForm
+                  onCodeSent={handleResetCodeSent}
+                  onBack={handleBackToSignIn}
+                />
+              ) : (
+                <ResetPasswordForm
+                  email={resetPasswordEmail}
+                  onSuccess={handlePasswordResetSuccess}
+                  onBack={() => setForgotPasswordMode("request")}
+                />
+              )}
+            </div>
           </div>
         </div>
       ) : (
@@ -159,6 +208,7 @@ function AuthContent() {
                         setPendingVerification(true)
                       }}
                       onSwitchToSignUp={() => setIsSignUp(true)}
+                      onForgotPassword={handleForgotPassword}
                     />
                   )}
                 </div>

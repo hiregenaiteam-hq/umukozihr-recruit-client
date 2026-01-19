@@ -13,6 +13,7 @@ type Props = {
   onSuccess?: () => void
   onNotVerified?: (payload: NotVerifiedPayload) => void
   onSwitchToSignUp?: () => void
+  onForgotPassword?: () => void
 }
 
 type ApiError = Error & {
@@ -21,7 +22,7 @@ type ApiError = Error & {
 }
 
 
-export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp }: Props) {
+export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp, onForgotPassword }: Props) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -199,7 +200,16 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp 
 
           {/* Password */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700 font-inter">Password</label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-slate-700 font-inter">Password</label>
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="text-xs text-umukozi-orange hover:text-umukozi-orange-dark font-medium transition-colors font-inter"
+              >
+                Forgot password?
+              </button>
+            </div>
             {fieldErrors["password"] && (
               <p className="text-sm text-red-600 font-inter">{fieldErrors["password"]}</p>
             )}
