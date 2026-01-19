@@ -336,11 +336,17 @@ export async function loginAndGetToken(
     username: email.trim(),
     password,
   });
-  const data: LoginResponse = await apiFetch(`/api/v1/auths/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString(),
-  });
+  // IMPORTANT: Skip token refresh for login - user isn't authenticated yet!
+  const data: LoginResponse = await apiFetch(
+    `/api/v1/auths/login`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    },
+    15000,
+    true // skipTokenRefresh = true for login endpoint
+  );
   const token = data?.token || data?.access_token || data?.accessToken;
   if (!token) {
     const err: ApiError = new Error("No token returned from server");
