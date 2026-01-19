@@ -42,7 +42,7 @@ async function tryRefreshToken(): Promise<string | null> {
   }
 
   try {
-    const response = await fetch(`${baseUrl}/api/v1/auths/refresh`, {
+    const response = await fetch(`${baseUrl}/api/v1/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -330,19 +330,17 @@ export async function loginAndGetToken(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  // OAuth2 password grant requires grant_type=password
-  const params = new URLSearchParams({
-    grant_type: "password",
-    username: email.trim(),
-    password,
-  });
+  // JSON format with email and password
   // IMPORTANT: Skip token refresh for login - user isn't authenticated yet!
   const data: LoginResponse = await apiFetch(
-    `/api/v1/auths/login`,
+    `/api/v1/auth/login`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim(),
+        password: password,
+      }),
     },
     15000,
     true // skipTokenRefresh = true for login endpoint
@@ -703,7 +701,7 @@ export async function getMySubscription(): Promise<UserSubscription | null> {
  * Get current user's profile (includes subscription info)
  */
 export async function getCurrentUser(): Promise<UserProfile> {
-  return await apiFetch("/api/v1/auths/me");
+  return await apiFetch("/api/v1/auth/me");
 }
 
 /**
@@ -716,7 +714,7 @@ export async function updateUserProfile(data: Partial<{
   job_title: string;
   department: string;
 }>): Promise<UserProfile> {
-  return await apiFetch("/api/v1/auths/me", {
+  return await apiFetch("/api/v1/auth/me", {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -762,7 +760,7 @@ export async function getSubscriptionHistory(): Promise<UserSubscription[]> {
  * Refresh token
  */
 export async function refreshAccessToken(refreshToken: string): Promise<LoginResponse> {
-  return await apiFetch("/api/v1/auths/refresh", {
+  return await apiFetch("/api/v1/auth/refresh", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refresh_token: refreshToken }),
@@ -774,7 +772,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<LoginRes
  */
 export async function logoutUser(): Promise<void> {
   try {
-    await apiFetch("/api/v1/auths/logout", { method: "POST" });
+    await apiFetch("/api/v1/auth/logout", { method: "POST" });
   } finally {
     // Clear cookies regardless of API response
     document.cookie = "hg_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
