@@ -30,6 +30,8 @@ interface UserData {
     monthly_search_limit: number;
     monthly_searches_used: number;
     created_at: string;
+    is_admin?: boolean;
+    admin_role?: string | null;
 }
 
 interface Candidate {

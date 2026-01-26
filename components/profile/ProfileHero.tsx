@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building, Mail, Edit3, LogOut, Search, Crown, Shield } from "lucide-react";
+import { Building, Mail, Edit3, LogOut, Search, Crown, Shield, ShieldCheck } from "lucide-react";
 
 interface UserData {
     id: string;
@@ -19,6 +19,8 @@ interface UserData {
     monthly_search_limit: number;
     monthly_searches_used: number;
     created_at: string;
+    is_admin?: boolean;
+    admin_role?: string | null;
 }
 
 interface ProfileHeroProps {
@@ -93,18 +95,27 @@ export default function ProfileHero({ user, onNewSearch, onEditProfile, onLogout
                     <div className="text-center">
                         <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
                             <div className="flex items-center justify-center mb-2">
-                                {user.is_premium ? (
+                                {user.is_admin ? (
+                                    <ShieldCheck className="w-8 h-8 text-emerald-300" />
+                                ) : user.is_premium ? (
                                     <Crown className="w-8 h-8 text-yellow-300" />
                                 ) : (
                                     <Shield className="w-8 h-8 text-white/80" />
                                 )}
                             </div>
                             <p className="text-white/90 text-sm font-inter">
-                                {user.is_premium ? "Premium" : "Free"} Account
+                                {user.is_admin ? "Admin" : user.is_premium ? "Premium" : "Free"} Account
                             </p>
-                            <Badge className={`mt-2 ${user.is_premium ? 'bg-yellow-400 text-yellow-900' : 'bg-white/20 text-white'}`}>
-                                {user.subscription_tier}
-                            </Badge>
+                            <div className="flex flex-col items-center gap-1 mt-2">
+                                {user.is_admin && (
+                                    <Badge className="bg-emerald-400 text-emerald-900">
+                                        {user.admin_role || 'Admin'}
+                                    </Badge>
+                                )}
+                                <Badge className={`${user.is_premium ? 'bg-yellow-400 text-yellow-900' : 'bg-white/20 text-white'}`}>
+                                    {user.subscription_tier}
+                                </Badge>
+                            </div>
                         </div>
                     </div>
                 </div>

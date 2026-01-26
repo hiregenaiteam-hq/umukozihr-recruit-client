@@ -1,7 +1,8 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { User, ShieldCheck, CheckCircle } from "lucide-react";
 
 interface UserData {
     id: string;
@@ -17,6 +18,8 @@ interface UserData {
     monthly_search_limit: number;
     monthly_searches_used: number;
     created_at: string;
+    is_admin?: boolean;
+    admin_role?: string | null;
 }
 
 interface AccountOverviewProps {
@@ -38,9 +41,24 @@ export default function AccountOverview({ user }: AccountOverviewProps) {
                 <div className="p-3 bg-umukozi-orange/10 rounded-xl mr-4">
                     <User className="w-6 h-6 text-umukozi-orange" />
                 </div>
-                <div>
+                <div className="flex-1">
                     <h2 className="text-2xl font-bold text-slate-900 font-inter">Account Overview</h2>
                     <p className="text-slate-600 font-inter">Your personal information and account details</p>
+                </div>
+                {/* Status Badges */}
+                <div className="flex items-center gap-2">
+                    {user.is_admin && (
+                        <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 flex items-center gap-1">
+                            <ShieldCheck className="w-3 h-3" />
+                            {user.admin_role || 'Admin'}
+                        </Badge>
+                    )}
+                    {user.is_verified && (
+                        <Badge className="bg-blue-100 text-blue-700 border-blue-200 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" />
+                            Verified
+                        </Badge>
+                    )}
                 </div>
             </div>
 

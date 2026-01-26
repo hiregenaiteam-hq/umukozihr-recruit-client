@@ -23,7 +23,7 @@ import {
     Lightbulb
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { sendChatMessage } from "@/lib/api"
+import { sendChatMessage, clearChatSession } from "@/lib/api"
 
 interface Message {
     id: string
@@ -173,13 +173,21 @@ export default function ChatWidget({
         }
     }
 
-    const clearChat = () => {
-        setMessages([])
-        setSessionId(null)
-        toast({
-            title: "Chat Cleared",
-            description: "Your conversation has been cleared."
-        })
+    const clearChat = async () => {
+        try {
+            // Clear on server if we have a session
+            if (sessionId) {
+                await clearChatSession(sessionId).catch(console.error);
+            }
+        } finally {
+            // Always clear local state
+            setMessages([]);
+            setSessionId(null);
+            toast({
+                title: "Chat Cleared",
+                description: "Your conversation has been cleared."
+            });
+        }
     }
 
     const getQuickQuestions = () => [

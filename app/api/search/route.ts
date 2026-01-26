@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`Search API error: ${response.status}`, errorText);
       return NextResponse.json(
         { error: `External API error: ${response.status}`, details: errorText },
         { status: response.status }
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
+    console.log("Search API success, results:", data?.results?.length || 0);
     return NextResponse.json(data);
   } catch (error) {
     // Handle timeout specifically
