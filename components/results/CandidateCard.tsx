@@ -10,7 +10,9 @@ import {
     ExternalLink,
     Star,
     CheckCircle,
-    TrendingUp
+    TrendingUp,
+    Heart,
+    AlertTriangle
 } from "lucide-react"
 import { Candidate } from "./types"
 
@@ -33,6 +35,32 @@ export default function CandidateCard({ candidate, onSelect }: CandidateCardProp
         if (score >= 60) return 'text-umukozi-orange bg-umukozi-orange/10 border-umukozi-orange/20 shadow-sm'
         if (score >= 40) return 'text-umukozi-orange bg-umukozi-orange/10 border-umukozi-orange/20 shadow-sm'
         return 'text-gray-600 bg-gray-100 border-gray-200 shadow-sm'
+    }
+
+    const getWillingnessColor = (likelihood: string | undefined) => {
+        switch (likelihood) {
+            case 'very_likely':
+            case 'likely':
+                return 'text-green-600 bg-green-50 border-green-200'
+            case 'possible':
+                return 'text-yellow-600 bg-yellow-50 border-yellow-200'
+            case 'unlikely':
+            case 'very_unlikely':
+                return 'text-red-600 bg-red-50 border-red-200'
+            default:
+                return 'text-gray-600 bg-gray-50 border-gray-200'
+        }
+    }
+
+    const getWillingnessLabel = (likelihood: string | undefined) => {
+        switch (likelihood) {
+            case 'very_likely': return 'Very Likely to Join'
+            case 'likely': return 'Likely to Join'
+            case 'possible': return 'Possibly Interested'
+            case 'unlikely': return 'Unlikely to Join'
+            case 'very_unlikely': return 'Very Unlikely'
+            default: return 'Not Assessed'
+        }
     }
 
     const getScoreIcon = (score: number) => {
@@ -124,6 +152,29 @@ export default function CandidateCard({ candidate, onSelect }: CandidateCardProp
                         <div className="text-xs text-gray-500">Skills Match</div>
                     </div>
                 </div>
+
+                {/* Willingness Score - NEW: Show when available from deep search */}
+                {candidate.willingness_score && (
+                    <div className={`mb-4 p-3 rounded-lg border ${getWillingnessColor(candidate.willingness_score.likelihood)}`}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Heart className="w-4 h-4" />
+                                <span className="text-xs font-medium uppercase tracking-wide">Willingness to Join</span>
+                            </div>
+                            <span className="font-bold">{candidate.willingness_score.score}/20</span>
+                        </div>
+                        <p className="text-sm font-medium">{getWillingnessLabel(candidate.willingness_score.likelihood)}</p>
+                        {candidate.willingness_score.reasoning.length > 0 && (
+                            <p className="text-xs mt-1 opacity-80">{candidate.willingness_score.reasoning[0]}</p>
+                        )}
+                        {candidate.willingness_score.red_flags.length > 0 && (
+                            <div className="flex items-center gap-1 mt-2 text-xs text-red-600">
+                                <AlertTriangle className="w-3 h-3" />
+                                <span>{candidate.willingness_score.red_flags[0]}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Skills */}
                 <div className="mb-4">

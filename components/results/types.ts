@@ -1,3 +1,15 @@
+// Willingness Score - Assessment of how likely a candidate is to join
+export interface WillingnessScore {
+  score: number; // 0-20
+  career_stage_fit: number;
+  compensation_fit: number;
+  risk_tolerance: number;
+  reasoning: string[];
+  red_flags: string[];
+  green_flags: string[];
+  likelihood: 'very_unlikely' | 'unlikely' | 'possible' | 'likely' | 'very_likely';
+}
+
 export interface Candidate {
   id: number;
   full_name: string;
@@ -17,6 +29,9 @@ export interface Candidate {
   location_score: number;
   matched_skills: string[];
   missing_skills: string[];
+  // NEW: Willingness scoring from deep search
+  willingness_score?: WillingnessScore;
+  total_score?: number; // Combined: hard + soft + willingness
   experience: Array<{
     active_experience: boolean;
     position_title: string;
@@ -50,9 +65,20 @@ export interface SearchRequest {
   };
 }
 
+// Clarification request when required fields are missing
+export interface ClarificationRequest {
+  needs_clarification: boolean;
+  missing_fields: string[];
+  clarification_prompt: string;
+}
+
 export interface SearchResponse {
   search_id: string;
   total_results: number;
   results: Candidate[];
   search_request: SearchRequest;
+  // NEW: Clarification flow from deep search
+  needs_clarification?: boolean;
+  clarification?: ClarificationRequest;
+  warnings?: string[];
 }

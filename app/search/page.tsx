@@ -14,8 +14,12 @@ import {
   TagAutocomplete,
   ExperienceRange,
   LocationAutocomplete,
-  LoadingScreen
+  LoadingScreen,
+  ClarificationDialog,
+  PromptInput
 } from "@/components/search"
+import type { ClarificationValues } from "@/components/search"
+import type { SearchOptions } from "@/components/search/PromptInput"
 import AnimatedFormField from "@/components/search/AnimatedFormField"
 import SuccessScreen from "@/components/search/SuccessScreen"
 
@@ -39,6 +43,15 @@ import { apiFetch, normalizeError, parseValidationDetails, getCookie, ensureVali
 // --- Types ---
 type Toast = { type: "error" | "success"; message: string } | null
 
+// Clarification response type
+interface ClarificationResponse {
+  needs_clarification: boolean
+  clarification?: {
+    missing_fields: string[]
+    clarification_prompt: string
+  }
+}
+
 
 
 
@@ -58,6 +71,17 @@ export default function PremiumSearchPage() {
   
   // Search mode: database (fast, internal DB), live (real-time scraper), hybrid (both)
   const [searchMode, setSearchMode] = useState<"database" | "live" | "hybrid">("hybrid")
+  
+  // Search input mode: prompt (AI-powered) or manual (step-by-step)
+  const [searchInputMode, setSearchInputMode] = useState<"prompt" | "manual">("prompt")
+  const [promptText, setPromptText] = useState<string>("")
+  const [deepResearch, setDeepResearch] = useState<boolean>(false)
+  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
+    searchType: "auto",
+    sourceCategory: "personal site",
+    useLivecrawl: true,
+  })
+  const [promptSearchResults, setPromptSearchResults] = useState<any>(null)
 
   // experience
   const [expMin, setExpMin] = useState<number>(EXPERIENCE_RANGE.DEFAULT_MIN)
@@ -70,6 +94,10 @@ export default function PremiumSearchPage() {
   const [searchResults, setSearchResults] = useState<any>(null)
   const [toast, setToast] = useState<Toast>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+
+  // Clarification dialog state
+  const [showClarification, setShowClarification] = useState<boolean>(false)
+  const [clarificationData, setClarificationData] = useState<ClarificationResponse["clarification"] | null>(null)
 
   const steps = [
     { id: 1, title: "Job Position", description: "What role are you hiring for?" },
@@ -208,6 +236,15 @@ export default function PremiumSearchPage() {
 
       console.log("Search API response:", data)
 
+      // NEW: Check if API needs clarification
+      if (data.needs_clarification && data.clarification) {
+        console.log("Clarification needed:", data.clarification)
+        setClarificationData(data.clarification)
+        setShowClarification(true)
+        setIsLoading(false)
+        return
+      }
+
       // Validate that we have actual results
       if (!data || !data.results || data.results.length === 0) {
         setToast({ type: "error", message: "No candidates found matching your criteria. Please try adjusting your search parameters." })
@@ -247,6 +284,156 @@ export default function PremiumSearchPage() {
 
   const handleContinueToResults = () => {
     router.push("/results")
+  }
+
+  // Submit prompt-based search
+  const submitPromptSearch = async (): Promise<void> => {
+    if (!promptText || promptText.trim().length < 10) {
+      setToast({ type: "error", message: "Please describe who you're looking for in at least 10 characters." })
+      return
+    }
+
+    setIsSubmitting(true)
+    setIsLoading(true)
+    setToast(null)
+
+    try {
+      const token = await ensureValidToken()
+      
+      if (!token) {
+        setToast({ type: "error", message: "Your session has expired. Please sign in again." })
+        clearAuthAndRedirect()
+        return
+      }
+      
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+
+      const promptPayload = {
+        search_type: "prompt",
+        prompt: promptText,
+        use_deep_research: deepResearch,
+        search_options: {
+          search_type: searchOptions.searchType,
+          source_category: searchOptions.sourceCategory,
+          use_livecrawl: searchOptions.useLivecrawl,
+        },
+      }
+
+      console.log("Submitting prompt search:", promptPayload)
+
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(promptPayload),
+        credentials: "include",
+      })
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log("Prompt search response:", data)
+
+      // Check if API needs clarification
+      if (data.needs_clarification && data.clarification) {
+        console.log("Clarification needed:", data.clarification)
+        setClarificationData(data.clarification)
+        setShowClarification(true)
+        setIsLoading(false)
+        return
+      }
+
+      // Check for errors
+      if (!data.success) {
+        setToast({ type: "error", message: data.message || "Search failed. Please try again." })
+        return
+      }
+
+      // Check if we have results
+      if (!data.candidates || data.candidates.length === 0) {
+        setToast({ type: "error", message: "No candidates found matching your description. Please try a different search." })
+        return
+      }
+
+      // Transform prompt results to match expected format for results page
+      const transformedResults = {
+        search_id: `prompt-${Date.now()}`,
+        user_id: "",
+        results: data.candidates.map((c: any, index: number) => ({
+          id: index + 1,
+          full_name: c.name || "Unknown",
+          headline: c.title || c.experience_summary?.slice(0, 100) || "",
+          linkedin_url: c.url,
+          location_full: c.location || "",
+          active_experience_title: c.title || "",
+          inferred_skills: c.skills || [],
+          rank_position: index + 1,
+          relevance_score: (c.match_score || 0.5) * 100,
+          skill_match_score: (c.match_score || 0.5) * 100,
+          experience_score: 70,
+          location_score: 70,
+          job_title_score: 80,
+          ranking_explanation: c.match_reasons?.join(", ") || "AI-matched candidate",
+          matched_skills: c.skills?.slice(0, 5) || [],
+          missing_skills: [],
+          willingness: c.willingness || null,
+        })),
+        total_results: data.candidates.length,
+        search_duration: 0,
+        timestamp: new Date().toISOString(),
+        search_summary: `AI found ${data.candidates.length} candidates`,
+        recommendations: data.warnings || [],
+      }
+
+      // Store results
+      localStorage.setItem('searchResults', JSON.stringify(transformedResults))
+      localStorage.setItem('searchCriteria', JSON.stringify({ prompt: promptText, deepResearch }))
+
+      setSearchResults(transformedResults)
+      setShowSuccess(true)
+
+      setTimeout(() => {
+        router.push("/results")
+      }, 3000)
+    } catch (err: unknown) {
+      const norm = normalizeError(err)
+      setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
+    } finally {
+      setIsSubmitting(false)
+      setIsLoading(false)
+    }
+  }
+
+  // Handle clarification submission
+  const handleClarificationSubmit = (values: ClarificationValues) => {
+    setShowClarification(false)
+    setClarificationData(null)
+
+    // Update form fields with clarified values
+    if (values.job_title && !jobTitles.includes(values.job_title)) {
+      setJobTitles([...jobTitles, values.job_title])
+    }
+    if (values.location) {
+      setLocation(values.location)
+    }
+    if (values.experience) {
+      // Parse experience string like "5+ years" or "Senior"
+      const match = values.experience.match(/(\d+)/)
+      if (match) {
+        setExpMin(parseInt(match[1]))
+      }
+    }
+
+    // Show toast suggesting to try again
+    setToast({ 
+      type: "success", 
+      message: "Details added! Please review and submit your search again." 
+    })
   }
 
   // small helper to render toast
@@ -296,16 +483,70 @@ export default function PremiumSearchPage() {
 
         <main className="max-w-7xl mx-auto px-6 py-12">
           {/* Hero Section */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-4 font-inter">
               Find the perfect candidate
             </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-inter">
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-inter mb-8">
               Follow our simple steps to discover qualified candidates for your team
             </p>
+            
+            {/* Mode Toggle */}
+            <div className="flex justify-center gap-3 mb-8">
+              <button
+                onClick={() => setSearchInputMode("prompt")}
+                className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                  searchInputMode === "prompt"
+                    ? "bg-umukozi-orange text-white shadow-lg shadow-umukozi-orange/25"
+                    : "bg-white text-slate-600 border border-gray-200 hover:border-umukozi-orange/50"
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                AI Prompt
+                <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">Recommended</span>
+              </button>
+              <button
+                onClick={() => setSearchInputMode("manual")}
+                className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                  searchInputMode === "manual"
+                    ? "bg-umukozi-orange text-white shadow-lg shadow-umukozi-orange/25"
+                    : "bg-white text-slate-600 border border-gray-200 hover:border-umukozi-orange/50"
+                }`}
+              >
+                Manual Fields
+              </button>
+            </div>
           </div>
 
-          {/* Vertical Stepper Layout */}
+          {/* Prompt Mode */}
+          {searchInputMode === "prompt" && (
+            <div className="max-w-3xl mx-auto px-6 mb-12">
+              <PromptInput
+                value={promptText}
+                onChange={setPromptText}
+                deepResearch={deepResearch}
+                onDeepResearchChange={setDeepResearch}
+                searchOptions={searchOptions}
+                onSearchOptionsChange={setSearchOptions}
+                disabled={isSubmitting}
+              />
+              
+              {/* Submit Button */}
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={submitPromptSearch}
+                  disabled={isSubmitting || promptText.trim().length < 10}
+                  className="px-8 py-4 bg-umukozi-orange text-white rounded-xl font-medium hover:bg-umukozi-orange/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-umukozi-orange/25"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  {isSubmitting ? "Searching..." : "Find Candidates"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Manual Mode - Vertical Stepper Layout */}
+          {searchInputMode === "manual" && (
           <div className="flex gap-12 max-w-7xl mx-auto px-6">
             {/* Left Side - Vertical Stepper */}
             <VerticalStepper
@@ -604,6 +845,7 @@ export default function PremiumSearchPage() {
               </Card>
             </div>
           </div>
+          )}
 
           {/* Validation Errors */}
           {Object.keys(fieldErrors).length > 0 && (
@@ -644,6 +886,15 @@ export default function PremiumSearchPage() {
             </div>
           </div>
         )}
+
+        {/* Clarification Dialog */}
+        <ClarificationDialog
+          isOpen={showClarification}
+          onClose={() => setShowClarification(false)}
+          missingFields={clarificationData?.missing_fields || []}
+          clarificationPrompt={clarificationData?.clarification_prompt || ""}
+          onSubmit={handleClarificationSubmit}
+        />
 
 
       </div>

@@ -6,29 +6,20 @@ const TIMEOUT_MS = {
   database: 30000,  // 30s for database
   live: 120000,     // 2min for live scraping
   hybrid: 90000,    // 1.5min for hybrid
+  prompt: 90000,    // 1.5min for AI prompt search
 };
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const searchType = body.search_type || "manual"; // "prompt" or "manual"
     const searchMode = body.search_mode || "database";
-    const timeoutMs = TIMEOUT_MS[searchMode as keyof typeof TIMEOUT_MS] || TIMEOUT_MS.database;
+    
+    // Determine timeout based on search type
+    const timeoutMs = searchType === "prompt" 
+      ? TIMEOUT_MS.prompt 
+      : (TIMEOUT_MS[searchMode as keyof typeof TIMEOUT_MS] || TIMEOUT_MS.database);
 
-    // Check if we should use hardcoded response (for testing/development)
-    // const useHardcodedResponse =
-    //   process.env.USE_HARDCODED_RESPONSE === "true" ||
-    //   body.use_hardcoded_response === true;
-
-    // if (useHardcodedResponse) {
-    //   console.log("Using hardcoded response for search:", body);
-
-    //   // Simulate a small delay to make it feel more realistic
-    //   await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    //   return NextResponse.json(responseSamples);
-    // }
-
-    // Original API code - keep your existing implementation
     // Get the authorization header and cookies from the incoming request
     const authHeader = request.headers.get("authorization");
     const cookieHeader = request.headers.get("cookie");
@@ -55,15 +46,19 @@ export async function POST(request: NextRequest) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    const response = await fetch(
-      `${baseUrl}/api/v1/search/search`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      }
-    );
+    // Determine which endpoint to use
+    const endpoint = searchType === "prompt" 
+      ? `${baseUrl}/api/v1/search/search/prompt`
+      : `${baseUrl}/api/v1/search/search`;
+    
+    console.log(`Search request: type=${searchType}, mode=${searchMode}, endpoint=${endpoint}`);
+
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
 
     clearTimeout(timeoutId);
 
@@ -77,7 +72,8 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log("Search API success, results:", data?.results?.length || 0);
+    console.log(`Search API success, type=${searchType}, results:`, 
+      searchType === "prompt" ? data?.candidates?.length || 0 : data?.results?.length || 0);
     return NextResponse.json(data);
   } catch (error) {
     // Handle timeout specifically
