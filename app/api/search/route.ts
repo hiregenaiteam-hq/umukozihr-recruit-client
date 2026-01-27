@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import baseUrl from "@/lib/config";
 
 // Longer timeout for live search mode which uses real-time scraping
+// Deep research can take up to 180s for Exa Research API polling
 const TIMEOUT_MS = {
   database: 30000,  // 30s for database
   live: 120000,     // 2min for live scraping
   hybrid: 90000,    // 1.5min for hybrid
-  prompt: 90000,    // 1.5min for AI prompt search
+  prompt: 120000,   // 2min for AI prompt search (standard)
+  deep_research: 200000, // ~3.5min for deep research (Exa Research API polling)
 };
 
 export async function POST(request: NextRequest) {
@@ -15,10 +17,15 @@ export async function POST(request: NextRequest) {
     const searchType = body.search_type || "manual"; // "prompt" or "manual"
     const searchMode = body.search_mode || "database";
     
-    // Determine timeout based on search type
-    const timeoutMs = searchType === "prompt" 
-      ? TIMEOUT_MS.prompt 
-      : (TIMEOUT_MS[searchMode as keyof typeof TIMEOUT_MS] || TIMEOUT_MS.database);
+    // Determine timeout based on search type and deep research
+    const useDeepResearch = body.use_deep_research === true;
+    let timeoutMs = TIMEOUT_MS.database;
+    
+    if (searchType === "prompt") {
+      timeoutMs = useDeepResearch ? TIMEOUT_MS.deep_research : TIMEOUT_MS.prompt;
+    } else {
+      timeoutMs = TIMEOUT_MS[searchMode as keyof typeof TIMEOUT_MS] || TIMEOUT_MS.database;
+    }
 
     // Get the authorization header and cookies from the incoming request
     const authHeader = request.headers.get("authorization");
