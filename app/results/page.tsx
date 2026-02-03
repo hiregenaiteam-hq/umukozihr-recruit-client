@@ -69,14 +69,17 @@ function ResultsContent() {
   useEffect(() => {
     if (!searchData) return
 
-    const filtered = searchData.results.filter(candidate =>
-      candidate.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.active_experience_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      candidate.inferred_skills.some(skill =>
-        skill.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = searchData.results.filter(candidate => {
+      const searchLower = searchTerm.toLowerCase()
+      return (
+        candidate.full_name?.toLowerCase().includes(searchLower) ||
+        candidate.headline?.toLowerCase().includes(searchLower) ||
+        candidate.active_experience_title?.toLowerCase().includes(searchLower) ||
+        candidate.inferred_skills?.some(skill =>
+          skill?.toLowerCase().includes(searchLower)
+        )
       )
-    )
+    })
     setFilteredCandidates(filtered)
   }, [searchTerm, searchData])
 
