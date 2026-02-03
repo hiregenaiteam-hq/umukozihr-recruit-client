@@ -103,7 +103,7 @@ export default function VerificationForm({
     }
     setLoading(true)
     try {
-      const payload: any = { email: verificationEmail.trim(), otp: code }
+      const payload: { email: string; otp: string; user_id?: string | number | null } = { email: verificationEmail.trim(), otp: code }
       if (userId) payload.user_id = userId
       await apiFetch(`/api/v1/users/verify-email`, {
         method: "POST",
@@ -118,7 +118,7 @@ export default function VerificationForm({
         setSuccess(false)
         onVerified()
       }, 1500) // 1.5s to allow animation to complete
-    } catch (e: any) {
+    } catch (e: unknown) {
       const { title, description } = normalizeError(e)
       toast.error(`${title}: ${description}`)
     } finally {
@@ -154,7 +154,7 @@ export default function VerificationForm({
           return s - 1
         })
       }, 1000)
-    } catch (e: any) {
+    } catch (e: unknown) {
       const { title, description } = normalizeError(e)
       toast.error(`${title}: ${description}`)
     } finally {

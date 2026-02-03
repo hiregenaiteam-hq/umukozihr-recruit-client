@@ -84,7 +84,7 @@ export default function SignUpForm({ onSignedUp, onSwitchToSignIn }: Props) {
 
       toast.success("Account created. Please verify your email.")
       onSignedUp({ email: payload.email, userId: data?.id ?? null })
-    } catch (e: any) {
+    } catch (e: unknown) {
       const parsed = parseValidationDetails(e)
       if (Object.keys(parsed).length > 0) {
         setFieldErrors(parsed)
