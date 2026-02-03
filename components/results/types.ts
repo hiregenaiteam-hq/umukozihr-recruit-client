@@ -56,13 +56,18 @@ export interface Candidate {
 
 export interface SearchRequest {
   session_id?: string;
-  criteria: {
+  search_mode?: string;
+  // For structured searches
+  criteria?: {
     job_titles: string[];
     skills_keywords: string[];
     location_full: string;
     experience_years_min: number;
     experience_years_max: number;
   };
+  // For prompt-based searches
+  prompt?: string;
+  use_deep_research?: boolean;
 }
 
 // Clarification request when required fields are missing

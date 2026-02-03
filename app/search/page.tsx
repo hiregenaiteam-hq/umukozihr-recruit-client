@@ -356,6 +356,11 @@ export default function PremiumSearchPage() {
           search_summary: data.message || "No candidates found matching your description.",
           recommendations: data.warnings || ["Try broadening your search criteria", "Use more specific locations or skills"],
           requirements: data.requirements,
+          search_request: {
+            search_mode: "prompt",
+            prompt: promptText,
+            use_deep_research: deepResearch,
+          }
         }
         
         localStorage.setItem('searchResults', JSON.stringify(emptyResults))
@@ -398,6 +403,11 @@ export default function PremiumSearchPage() {
         timestamp: new Date().toISOString(),
         search_summary: `AI found ${data.candidates.length} candidates`,
         recommendations: data.warnings || [],
+        search_request: {
+          search_mode: "prompt",
+          prompt: promptText,
+          use_deep_research: deepResearch,
+        }
       }
 
       // Store results

@@ -48,19 +48,40 @@ export default function ResultsHeader({
                 </p>
             </div>
 
-            {/* Search Criteria Summary */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-lg border border-white/20">
-                <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full border border-orange-100">
-                        <MapPin className="w-4 h-4 text-orange-600" />
-                        <span className="text-orange-700 font-medium">{searchRequest.criteria.location_full}</span>
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 bg-teal-50 rounded-full border border-teal-100">
-                        <Briefcase className="w-4 h-4 text-teal-600" />
-                        <span className="text-teal-700 font-medium">{searchRequest.criteria.experience_years_min}-{searchRequest.criteria.experience_years_max} years experience</span>
+            {/* Search Criteria Summary - Only show for structured searches */}
+            {searchRequest?.criteria && (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-lg border border-white/20">
+                    <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+                        {searchRequest.criteria.location_full && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full border border-orange-100">
+                                <MapPin className="w-4 h-4 text-orange-600" />
+                                <span className="text-orange-700 font-medium">{searchRequest.criteria.location_full}</span>
+                            </div>
+                        )}
+                        {searchRequest.criteria.experience_years_min !== undefined && searchRequest.criteria.experience_years_max !== undefined && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-teal-50 rounded-full border border-teal-100">
+                                <Briefcase className="w-4 h-4 text-teal-600" />
+                                <span className="text-teal-700 font-medium">{searchRequest.criteria.experience_years_min}-{searchRequest.criteria.experience_years_max} years experience</span>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
+            )}
+
+            {/* Prompt Summary - Show for AI searches */}
+            {searchRequest?.prompt && (
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-lg border border-white/20">
+                    <div className="flex items-center gap-3 text-sm">
+                        <Sparkles className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                        <p className="text-slate-700 italic">"{searchRequest.prompt}"</p>
+                        {searchRequest.use_deep_research && (
+                            <span className="ml-auto px-3 py-1 bg-gradient-to-r from-orange-500 to-teal-500 text-white text-xs font-medium rounded-full">
+                                Deep Research
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Search and View Controls */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
