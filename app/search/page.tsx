@@ -345,7 +345,28 @@ export default function PremiumSearchPage() {
 
       // Check if we have results
       if (!data.candidates || data.candidates.length === 0) {
-        setToast({ type: "error", message: "No candidates found matching your description. Please try a different search." })
+        // Still redirect but show empty state on results page
+        const emptyResults = {
+          search_id: `prompt-${Date.now()}`,
+          user_id: "",
+          results: [],
+          total_results: 0,
+          search_duration: 0,
+          timestamp: new Date().toISOString(),
+          search_summary: data.message || "No candidates found matching your description.",
+          recommendations: data.warnings || ["Try broadening your search criteria", "Use more specific locations or skills"],
+          requirements: data.requirements,
+        }
+        
+        localStorage.setItem('searchResults', JSON.stringify(emptyResults))
+        localStorage.setItem('searchCriteria', JSON.stringify({ prompt: promptText, deepResearch }))
+        
+        setSearchResults(emptyResults)
+        setShowSuccess(true)
+        
+        setTimeout(() => {
+          router.push("/results")
+        }, 1500)
         return
       }
 
