@@ -13,3 +13,7 @@ export { default as AnimatedFormField } from "./AnimatedFormField";
 export { default as SuccessScreen } from "./SuccessScreen";
 export { default as ClarificationDialog } from "./ClarificationDialog";
 export { default as PromptInput } from "./PromptInput";
+
+// Chat Search Components
+export { default as SearchChat } from "./SearchChat";
+export { default as ResultsPanel } from "./ResultsPanel";
