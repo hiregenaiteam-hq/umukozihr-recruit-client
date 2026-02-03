@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Building2, Sparkles, TrendingUp, Users, DollarSign, MapPin, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getCompanyProfile, updateCompanyProfile } from "@/lib/api";
 
 interface CompanyProfileProps {
   onSave?: (profile: CompanyProfileData) => void;
@@ -71,43 +72,28 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
   const loadCompanyProfile = async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/company-profile`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to load company profile');
-      }
-
-      const data = await response.json();
+      const data = await getCompanyProfile();
       
-      if (data.has_profile && data.profile) {
+      if (data) {
         setFormData({
-          company_name: data.profile.company_name || "",
-          tagline: data.profile.tagline || "",
-          industry: data.profile.industry || "",
-          headquarters: data.profile.headquarters || "",
-          stage: data.profile.stage || "pre-seed",
-          team_size: data.profile.team_size || 1,
-          funding_raised: data.profile.funding_raised || 0,
-          monthly_revenue: data.profile.monthly_revenue || 0,
-          is_profitable: data.profile.is_profitable || false,
-          compensation_philosophy: data.profile.compensation_philosophy || "equity_only",
-          remote_policy: data.profile.remote_policy || "remote_first",
-          mission: data.profile.mission || "",
-          bio: data.profile.bio || "",
-          unique_selling_points: data.profile.unique_selling_points || [],
-          growth_potential: data.profile.growth_potential || "",
+          company_name: data.company_name || "",
+          tagline: data.tagline || "",
+          industry: data.industry || "",
+          headquarters: data.headquarters || "",
+          stage: data.stage || "pre-seed",
+          team_size: data.team_size || 1,
+          funding_raised: data.funding_raised || 0,
+          monthly_revenue: data.monthly_revenue || 0,
+          is_profitable: data.is_profitable || false,
+          compensation_philosophy: data.compensation_philosophy || "equity_only",
+          remote_policy: data.remote_policy || "remote_first",
+          mission: data.mission || "",
+          bio: data.bio || "",
+          unique_selling_points: data.unique_selling_points || [],
+          growth_potential: data.growth_potential || "",
         });
-        setAttractiveness(data.profile.attractiveness_score || 0);
-        setRiskLevel(data.profile.risk_level || "medium");
+        setAttractiveness(data.attractiveness_score || 0);
+        setRiskLevel(data.risk_level || "medium");
       }
     } catch (error) {
       console.error('Error loading company profile:', error);
@@ -121,11 +107,6 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
     setIsSaving(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
       // Filter out USP entries that are empty
       const cleanedUSPs = formData.unique_selling_points.filter(usp => usp.trim() !== "");
 
@@ -134,38 +115,25 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
         unique_selling_points: cleanedUSPs,
       };
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/company-profile`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save company profile');
-      }
-
-      const data = await response.json();
+      const result = await updateCompanyProfile(profileData);
       
-      setAttractiveness(data.attractiveness_score || 0);
-      setRiskLevel(data.risk_level || "medium");
+      setAttractiveness(result.attractiveness_score || 0);
+      setRiskLevel(result.risk_level || "medium");
 
       toast({
         title: "Company profile saved",
-        description: `Your company profile has been updated successfully. Attractiveness score: ${data.attractiveness_score}/100`,
+        description: `Your company profile has been updated successfully. Attractiveness score: ${result.attractiveness_score}/100`,
       });
 
       if (onSave) {
         onSave(profileData);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving company profile:', error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to save your company profile. Please try again.";
       toast({
         title: "Save failed",
-        description: error.message || "Failed to save your company profile. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
