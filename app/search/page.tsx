@@ -19,7 +19,6 @@ import {
   PromptInput
 } from "@/components/search"
 import type { ClarificationValues } from "@/components/search"
-import type { SearchOptions } from "@/components/search/PromptInput"
 import AnimatedFormField from "@/components/search/AnimatedFormField"
 import SuccessScreen from "@/components/search/SuccessScreen"
 
@@ -76,11 +75,6 @@ export default function PremiumSearchPage() {
   const [searchInputMode, setSearchInputMode] = useState<"prompt" | "manual">("prompt")
   const [promptText, setPromptText] = useState<string>("")
   const [deepResearch, setDeepResearch] = useState<boolean>(false)
-  const [searchOptions, setSearchOptions] = useState<SearchOptions>({
-    searchType: "auto",
-    sourceCategory: "personal site",
-    useLivecrawl: true,
-  })
   const [promptSearchResults, setPromptSearchResults] = useState<any>(null)
 
   // experience
@@ -316,11 +310,6 @@ export default function PremiumSearchPage() {
         search_type: "prompt",
         prompt: promptText,
         use_deep_research: deepResearch,
-        search_options: {
-          search_type: searchOptions.searchType,
-          source_category: searchOptions.sourceCategory,
-          use_livecrawl: searchOptions.useLivecrawl,
-        },
       }
 
       console.log("Submitting prompt search:", promptPayload)
@@ -526,8 +515,6 @@ export default function PremiumSearchPage() {
                 onChange={setPromptText}
                 deepResearch={deepResearch}
                 onDeepResearchChange={setDeepResearch}
-                searchOptions={searchOptions}
-                onSearchOptionsChange={setSearchOptions}
                 disabled={isSubmitting}
               />
               
