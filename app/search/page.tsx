@@ -18,7 +18,6 @@ import {
   ClarificationDialog,
   PromptInput
 } from "@/components/search"
-import type { ClarificationValues } from "@/components/search"
 import AnimatedFormField from "@/components/search/AnimatedFormField"
 import SuccessScreen from "@/components/search/SuccessScreen"
 
@@ -34,22 +33,19 @@ import {
 } from "@/lib/constants"
 import { X, Check, Sparkles } from "lucide-react"
 
-// IMPORTANT: uses apiFetch util provided by your codebase. Update the import path if needed.
+import {
+  SearchCriteria,
+  SearchPayload,
+  SearchResponse,
+  PromptSearchPayload,
+  PromptSearchResponse,
+  PromptCandidate,
+  Candidate,
+  ClarificationRequest,
+  ClarificationValues,
+  ToastMessage
+} from "@/lib/types"
 import { apiFetch, normalizeError, parseValidationDetails, getCookie, ensureValidToken, clearAuthAndRedirect } from "@/lib/api"
-
-
-
-// --- Types ---
-type Toast = { type: "error" | "success"; message: string } | null
-
-// Clarification response type
-interface ClarificationResponse {
-  needs_clarification: boolean
-  clarification?: {
-    missing_fields: string[]
-    clarification_prompt: string
-  }
-}
 
 
 
@@ -85,13 +81,13 @@ export default function PremiumSearchPage() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showSuccess, setShowSuccess] = useState<boolean>(false)
-  const [searchResults, setSearchResults] = useState<any>(null)
-  const [toast, setToast] = useState<Toast>(null)
+  const [searchResults, setSearchResults] = useState<SearchResponse | null>(null)
+  const [toast, setToast] = useState<ToastMessage | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   // Clarification dialog state
   const [showClarification, setShowClarification] = useState<boolean>(false)
-  const [clarificationData, setClarificationData] = useState<ClarificationResponse["clarification"] | null>(null)
+  const [clarificationData, setClarificationData] = useState<ClarificationRequest | null>(null)
 
   const steps = [
     { id: 1, title: "Job Position", description: "What role are you hiring for?" },
