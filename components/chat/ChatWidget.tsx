@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { sendChatMessage, clearChatSession } from "@/lib/api"
+import type { Candidate } from "@/lib/types"
 
 interface Message {
     id: string
@@ -33,10 +34,16 @@ interface Message {
     isTyping?: boolean
 }
 
+interface CandidateContext {
+    id?: number
+    name?: string
+    data?: Partial<Candidate>
+}
+
 interface ChatWidgetProps {
     candidateId?: number
     candidateName?: string
-    candidateData?: any
+    candidateData?: Partial<Candidate>
     sessionId?: string
     isOpen: boolean
     onToggle: () => void

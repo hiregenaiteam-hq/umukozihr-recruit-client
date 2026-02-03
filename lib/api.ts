@@ -123,11 +123,116 @@ export function clearAuthAndRedirect(redirectPath = "/auth") {
   }
 }
 
+/**
+ * Sleep utility for retry delays
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Retry configuration
+ */
+interface RetryConfig {
+  maxRetries?: number;
+  initialDelayMs?: number;
+  maxDelayMs?: number;
+  backoffMultiplier?: number;
+  retryableStatuses?: number[];
+}
+
+const DEFAULT_RETRY_CONFIG: Required<RetryConfig> = {
+  maxRetries: 3,
+  initialDelayMs: 1000,
+  maxDelayMs: 10000,
+  backoffMultiplier: 2,
+  retryableStatuses: [408, 429, 500, 502, 503, 504] // Network/server errors
+};
+
+/**
+ * Check if error is retryable
+ */
+function isRetryableError(error: unknown, status?: number): boolean {
+  // Network errors (timeout, connection refused, etc.)
+  if (error instanceof Error) {
+    if (error.name === 'AbortError') return true; // Timeout
+    if (error.message.includes('fetch') || error.message.includes('network')) return true;
+  }
+  
+  // HTTP status codes that are retryable
+  if (status && DEFAULT_RETRY_CONFIG.retryableStatuses.includes(status)) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Execute fetch with exponential backoff retry logic
+ */
+async function fetchWithRetry(
+  url: RequestInfo | URL,
+  init: RequestInit,
+  signal: AbortSignal,
+  config: RetryConfig = {}
+): Promise<Response> {
+  const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
+  let lastError: unknown;
+  
+  for (let attempt = 0; attempt <= retryConfig.maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, { ...init, signal });
+      
+      // If successful or non-retryable error, return immediately
+      if (response.ok || !isRetryableError(null, response.status)) {
+        return response;
+      }
+      
+      // Store error for potential retry
+      lastError = new Error(`HTTP ${response.status}`);
+      
+      // If this was the last attempt, return the error response
+      if (attempt === retryConfig.maxRetries) {
+        return response;
+      }
+      
+      // Calculate exponential backoff delay
+      const delay = Math.min(
+        retryConfig.initialDelayMs * Math.pow(retryConfig.backoffMultiplier, attempt),
+        retryConfig.maxDelayMs
+      );
+      
+      console.log(`Request failed with status ${response.status}, retrying in ${delay}ms (attempt ${attempt + 1}/${retryConfig.maxRetries})...`);
+      await sleep(delay);
+      
+    } catch (error) {
+      lastError = error;
+      
+      // If not retryable or last attempt, throw
+      if (!isRetryableError(error) || attempt === retryConfig.maxRetries) {
+        throw error;
+      }
+      
+      // Calculate exponential backoff delay
+      const delay = Math.min(
+        retryConfig.initialDelayMs * Math.pow(retryConfig.backoffMultiplier, attempt),
+        retryConfig.maxDelayMs
+      );
+      
+      console.log(`Network error, retrying in ${delay}ms (attempt ${attempt + 1}/${retryConfig.maxRetries})...`, error);
+      await sleep(delay);
+    }
+  }
+  
+  throw lastError || new Error('Max retries exceeded');
+}
+
 export async function apiFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
   timeoutMs = 15000,
-  skipTokenRefresh = false
+  skipTokenRefresh = false,
+  retryConfig?: RetryConfig
 ) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -158,11 +263,12 @@ export async function apiFetch(
       headers.set("Authorization", `Bearer ${token}`);
     }
 
-    const res = await fetch(url, {
+    // Use retry logic for network resilience
+    const res = await fetchWithRetry(url, {
       ...init,
       headers,
-      signal: controller.signal,
-    });
+    }, controller.signal, retryConfig);
+    
     const text = await res.text();
     let data: any = null;
     try {
