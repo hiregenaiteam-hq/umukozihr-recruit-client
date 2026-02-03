@@ -82,6 +82,8 @@ export interface SearchResponse {
   total_results: number;
   results: Candidate[];
   search_request: SearchRequest;
+  search_summary?: string;
+  recommendations?: string[];
   // NEW: Clarification flow from deep search
   needs_clarification?: boolean;
   clarification?: ClarificationRequest;

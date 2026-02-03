@@ -182,19 +182,42 @@ function ResultsContent() {
           {/* No Results */}
           {filteredCandidates.length === 0 && searchData && (
             <div className="text-center py-20">
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-16 shadow-xl border border-white/20 max-w-2xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-16 shadow-xl border border-white/20 max-w-3xl mx-auto">
                 <div className="w-24 h-24 bg-linear-to-r from-orange-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-8">
                   <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.709M15 6.291A7.962 7.962 0 0012 5c-2.34 0-4.29 1.009-5.824 2.709" />
                   </svg>
                 </div>
                 <h2 className="text-3xl font-light text-slate-800 mb-6">No Candidates Found</h2>
-                <p className="text-slate-600 text-lg mb-10 leading-relaxed">
+                <p className="text-slate-600 text-lg mb-6 leading-relaxed">
                   {searchTerm ?
                     `No candidates match your search term "${searchTerm}". Try adjusting your search criteria.` :
-                    "No candidates were found matching your search criteria. Try adjusting your requirements."
+                    searchData.search_summary || "No candidates were found matching your search criteria."
                   }
                 </p>
+
+                {/* AI Suggestions */}
+                {searchData.recommendations && searchData.recommendations.length > 0 && (
+                  <div className="bg-gradient-to-r from-orange-50 to-teal-50 rounded-2xl p-8 mb-8 text-left border border-orange-100">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      AI Suggestions to Improve Results
+                    </h3>
+                    <ul className="space-y-3">
+                      {searchData.recommendations.map((suggestion: string, idx: number) => (
+                        <li key={idx} className="text-slate-700 flex items-start gap-3">
+                          <span className="text-xl flex-shrink-0 mt-0.5">
+                            {suggestion.startsWith('💡') ? '💡' : suggestion.startsWith('🚀') ? '🚀' : '✨'}
+                          </span>
+                          <span>{suggestion.replace(/^[💡🚀✨]\s*/, '')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   {searchTerm && (
                     <button
@@ -211,7 +234,7 @@ function ResultsContent() {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    Start New Search
+                    Refine Search
                   </button>
                 </div>
               </div>
