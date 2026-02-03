@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import baseUrl from "@/lib/config";
 
 // Longer timeout for live search mode which uses real-time scraping
-// Deep research can take up to 180s for Exa Research API polling
+// Deep research can take up to 240s for Exa Research API polling (increased for global searches)
 const TIMEOUT_MS = {
   database: 30000,  // 30s for database
   live: 120000,     // 2min for live scraping
   hybrid: 90000,    // 1.5min for hybrid
   prompt: 120000,   // 2min for AI prompt search (standard)
-  deep_research: 200000, // ~3.5min for deep research (Exa Research API polling)
+  deep_research: 260000, // ~4.5min for deep research (increased from 3.5min for global coverage)
 };
 
 export async function POST(request: NextRequest) {
