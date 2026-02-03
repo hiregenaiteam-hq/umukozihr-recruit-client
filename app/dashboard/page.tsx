@@ -330,7 +330,7 @@ export default function DashboardPage() {
                     <div className="p-3 bg-slate-50 rounded-lg">
                       <p className="text-xs text-slate-500 uppercase">Remote</p>
                       <p className="font-medium text-slate-900 capitalize">
-                        {companyProfile.remote_policy.replace("_", " ")}
+                        {companyProfile.remote_policy?.replace("_", " ") || "Not set"}
                       </p>
                     </div>
                   </div>
