@@ -141,10 +141,11 @@ export default function PaymentPage() {
       } else {
         throw new Error("No authorization URL received");
       }
-    } catch (err: any) {
-      console.error("Subscription initiation failed:", err);
+    } catch (err: unknown) {
+      const error = err as Error
+      console.error("Subscription initiation failed:", error);
       setError(
-        err?.message || "Failed to initiate payment. Please try again."
+        error?.message || "Failed to initiate payment. Please try again."
       );
       setIsProcessing(false);
     }

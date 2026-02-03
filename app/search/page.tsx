@@ -375,7 +375,7 @@ export default function PremiumSearchPage() {
       const transformedResults = {
         search_id: `prompt-${Date.now()}`,
         user_id: "",
-        results: data.candidates.map((c: any, index: number) => ({
+        results: data.candidates.map((c: PromptCandidate, index: number) => ({
           id: index + 1,
           full_name: c.name || "Unknown",
           headline: c.title || c.experience_summary?.slice(0, 100) || "",

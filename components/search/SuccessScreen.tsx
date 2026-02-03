@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { CheckCircle, Users, Sparkles, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { Candidate } from "@/lib/types"
 
 interface SuccessScreenProps {
     searchCriteria: {
@@ -13,7 +14,7 @@ interface SuccessScreenProps {
     }
     searchResults?: {
         total_results: number
-        results: any[]
+        results: Candidate[]
     }
     onContinue: () => void
 }
