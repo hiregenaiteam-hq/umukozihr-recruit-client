@@ -20,6 +20,7 @@ import {
   Brain,
   Play,
   ChevronRight,
+  Building2,
 } from "lucide-react";
 
 interface OnboardingWizardProps {
@@ -239,9 +240,54 @@ const steps: OnboardingStep[] = [
     tip: "You can always upgrade or downgrade your plan from Settings → Billing.",
   },
   {
+    id: "company",
+    title: "Complete Your Company Profile",
+    subtitle: "Step 5: Better Matches",
+    description:
+      "Tell us about your company to get personalized willingness scores. Candidates are more likely to join companies they find attractive!",
+    icon: Building2,
+    illustration: (
+      <div className="relative w-full h-64 bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-umukozi-orange to-umukozi-teal rounded-xl flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="h-4 bg-slate-100 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-50 rounded w-1/2"></div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+              <p className="text-xs text-slate-600 mb-1">Stage</p>
+              <p className="text-sm font-semibold text-orange-700">Seed</p>
+            </div>
+            <div className="p-3 bg-teal-50 rounded-lg border border-teal-100">
+              <p className="text-xs text-slate-600 mb-1">Team Size</p>
+              <p className="text-sm font-semibold text-teal-700">12 people</p>
+            </div>
+          </div>
+
+          <div className="p-3 bg-gradient-to-r from-orange-50 to-teal-50 rounded-lg border border-orange-100">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-600">Attractiveness Score</span>
+              <span className="text-lg font-bold text-orange-600">72/100</span>
+            </div>
+            <div className="w-full bg-slate-200 rounded-full h-2 mt-2">
+              <div className="bg-gradient-to-r from-umukozi-orange to-umukozi-teal h-2 rounded-full" style={{ width: '72%' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+    tip: "Higher attractiveness = better willingness scores. Complete it now or later in Settings → Company Profile.",
+  },
+  {
     id: "ready",
     title: "You're All Set!",
-    subtitle: "Let's Start Finding Talent",
+    subtitle: "Step 6: Let's Start Finding Talent",
     description:
       "You now know the basics of UmukoziHR Recruit. Ready to find your next great hire?",
     icon: CheckCircle,
