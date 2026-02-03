@@ -48,7 +48,7 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp,
       const details = (err as ApiError).details as any
       const arr = details?.detail
       if (Array.isArray(arr)) {
-        arr.forEach((d: any) => {
+        arr.forEach((d: Record<string, unknown>) => {
           // `loc` may be ["body","password"] or similar - take last segment as the field name
           const loc = d?.loc
           let key = "form"
@@ -58,7 +58,7 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp,
             key = d.loc
           }
           // prefer msg, fallback to error or stringifying ctx
-          const msg = d?.msg || d?.error || JSON.stringify(d?.ctx || "")
+          const msg = String(d?.msg || d?.error || JSON.stringify(d?.ctx || ""))
           out[key] = msg
         })
       }
@@ -121,27 +121,29 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp,
       toast.success("You're now signed in.")
       // success - notify parent
       onSuccess?.()
-    } catch (err: any) {
+    } catch (err: unknown) {
       // --- precise detection for your server error shape ---
       // apiFetch throws an ApiError where .details contains parsed response JSON.
-      console.log("Login error caught:", err)
-      console.log("Error details:", err?.details)
-      console.log("Error status:", err?.status)
+      const apiErr = err as ApiError
+      console.log("Login error caught:", apiErr)
+      console.log("Error details:", apiErr?.details)
+      console.log("Error status:", apiErr?.status)
       
-      const details = err?.details ?? err // fallback
-      const message = details?.message ?? details?.detail ?? err?.message ?? ""
-      const statusVal = details?.status ?? null
+      const details = apiErr?.details ?? apiErr // fallback
+      const message = (details as Record<string, unknown>)?.message ?? (details as Record<string, unknown>)?.detail ?? apiErr?.message ?? ""
+      const statusVal = (details as Record<string, unknown>)?.status ?? null
       
       console.log("Parsed - message:", message, "statusVal:", statusVal)
       
       // Extract email from multiple possible locations in the response
-      const emailFromServer = details?.email ?? details?.data?.email ?? email // fallback to user input
+      const detailsObj = details as Record<string, unknown>
+      const emailFromServer = detailsObj?.email ?? (detailsObj?.data as Record<string, unknown>)?.email ?? email // fallback to user input
       console.log("Email from server:", emailFromServer)
 
       // Check for "email not verified" error - be flexible with message matching
       const messageMatches = typeof message === "string" && 
         (/email not verified/i.test(message) || /not verified/i.test(message) || /verification/i.test(message))
-      const statusMatches = statusVal === "unauthorized" || err?.status === 401 || err?.status === 403
+      const statusMatches = statusVal === "unauthorized" || apiErr?.status === 401 || apiErr?.status === 403
       
       console.log("Message matches:", messageMatches, "Status matches:", statusMatches)
       
@@ -150,20 +152,25 @@ export default function SignInForm({ onSuccess, onNotVerified, onSwitchToSignUp,
       if (isEmailNotVerified) {
         console.log(">>> REDIRECTING TO VERIFICATION PAGE. Email:", emailFromServer)
         toast.info("Your email is not verified. Please check your inbox for the verification code.")
-        onNotVerified?.({ email: emailFromServer, userId: details?.user_id ?? details?.id ?? null, message })
+        onNotVerified?.({ 
+          email: String(emailFromServer), 
+          userId: (typeof detailsObj?.user_id === 'string' || typeof detailsObj?.user_id === 'number') ? detailsObj.user_id : 
+                  (typeof detailsObj?.id === 'string' || typeof detailsObj?.id === 'number') ? detailsObj.id : null, 
+          message: String(message) 
+        })
         setIsLoading(false)
         return
       }
 
       // parse field-level validation errors (if present)
-      const parsed = parseValidationDetails(err)
+      const parsed = parseValidationDetails(apiErr)
       if (Object.keys(parsed).length > 0) {
         setFieldErrors(parsed)
         // show a combined toast with all messages (or just first message if you prefer)
         toast.error(Object.values(parsed).join(" — "))
       } else {
         // otherwise fallback
-        toast.error(message || "Sign in failed.")
+        toast.error(String(message) || "Sign in failed.")
       }
     } finally {
       setIsLoading(false)

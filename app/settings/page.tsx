@@ -110,7 +110,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handlePreferencesSave = (preferences: any) => {
+  const handlePreferencesSave = (preferences: Record<string, unknown>) => {
     // Save AI preferences
     localStorage.setItem('ai_preferences', JSON.stringify(preferences));
     toast({
@@ -119,7 +119,7 @@ export default function SettingsPage() {
     });
   };
 
-  const handleNotificationsSave = (notifications: any) => {
+  const handleNotificationsSave = (notifications: Record<string, boolean>) => {
     // Save notification preferences
     localStorage.setItem('notification_preferences', JSON.stringify(notifications));
     toast({

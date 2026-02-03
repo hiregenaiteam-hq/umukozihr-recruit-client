@@ -7,7 +7,7 @@ import { Zap, Target, Users, TrendingUp } from "lucide-react";
 import { useState } from "react";
 
 interface AIPreferencesProps {
-    onSave: (preferences: any) => void;
+    onSave: (preferences: Record<string, unknown>) => void;
 }
 
 export default function AIPreferences({ onSave }: AIPreferencesProps) {

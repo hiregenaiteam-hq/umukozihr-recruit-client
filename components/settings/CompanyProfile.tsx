@@ -17,7 +17,25 @@ import { Building2, Sparkles, TrendingUp, Users, DollarSign, MapPin, Lightbulb }
 import { useToast } from "@/hooks/use-toast";
 
 interface CompanyProfileProps {
-  onSave?: (profile: any) => void;
+  onSave?: (profile: CompanyProfileData) => void;
+}
+
+interface CompanyProfileData {
+  company_name: string;
+  tagline?: string;
+  industry: string;
+  headquarters: string;
+  stage: "pre-seed" | "seed" | "series_a" | "series_b" | "series_c" | "growth" | "public";
+  team_size: number;
+  funding_raised: number;
+  monthly_revenue: number;
+  is_profitable: boolean;
+  compensation_philosophy: "market_rate" | "below_market_equity" | "equity_only";
+  remote_policy: "remote_first" | "hybrid" | "office_only";
+  mission: string;
+  bio: string;
+  unique_selling_points: string[];
+  growth_potential: string;
 }
 
 export default function CompanyProfile({ onSave }: CompanyProfileProps) {
@@ -27,8 +45,8 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
   const [attractiveness, setAttractiveness] = useState(0);
   const [riskLevel, setRiskLevel] = useState<string>("medium");
 
-  // Form state
-  const [formData, setFormData] = useState({
+  // Form state with proper types
+  const [formData, setFormData] = useState<CompanyProfileData>({
     company_name: "",
     tagline: "",
     industry: "",
@@ -42,7 +60,7 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
     remote_policy: "remote_first",
     mission: "",
     bio: "",
-    unique_selling_points: [] as string[],
+    unique_selling_points: [],
     growth_potential: "",
   });
 
@@ -301,7 +319,7 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
                 <Label htmlFor="stage">Company Stage *</Label>
                 <Select
                   value={formData.stage}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, stage: value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, stage: value as CompanyProfileData["stage"] }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -386,7 +404,7 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
                 <Label htmlFor="compensation_philosophy">Compensation Philosophy *</Label>
                 <Select
                   value={formData.compensation_philosophy}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, compensation_philosophy: value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, compensation_philosophy: value as CompanyProfileData["compensation_philosophy"] }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -403,7 +421,7 @@ export default function CompanyProfile({ onSave }: CompanyProfileProps) {
                 <Label htmlFor="remote_policy">Remote Policy *</Label>
                 <Select
                   value={formData.remote_policy}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, remote_policy: value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, remote_policy: value as CompanyProfileData["remote_policy"] }))}
                 >
                   <SelectTrigger>
                     <SelectValue />

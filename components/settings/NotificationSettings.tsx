@@ -6,7 +6,7 @@ import { Bell, Mail, Smartphone, Globe } from "lucide-react";
 import { useState } from "react";
 
 interface NotificationSettingsProps {
-    onSave: (notifications: any) => void;
+    onSave: (notifications: Record<string, boolean>) => void;
 }
 
 export default function NotificationSettings({ onSave }: NotificationSettingsProps) {
