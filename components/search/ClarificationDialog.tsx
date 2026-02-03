@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import type { ClarificationValues } from "@/lib/types"
 import { 
   MessageCircle, 
   MapPin, 
@@ -20,12 +21,6 @@ interface ClarificationDialogProps {
   missingFields: string[]
   clarificationPrompt: string
   onSubmit: (values: ClarificationValues) => void
-}
-
-export interface ClarificationValues {
-  job_title?: string
-  location?: string
-  experience?: string
 }
 
 const FIELD_CONFIG = {

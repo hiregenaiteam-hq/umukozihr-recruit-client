@@ -469,7 +469,7 @@ export default function PremiumSearchPage() {
           location,
           industries
         }}
-        searchResults={searchResults}
+        searchResults={searchResults || undefined}
         onContinue={handleContinueToResults}
       />
     )
