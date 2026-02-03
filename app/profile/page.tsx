@@ -9,13 +9,13 @@ import {
     ProfileTabs,
     AccountOverview,
     UsageStats,
-    ProfileSidebar,
     CandidatesHeader,
     CandidatesFilters,
     CandidateCard,
-    EmptyCandidatesState
+    EmptyCandidatesState,
+    ScoreBreakdown,
 } from "@/components/profile";
-import { getCompanyProfile, type CompanyProfileResponse } from "@/lib/api";
+import { getCompanyProfile, getUserSearchStats, type CompanyProfileResponse } from "@/lib/api";
 
 interface UserData {
     id: string;
@@ -81,11 +81,20 @@ interface Candidate {
     status?: 'new' | 'contacted' | 'interviewed' | 'hired' | 'rejected';
 }
 
+interface SearchStats {
+    total_searches: number;
+    monthly_searches: number;
+    searches_this_week: number;
+    last_search_date: string | null;
+    average_searches_per_month: number;
+}
+
 export default function UserProfilePage() {
     const [user, setUser] = useState<UserData | null>(null);
     const [companyProfile, setCompanyProfile] = useState<CompanyProfileResponse | null>(null);
+    const [searchStats, setSearchStats] = useState<SearchStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'profile' | 'candidates'>('profile');
+    const [activeTab, setActiveTab] = useState<'overview' | 'candidates' | 'account'>('overview');
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -96,20 +105,21 @@ export default function UserProfilePage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        const loadUserData = async () => {
+        const loadData = async () => {
             try {
                 const storedUserData = localStorage.getItem('user_data');
                 if (storedUserData) {
                     const userData = JSON.parse(storedUserData);
                     setUser(userData);
                     
-                    // Load company profile
-                    try {
-                        const profile = await getCompanyProfile();
-                        setCompanyProfile(profile);
-                    } catch (err) {
-                        console.log("No company profile found");
-                    }
+                    // Load company profile and search stats in parallel
+                    const [profile, stats] = await Promise.all([
+                        getCompanyProfile().catch(() => null),
+                        getUserSearchStats().catch(() => null),
+                    ]);
+                    
+                    setCompanyProfile(profile);
+                    setSearchStats(stats);
                 } else {
                     router.push('/auth');
                 }
@@ -121,7 +131,7 @@ export default function UserProfilePage() {
             }
         };
 
-        loadUserData();
+        loadData();
     }, [router]);
 
     useEffect(() => {
@@ -206,7 +216,7 @@ export default function UserProfilePage() {
     const handleStatusChange = (candidateId: number, newStatus: string) => {
         setCandidates(prev => prev.map(candidate =>
             candidate.id === candidateId
-                ? { ...candidate, status: newStatus as any }
+                ? { ...candidate, status: newStatus as Candidate['status'] }
                 : candidate
         ));
         toast({
@@ -218,7 +228,7 @@ export default function UserProfilePage() {
     const handleContact = (candidateId: number) => {
         setCandidates(prev => prev.map(candidate =>
             candidate.id === candidateId
-                ? { ...candidate, lastContacted: new Date().toISOString(), status: 'contacted' as any }
+                ? { ...candidate, lastContacted: new Date().toISOString(), status: 'contacted' as const }
                 : candidate
         ));
         toast({
@@ -259,7 +269,7 @@ export default function UserProfilePage() {
             <ProfileHero
                 user={user}
                 onNewSearch={() => router.push('/search')}
-                onEditProfile={() => { }}
+                onEditProfile={() => router.push('/settings')}
                 onLogout={handleLogout}
             />
 
@@ -271,26 +281,13 @@ export default function UserProfilePage() {
             />
 
             <main className="max-w-7xl mx-auto px-6 py-8">
-                {/* Profile Tab */}
-                {activeTab === 'profile' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Content */}
-                        <div className="lg:col-span-2 space-y-8">
-                            <AccountOverview user={user} />
-                            <UsageStats user={user} candidatesCount={candidates.length} />
-                        </div>
-
-                        {/* Sidebar */}
-                        <div className="space-y-6">
-                            <ProfileSidebar
-                                user={user}
-                                companyProfile={companyProfile}
-                                onNewSearch={() => router.push('/search')}
-                                onViewCandidates={() => setActiveTab('candidates')}
-                                onSettings={() => router.push('/settings?tab=company')}
-                            />
-                        </div>
-                    </div>
+                {/* Overview Tab - Score Breakdown */}
+                {activeTab === 'overview' && (
+                    <ScoreBreakdown
+                        companyProfile={companyProfile}
+                        searchStats={searchStats}
+                        user={user}
+                    />
                 )}
 
                 {/* Candidates Tab */}
@@ -338,6 +335,14 @@ export default function UserProfilePage() {
                                 ))}
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* Account Tab */}
+                {activeTab === 'account' && (
+                    <div className="space-y-8">
+                        <AccountOverview user={user} />
+                        <UsageStats user={user} candidatesCount={candidates.length} />
                     </div>
                 )}
             </main>

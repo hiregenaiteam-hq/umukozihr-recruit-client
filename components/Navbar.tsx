@@ -6,8 +6,6 @@ import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCompanyProfile, type CompanyProfileResponse } from "@/lib/api";
-import { Star, Building2 } from "lucide-react";
 
 interface User {
   id: string;
@@ -23,7 +21,6 @@ interface User {
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
-  const [companyProfile, setCompanyProfile] = useState<CompanyProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -34,14 +31,6 @@ export default function Navbar() {
         if (storedUserData) {
           const userData = JSON.parse(storedUserData);
           setUser(userData);
-          
-          // Load company profile for attractiveness score
-          try {
-            const profile = await getCompanyProfile();
-            setCompanyProfile(profile);
-          } catch {
-            // No company profile yet
-          }
         }
       } catch (error) {
         console.error("Failed to load user data from localStorage:", error);
@@ -92,51 +81,13 @@ export default function Navbar() {
     router.push('/profile');
   };
 
-  const handleDashboardClick = () => {
-    router.push('/dashboard');
-  };
-
   return (
     <header className="bg-linear-to-r from-white via-slate-50/95 to-white backdrop-blur-xl border-b border-slate-200/50 sticky top-0 z-50 shadow-lg shadow-umukozi-orange/5">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        <Link href="/dashboard" className="group cursor-pointer transition-all duration-300 hover:scale-105">
+        <Link href="/profile" className="group cursor-pointer transition-all duration-300 hover:scale-105">
           <BrandLogo size="md" />
         </Link>
         <div className="flex items-center gap-3">
-          {/* Company Score Badge */}
-          {companyProfile && (
-            <button
-              onClick={handleDashboardClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-umukozi-orange/10 to-orange-100 rounded-full hover:from-umukozi-orange/20 hover:to-orange-200 transition-all duration-200 group"
-              title={`${companyProfile.company_name} - Attractiveness Score`}
-            >
-              <Building2 className="w-3.5 h-3.5 text-umukozi-orange" />
-              <span className="text-xs font-medium text-slate-700 max-w-[100px] truncate hidden sm:inline">
-                {companyProfile.company_name}
-              </span>
-              <div className="flex items-center gap-0.5 bg-umukozi-orange/20 px-1.5 py-0.5 rounded-full">
-                <Star className="w-3 h-3 text-umukozi-orange fill-umukozi-orange" />
-                <span className="text-xs font-bold text-umukozi-orange">
-                  {companyProfile.attractiveness_score || 0}
-                </span>
-              </div>
-            </button>
-          )}
-
-          {/* No Company Profile */}
-          {!companyProfile && !isLoading && user && (
-            <button
-              onClick={() => router.push('/settings?tab=company')}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200 transition-all duration-200 border border-dashed border-slate-300"
-              title="Set up company profile"
-            >
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-xs font-medium text-slate-500 hidden sm:inline">
-                Add Company
-              </span>
-            </button>
-          )}
-
           {/* Subscription Tier */}
           {user?.subscription_tier && (
             <Badge className={`${getTierBadgeColor(user.subscription_tier)} text-xs font-medium`}>
@@ -161,4 +112,4 @@ export default function Navbar() {
       </div>
     </header>
   );
-} 
+}

@@ -7,3 +7,4 @@ export { default as CandidatesHeader } from "./CandidatesHeader";
 export { default as CandidatesFilters } from "./CandidatesFilters";
 export { default as CandidateCard } from "./CandidateCard";
 export { default as EmptyCandidatesState } from "./EmptyCandidatesState";
+export { default as ScoreBreakdown } from "./ScoreBreakdown";

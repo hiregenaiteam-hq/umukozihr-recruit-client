@@ -1,17 +1,18 @@
 "use client";
 
-import { User, Users } from "lucide-react";
+import { LayoutDashboard, Users, Settings } from "lucide-react";
 
 interface ProfileTabsProps {
-    activeTab: 'profile' | 'candidates';
-    onTabChange: (tab: 'profile' | 'candidates') => void;
+    activeTab: 'overview' | 'candidates' | 'account';
+    onTabChange: (tab: 'overview' | 'candidates' | 'account') => void;
     candidatesCount: number;
 }
 
 export default function ProfileTabs({ activeTab, onTabChange, candidatesCount }: ProfileTabsProps) {
     const tabs = [
-        { id: 'profile', label: 'Profile', icon: User },
-        { id: 'candidates', label: 'My Candidates', icon: Users },
+        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+        { id: 'candidates', label: 'Candidates', icon: Users },
+        { id: 'account', label: 'Account', icon: Settings },
     ];
 
     return (
