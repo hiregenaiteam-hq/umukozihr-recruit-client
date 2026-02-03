@@ -12,6 +12,15 @@ import {
 } from "@/components/results"
 import { Candidate, SearchResponse } from "@/components/results/types"
 import { ChatWidget } from "@/components/chat"
+import { getCompanyProfile, type CompanyProfileResponse } from "@/lib/api"
+
+interface CompanyContext {
+  company_name: string;
+  attractiveness_score: number;
+  stage: string;
+  compensation_philosophy: string;
+  risk_level: string;
+}
 
 function ResultsContent() {
   const [searchData, setSearchData] = useState<SearchResponse | null>(null)
@@ -21,6 +30,7 @@ function ResultsContent() {
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [companyContext, setCompanyContext] = useState<CompanyContext | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -37,6 +47,28 @@ function ResultsContent() {
     setSelectedCandidate(candidate)
     setIsChatOpen(true)
   }
+
+  useEffect(() => {
+    // Load company profile for willingness context
+    const loadCompanyProfile = async () => {
+      try {
+        const profile = await getCompanyProfile();
+        if (profile) {
+          setCompanyContext({
+            company_name: profile.company_name,
+            attractiveness_score: profile.attractiveness_score || 0,
+            stage: profile.stage,
+            compensation_philosophy: profile.compensation_philosophy,
+            risk_level: profile.risk_level || "medium",
+          });
+        }
+      } catch {
+        // No company profile - willingness context won't show
+      }
+    };
+
+    loadCompanyProfile();
+  }, []);
 
   useEffect(() => {
     // Get search data from localStorage (set by the search page)
@@ -158,6 +190,7 @@ function ResultsContent() {
                   <CandidateCard
                     candidate={candidate}
                     onSelect={handleCandidateSelect}
+                    companyContext={companyContext}
                   />
                 </div>
               ))}

@@ -967,3 +967,137 @@ export async function verifyPasswordReset(data: {
     return { success: false, message };
   }
 }
+
+// ===========================================
+// COMPANY PROFILE API FUNCTIONS
+// ===========================================
+
+export interface CompanyProfileResponse {
+  company_name: string;
+  tagline?: string;
+  industry: string;
+  headquarters: string;
+  stage: "pre-seed" | "seed" | "series_a" | "series_b" | "series_c" | "growth" | "public";
+  team_size: number;
+  funding_raised: number;
+  monthly_revenue: number;
+  is_profitable: boolean;
+  compensation_philosophy: "market_rate" | "below_market_equity" | "equity_only";
+  remote_policy: "remote_first" | "hybrid" | "office_only";
+  mission: string;
+  bio: string;
+  unique_selling_points: string[];
+  growth_potential: string;
+  attractiveness_score: number;
+  risk_level: "high" | "medium" | "low";
+}
+
+/**
+ * Get current user's company profile
+ */
+export async function getCompanyProfile(): Promise<CompanyProfileResponse | null> {
+  try {
+    const response = await apiFetch("/api/v1/users/company-profile");
+    return response?.profile || response || null;
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Update company profile
+ */
+export async function updateCompanyProfile(data: Partial<CompanyProfileResponse>): Promise<{
+  message: string;
+  profile: CompanyProfileResponse;
+  attractiveness_score: number;
+  risk_level: string;
+}> {
+  return await apiFetch("/api/v1/users/company-profile", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+/**
+ * Calculate attractiveness score breakdown (client-side calculation matching backend)
+ */
+export function calculateAttractivenessBreakdown(profile: CompanyProfileResponse | null): {
+  total: number;
+  breakdown: Array<{ label: string; value: number; earned: boolean; tip?: string }>;
+} {
+  if (!profile) {
+    return {
+      total: 0,
+      breakdown: [
+        { label: "Base Score", value: 30, earned: false, tip: "Complete your company profile" },
+        { label: "Series Funding", value: 20, earned: false, tip: "Update your funding stage" },
+        { label: "Notable Investors", value: 15, earned: false, tip: "Add your investors" },
+        { label: "Revenue Traction", value: 15, earned: false, tip: "Add monthly revenue > $100k" },
+        { label: "Remote First", value: 10, earned: false, tip: "Set remote-first policy" },
+        { label: "Profitable", value: 10, earned: false, tip: "Mark as profitable" },
+        { label: "Detailed Bio", value: 5, earned: false, tip: "Add 500+ character bio" },
+      ]
+    };
+  }
+
+  const breakdown: Array<{ label: string; value: number; earned: boolean; tip?: string }> = [];
+  let total = 30; // Base score
+  breakdown.push({ label: "Base Score", value: 30, earned: true });
+
+  // Stage bonus
+  if (["series_a", "series_b", "series_c"].includes(profile.stage)) {
+    total += 20;
+    breakdown.push({ label: "Series Funding", value: 20, earned: true });
+  } else if (profile.stage === "seed") {
+    total += 10;
+    breakdown.push({ label: "Seed Stage", value: 10, earned: true, tip: "Series funding = +20" });
+  } else if (profile.stage === "growth") {
+    total += 25;
+    breakdown.push({ label: "Growth Stage", value: 25, earned: true });
+  } else if (profile.stage === "public") {
+    total += 30;
+    breakdown.push({ label: "Public Company", value: 30, earned: true });
+  } else {
+    breakdown.push({ label: "Stage Bonus", value: 0, earned: false, tip: "Seed = +10, Series = +20" });
+  }
+
+  // Revenue bonus
+  if (profile.monthly_revenue && profile.monthly_revenue > 100000) {
+    total += 15;
+    breakdown.push({ label: "Revenue Traction", value: 15, earned: true });
+  } else {
+    breakdown.push({ label: "Revenue Traction", value: 0, earned: false, tip: "> $100k MRR = +15" });
+  }
+
+  // Remote bonus
+  if (profile.remote_policy === "remote_first") {
+    total += 10;
+    breakdown.push({ label: "Remote First", value: 10, earned: true });
+  } else {
+    breakdown.push({ label: "Remote Policy", value: 0, earned: false, tip: "Remote-first = +10" });
+  }
+
+  // Profitability bonus
+  if (profile.is_profitable) {
+    total += 10;
+    breakdown.push({ label: "Profitable", value: 10, earned: true });
+  } else {
+    breakdown.push({ label: "Profitability", value: 0, earned: false, tip: "Profitable = +10" });
+  }
+
+  // Bio bonus
+  if (profile.bio && profile.bio.length > 500) {
+    total += 5;
+    breakdown.push({ label: "Detailed Bio", value: 5, earned: true });
+  } else {
+    breakdown.push({ label: "Bio Detail", value: 0, earned: false, tip: "500+ chars = +5" });
+  }
+
+  return { total: Math.min(100, total), breakdown };
+}

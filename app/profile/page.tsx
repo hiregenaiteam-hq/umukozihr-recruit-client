@@ -15,6 +15,7 @@ import {
     CandidateCard,
     EmptyCandidatesState
 } from "@/components/profile";
+import { getCompanyProfile, type CompanyProfileResponse } from "@/lib/api";
 
 interface UserData {
     id: string;
@@ -82,6 +83,7 @@ interface Candidate {
 
 export default function UserProfilePage() {
     const [user, setUser] = useState<UserData | null>(null);
+    const [companyProfile, setCompanyProfile] = useState<CompanyProfileResponse | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'profile' | 'candidates'>('profile');
     const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -94,12 +96,20 @@ export default function UserProfilePage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        const loadUserData = () => {
+        const loadUserData = async () => {
             try {
                 const storedUserData = localStorage.getItem('user_data');
                 if (storedUserData) {
                     const userData = JSON.parse(storedUserData);
                     setUser(userData);
+                    
+                    // Load company profile
+                    try {
+                        const profile = await getCompanyProfile();
+                        setCompanyProfile(profile);
+                    } catch (err) {
+                        console.log("No company profile found");
+                    }
                 } else {
                     router.push('/auth');
                 }
@@ -274,9 +284,10 @@ export default function UserProfilePage() {
                         <div className="space-y-6">
                             <ProfileSidebar
                                 user={user}
+                                companyProfile={companyProfile}
                                 onNewSearch={() => router.push('/search')}
                                 onViewCandidates={() => setActiveTab('candidates')}
-                                onSettings={() => router.push('/settings')}
+                                onSettings={() => router.push('/settings?tab=company')}
                             />
                         </div>
                     </div>

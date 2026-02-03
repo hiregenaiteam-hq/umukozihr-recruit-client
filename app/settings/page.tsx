@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -24,14 +24,23 @@ import {
   type SubscriptionPlansResponse,
 } from "@/lib/api";
 
-export default function SettingsPage() {
+function SettingsContent() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [plans, setPlans] = useState<SubscriptionPlansResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("account");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+
+  // Handle tab from URL query parameter
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && ["account", "company", "preferences", "notifications", "billing", "security", "appearance", "help"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     loadData();
@@ -243,5 +252,22 @@ export default function SettingsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-linear-to-br from-slate-50 to-umukozi-orange/10">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-umukozi-orange border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-slate-600">Loading settings...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }

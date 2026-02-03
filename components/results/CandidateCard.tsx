@@ -4,24 +4,63 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import {
     MapPin,
     Building,
+    Building2,
     Bookmark,
     ExternalLink,
     Star,
     CheckCircle,
     TrendingUp,
     Heart,
-    AlertTriangle
+    AlertTriangle,
+    Info
 } from "lucide-react"
 import { Candidate } from "./types"
+
+interface CompanyContext {
+    company_name: string;
+    attractiveness_score: number;
+    stage: string;
+    compensation_philosophy: string;
+    risk_level: string;
+}
 
 interface CandidateCardProps {
     candidate: Candidate
     onSelect: (candidate: Candidate) => void
+    companyContext?: CompanyContext | null
 }
 
-export default function CandidateCard({ candidate, onSelect }: CandidateCardProps) {
+const getStageLabel = (stage: string) => {
+    const labels: Record<string, string> = {
+        "pre-seed": "Pre-Seed",
+        "seed": "Seed",
+        "series_a": "Series A",
+        "series_b": "Series B",
+        "series_c": "Series C",
+        "growth": "Growth",
+        "public": "Public",
+    };
+    return labels[stage] || stage;
+};
+
+const getCompensationLabel = (compensation: string) => {
+    const labels: Record<string, string> = {
+        "market_rate": "Market Rate",
+        "below_market_equity": "Below Market + Equity",
+        "equity_only": "Equity Only",
+    };
+    return labels[compensation] || compensation;
+};
+
+export default function CandidateCard({ candidate, onSelect, companyContext }: CandidateCardProps) {
     const formatExperience = (months: number) => {
         if (months < 12) return `${months} months`
         const years = Math.floor(months / 12)
@@ -153,13 +192,57 @@ export default function CandidateCard({ candidate, onSelect }: CandidateCardProp
                     </div>
                 </div>
 
-                {/* Willingness Score - NEW: Show when available from deep search */}
+                {/* Willingness Score - Show when available from deep search */}
                 {candidate.willingness_score && (
                     <div className={`mb-4 p-3 rounded-lg border ${getWillingnessColor(candidate.willingness_score.likelihood)}`}>
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                                 <Heart className="w-4 h-4" />
                                 <span className="text-xs font-medium uppercase tracking-wide">Willingness to Join</span>
+                                {/* Company Context Tooltip */}
+                                {companyContext && (
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <button className="text-gray-400 hover:text-gray-600">
+                                                    <Info className="w-3.5 h-3.5" />
+                                                </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="max-w-xs p-3 bg-white border shadow-lg">
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2 pb-2 border-b">
+                                                        <Building2 className="w-4 h-4 text-umukozi-orange" />
+                                                        <span className="font-semibold text-sm">Based on {companyContext.company_name}</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                                        <div>
+                                                            <span className="text-gray-500">Attractiveness:</span>
+                                                            <span className="ml-1 font-medium">{companyContext.attractiveness_score}/100</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-gray-500">Stage:</span>
+                                                            <span className="ml-1 font-medium">{getStageLabel(companyContext.stage)}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-gray-500">Compensation:</span>
+                                                            <span className="ml-1 font-medium">{getCompensationLabel(companyContext.compensation_philosophy)}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="text-gray-500">Risk:</span>
+                                                            <span className={`ml-1 font-medium capitalize ${
+                                                                companyContext.risk_level === 'high' ? 'text-red-600' :
+                                                                companyContext.risk_level === 'medium' ? 'text-yellow-600' : 'text-green-600'
+                                                            }`}>{companyContext.risk_level}</span>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 pt-1 border-t">
+                                                        Score reflects how likely this candidate would join YOUR company.
+                                                    </p>
+                                                </div>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                )}
                             </div>
                             <span className="font-bold">{candidate.willingness_score.score}/20</span>
                         </div>
@@ -171,6 +254,13 @@ export default function CandidateCard({ candidate, onSelect }: CandidateCardProp
                             <div className="flex items-center gap-1 mt-2 text-xs text-red-600">
                                 <AlertTriangle className="w-3 h-3" />
                                 <span>{candidate.willingness_score.red_flags[0]}</span>
+                            </div>
+                        )}
+                        {/* Green flags */}
+                        {candidate.willingness_score.green_flags && candidate.willingness_score.green_flags.length > 0 && (
+                            <div className="flex items-center gap-1 mt-2 text-xs text-green-600">
+                                <CheckCircle className="w-3 h-3" />
+                                <span>{candidate.willingness_score.green_flags[0]}</span>
                             </div>
                         )}
                     </div>
