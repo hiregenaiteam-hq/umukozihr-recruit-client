@@ -280,7 +280,7 @@ function ResultsContent() {
       <ChatWidget
         candidateId={selectedCandidate?.id}
         candidateName={selectedCandidate?.full_name}
-        candidateData={selectedCandidate}
+        candidateData={selectedCandidate ?? undefined}
         sessionId={searchData?.search_request?.session_id}
         isOpen={isChatOpen}
         onToggle={() => setIsChatOpen(!isChatOpen)}
