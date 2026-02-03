@@ -8,6 +8,7 @@ import {
   SettingsHeader,
   SettingsTabs,
   AccountSettings,
+  CompanyProfile,
   AIPreferences,
   NotificationSettings,
   BillingSettings,
@@ -174,6 +175,11 @@ export default function SettingsPage() {
         {/* Account Tab */}
         {activeTab === "account" && (
           <AccountSettings user={user as any} onSave={handleAccountSave as any} />
+        )}
+
+        {/* Company Profile Tab */}
+        {activeTab === "company" && (
+          <CompanyProfile />
         )}
 
         {/* AI Preferences Tab */}
