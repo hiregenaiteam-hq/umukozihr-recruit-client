@@ -1,27 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Users,
   MessageSquare,
-  CreditCard,
-  Settings,
+  Building2,
   ArrowRight,
   ArrowLeft,
   X,
-  CheckCircle,
+  CheckCircle2,
   Sparkles,
-  Target,
-  Zap,
-  Database,
-  Globe,
-  Brain,
-  Play,
-  ChevronRight,
-  Building2,
+  Star,
+  Rocket,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -29,308 +23,15 @@ interface OnboardingWizardProps {
   userName?: string;
 }
 
-interface OnboardingStep {
+interface Step {
   id: string;
+  badge: string;
   title: string;
-  subtitle: string;
   description: string;
   icon: React.ElementType;
-  illustration: React.ReactNode;
-  features?: { icon: React.ElementType; title: string; description: string }[];
-  tip?: string;
+  iconBg: string;
+  content: React.ReactNode;
 }
-
-const steps: OnboardingStep[] = [
-  {
-    id: "welcome",
-    title: "Welcome to UmukoziHR Recruit",
-    subtitle: "AI-Powered Talent Sourcing",
-    description:
-      "Find the perfect candidates for your team using our advanced AI-powered search technology. Let's take a quick tour of the platform.",
-    icon: Sparkles,
-    illustration: (
-      <div className="relative w-full h-64 flex items-center justify-center">
-        <div className="absolute inset-0 bg-linear-to-br from-umukozi-orange/20 to-umukozi-teal/20 rounded-3xl"></div>
-        <div className="relative flex items-center gap-8">
-          <div className="w-20 h-20 bg-umukozi-orange rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
-            <Search className="w-10 h-10 text-white" />
-          </div>
-          <ArrowRight className="w-8 h-8 text-slate-400" />
-          <div className="w-20 h-20 bg-umukozi-teal rounded-2xl flex items-center justify-center shadow-lg">
-            <Users className="w-10 h-10 text-white" />
-          </div>
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "search",
-    title: "Find Talent with Ease",
-    subtitle: "Step 1: Talent Search",
-    description:
-      "Describe the role you're hiring for, and our AI will find matching candidates from millions of professional profiles.",
-    icon: Search,
-    illustration: (
-      <div className="relative w-full h-64 bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-umukozi-orange/10 rounded-lg flex items-center justify-center">
-              <Target className="w-5 h-5 text-umukozi-orange" />
-            </div>
-            <div className="flex-1 h-8 bg-slate-100 rounded-lg animate-pulse"></div>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {["Python", "React", "AWS"].map((skill) => (
-              <span
-                key={skill}
-                className="px-3 py-1 bg-umukozi-orange/10 text-umukozi-orange text-sm rounded-full text-center"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1 h-10 bg-slate-50 rounded-lg border border-slate-200 flex items-center px-3">
-              <span className="text-sm text-slate-500">📍 Accra, Ghana</span>
-            </div>
-            <div className="flex-1 h-10 bg-slate-50 rounded-lg border border-slate-200 flex items-center px-3">
-              <span className="text-sm text-slate-500">3-5 years exp</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-    features: [
-      {
-        icon: Database,
-        title: "Database Search",
-        description: "Quick search from our talent pool",
-      },
-      {
-        icon: Globe,
-        title: "Live Search",
-        description: "Real-time web scraping",
-      },
-      {
-        icon: Zap,
-        title: "Hybrid Mode",
-        description: "Best of both worlds",
-      },
-    ],
-  },
-  {
-    id: "results",
-    title: "Review Your Matches",
-    subtitle: "Step 2: Candidate Results",
-    description:
-      "Get a ranked list of candidates with match scores. Each profile shows skills, experience, and why they're a good fit.",
-    icon: Users,
-    illustration: (
-      <div className="relative w-full h-64 bg-white rounded-2xl border border-slate-200 p-4 shadow-lg overflow-hidden">
-        <div className="space-y-3">
-          {[
-            { name: "Kwame A.", score: 95, skills: ["Python", "ML"] },
-            { name: "Ama K.", score: 88, skills: ["React", "Node"] },
-            { name: "Kofi B.", score: 82, skills: ["AWS", "Docker"] },
-          ].map((candidate, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
-            >
-              <div className="w-10 h-10 bg-linear-to-br from-umukozi-orange to-umukozi-teal rounded-full flex items-center justify-center text-white font-medium">
-                {candidate.name[0]}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-slate-800">{candidate.name}</span>
-                  <span className="text-sm font-semibold text-umukozi-orange">
-                    {candidate.score}% match
-                  </span>
-                </div>
-                <div className="flex gap-1 mt-1">
-                  {candidate.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2 py-0.5 bg-umukozi-orange/10 text-umukozi-orange text-xs rounded"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-    tip: "Click on any candidate to see their full profile and detailed match breakdown.",
-  },
-  {
-    id: "chat",
-    title: "Your AI Assistant",
-    subtitle: "Step 3: Get Intelligent Help",
-    description:
-      "Ask questions, compare candidates, get interview suggestions, and analyze search patterns. The AI assistant is always ready to help.",
-    icon: MessageSquare,
-    illustration: (
-      <div className="relative w-full h-64 bg-slate-900 rounded-2xl p-4 shadow-lg">
-        <div className="space-y-3">
-          <div className="flex justify-end">
-            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-50">
-              <span className="text-sm">Compare these two candidates for me</span>
-            </div>
-          </div>
-          <div className="flex justify-start">
-            <div className="bg-slate-800 text-slate-100 px-4 py-2 rounded-2xl rounded-bl-md max-w-62.5">
-              <span className="text-sm">
-                Based on your requirements, Kwame has stronger backend skills while Ama
-                excels in frontend...
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <div className="bg-umukozi-orange text-white px-4 py-2 rounded-2xl rounded-br-md max-w-50">
-              <span className="text-sm">What questions should I ask Kwame?</span>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="flex items-center gap-2 bg-slate-800 rounded-full px-4 py-2">
-            <span className="text-slate-400 text-sm flex-1">Ask anything...</span>
-            <Brain className="w-5 h-5 text-umukozi-orange" />
-          </div>
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: "subscription",
-    title: "Choose Your Plan",
-    subtitle: "Step 4: Flexible Pricing",
-    description:
-      "Start free with 1 search per month, or upgrade to Pro or Business for more searches and features.",
-    icon: CreditCard,
-    illustration: (
-      <div className="relative w-full h-64 flex items-center justify-center gap-4">
-        {[
-          { name: "Basic", price: "Free", searches: "1/mo", popular: false },
-          { name: "Pro", price: "GHS 3,215", searches: "20/mo", popular: true },
-          { name: "Business", price: "GHS 4,291", searches: "30/mo", popular: false },
-        ].map((plan) => (
-          <div
-            key={plan.name}
-            className={`relative bg-white rounded-xl p-4 border-2 shadow-lg ${
-              plan.popular ? "border-umukozi-orange scale-110" : "border-slate-200"
-            }`}
-          >
-            {plan.popular && (
-              <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-umukozi-orange text-white text-xs rounded-full">
-                Popular
-              </span>
-            )}
-            <div className="text-center">
-              <h4 className="font-semibold text-slate-900">{plan.name}</h4>
-              <p className="text-lg font-bold text-umukozi-orange mt-1">{plan.price}</p>
-              <p className="text-xs text-slate-500 mt-1">{plan.searches} searches</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    ),
-    tip: "You can always upgrade or downgrade your plan from Settings → Billing.",
-  },
-  {
-    id: "company",
-    title: "Complete Your Company Profile",
-    subtitle: "Step 5: Better Matches",
-    description:
-      "Tell us about your company to get personalized willingness scores. Candidates are more likely to join companies they find attractive!",
-    icon: Building2,
-    illustration: (
-      <div className="relative w-full h-64 bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-umukozi-orange to-umukozi-teal rounded-xl flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="h-4 bg-slate-100 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-slate-50 rounded w-1/2"></div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
-              <p className="text-xs text-slate-600 mb-1">Stage</p>
-              <p className="text-sm font-semibold text-orange-700">Seed</p>
-            </div>
-            <div className="p-3 bg-teal-50 rounded-lg border border-teal-100">
-              <p className="text-xs text-slate-600 mb-1">Team Size</p>
-              <p className="text-sm font-semibold text-teal-700">12 people</p>
-            </div>
-          </div>
-
-          <div className="p-3 bg-gradient-to-r from-orange-50 to-teal-50 rounded-lg border border-orange-100">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-600">Attractiveness Score</span>
-              <span className="text-lg font-bold text-orange-600">72/100</span>
-            </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 mt-2">
-              <div className="bg-gradient-to-r from-umukozi-orange to-umukozi-teal h-2 rounded-full" style={{ width: '72%' }}></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-    tip: "Higher attractiveness = better willingness scores. Complete it now or later in Settings → Company Profile.",
-  },
-  {
-    id: "ready",
-    title: "You're All Set!",
-    subtitle: "Step 6: Let's Start Finding Talent",
-    description:
-      "You now know the basics of UmukoziHR Recruit. Ready to find your next great hire?",
-    icon: CheckCircle,
-    illustration: (
-      <div className="relative w-full h-64 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="w-12 h-12 text-green-600" />
-          </div>
-          <div className="flex items-center justify-center gap-6 mt-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-umukozi-orange/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <Search className="w-6 h-6 text-umukozi-orange" />
-              </div>
-              <span className="text-xs text-slate-600">Search</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-            <div className="text-center">
-              <div className="w-12 h-12 bg-umukozi-orange/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <Users className="w-6 h-6 text-umukozi-orange" />
-              </div>
-              <span className="text-xs text-slate-600">Review</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-            <div className="text-center">
-              <div className="w-12 h-12 bg-umukozi-orange/10 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <MessageSquare className="w-6 h-6 text-umukozi-orange" />
-              </div>
-              <span className="text-xs text-slate-600">Analyze</span>
-            </div>
-            <ChevronRight className="w-5 h-5 text-slate-300" />
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-              <span className="text-xs text-slate-600">Hire</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
-  },
-];
 
 export default function OnboardingWizard({
   onComplete,
@@ -339,6 +40,204 @@ export default function OnboardingWizard({
 }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  const steps: Step[] = [
+    {
+      id: "welcome",
+      badge: "Welcome",
+      title: userName ? `Hey ${userName.split(" ")[0]}!` : "Welcome!",
+      description: "Let's take a quick 30-second tour of UmukoziHR Recruit. You'll be finding great candidates in no time.",
+      icon: Sparkles,
+      iconBg: "bg-gradient-to-br from-orange-500 to-orange-600",
+      content: (
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mb-2">
+                <Search className="w-8 h-8 text-orange-600" />
+              </div>
+              <span className="text-xs text-slate-500 font-medium">Search</span>
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-teal-100 flex items-center justify-center mb-2">
+                <Users className="w-8 h-8 text-teal-600" />
+              </div>
+              <span className="text-xs text-slate-500 font-medium">Review</span>
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mb-2">
+                <MessageSquare className="w-8 h-8 text-purple-600" />
+              </div>
+              <span className="text-xs text-slate-500 font-medium">Analyze</span>
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+            <div className="flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mb-2">
+                <CheckCircle2 className="w-8 h-8 text-green-600" />
+              </div>
+              <span className="text-xs text-slate-500 font-medium">Hire</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "search",
+      badge: "Step 1",
+      title: "Describe Who You Need",
+      description: "Just type what you're looking for. Our AI understands natural language and finds matching candidates globally.",
+      icon: Search,
+      iconBg: "bg-gradient-to-br from-orange-500 to-orange-600",
+      content: (
+        <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+          <div className="bg-white rounded-lg border border-slate-200 p-4 mb-4">
+            <p className="text-slate-700 text-sm leading-relaxed">
+              "I need a <span className="text-orange-600 font-medium">senior backend engineer</span> with <span className="text-orange-600 font-medium">Python and AWS</span> experience, preferably someone who has worked at a <span className="text-orange-600 font-medium">fintech startup</span>..."
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">Python</span>
+            <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">AWS</span>
+            <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">Backend</span>
+            <span className="px-3 py-1.5 bg-teal-100 text-teal-700 text-xs font-medium rounded-full">5+ years exp</span>
+            <span className="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">Fintech</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "results",
+      badge: "Step 2",
+      title: "Review Ranked Candidates",
+      description: "Get a ranked list of candidates with match scores. See why each person is a good fit at a glance.",
+      icon: Users,
+      iconBg: "bg-gradient-to-br from-teal-500 to-teal-600",
+      content: (
+        <div className="space-y-3">
+          {[
+            { name: "Kwame Asante", role: "Senior Backend Engineer", match: 95, skills: ["Python", "AWS", "FastAPI"] },
+            { name: "Ama Mensah", role: "Software Engineer", match: 88, skills: ["Python", "Django", "PostgreSQL"] },
+            { name: "Kofi Boateng", role: "Backend Developer", match: 82, skills: ["Python", "Docker", "Redis"] },
+          ].map((c, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 bg-white rounded-xl border border-slate-200">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-orange-500 to-teal-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                {c.name.split(" ").map(n => n[0]).join("")}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-slate-900 text-sm truncate">{c.name}</span>
+                  <span className="text-orange-600 font-bold text-sm flex-shrink-0 ml-2">{c.match}%</span>
+                </div>
+                <p className="text-xs text-slate-500 mb-2">{c.role}</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {c.skills.map(s => (
+                    <span key={s} className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded">{s}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "chat",
+      badge: "Step 3",
+      title: "Ask Your AI Assistant",
+      description: "Compare candidates, get interview questions, or analyze your hiring patterns. Just ask!",
+      icon: MessageSquare,
+      iconBg: "bg-gradient-to-br from-purple-500 to-purple-600",
+      content: (
+        <div className="bg-slate-900 rounded-xl p-5">
+          <div className="space-y-3">
+            <div className="flex justify-end">
+              <div className="bg-orange-500 text-white px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[80%]">
+                <p className="text-sm">Compare Kwame and Ama for me</p>
+              </div>
+            </div>
+            <div className="flex justify-start">
+              <div className="bg-slate-800 text-white px-4 py-2.5 rounded-2xl rounded-bl-sm max-w-[85%]">
+                <p className="text-sm leading-relaxed">Kwame has stronger AWS and infrastructure skills (5 yrs), while Ama excels in Django and web frameworks. For a backend-heavy role, I'd recommend Kwame.</p>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <div className="bg-orange-500 text-white px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[80%]">
+                <p className="text-sm">What should I ask Kwame in an interview?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "company",
+      badge: "Step 4",
+      title: "Set Up Your Company",
+      description: "Tell us about your company. This helps us predict how likely candidates are to join you.",
+      icon: Building2,
+      iconBg: "bg-gradient-to-br from-blue-500 to-blue-600",
+      content: (
+        <div className="bg-gradient-to-br from-orange-50 to-teal-50 rounded-xl p-5 border border-orange-100">
+          <div className="flex items-start gap-4 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-teal-500 flex items-center justify-center flex-shrink-0">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-slate-900">Your Company</h4>
+              <p className="text-sm text-slate-500">Complete your profile for better matches</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
+              <p className="text-xs text-slate-500 mb-1">Stage</p>
+              <p className="text-sm font-semibold text-slate-900">Series A</p>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
+              <p className="text-xs text-slate-500 mb-1">Team</p>
+              <p className="text-sm font-semibold text-slate-900">25 people</p>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
+              <p className="text-xs text-slate-500 mb-1">Remote</p>
+              <p className="text-sm font-semibold text-slate-900">Hybrid</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg border border-orange-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-medium text-slate-700">Attractiveness Score</span>
+              </div>
+              <span className="text-xl font-bold text-orange-600">72/100</span>
+            </div>
+            <div className="w-full bg-slate-100 rounded-full h-2">
+              <div className="bg-gradient-to-r from-orange-500 to-teal-500 h-2 rounded-full" style={{ width: '72%' }} />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">Higher score = candidates more likely to join</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "ready",
+      badge: "All Done!",
+      title: "You're Ready to Go",
+      description: "Start your first search and find great candidates. You can always revisit settings later.",
+      icon: Rocket,
+      iconBg: "bg-gradient-to-br from-green-500 to-green-600",
+      content: (
+        <div className="flex flex-col items-center justify-center py-6">
+          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
+          </div>
+          <p className="text-slate-600 text-center max-w-sm">
+            Click <span className="font-semibold text-orange-600">"Start Searching"</span> to find your first candidates!
+          </p>
+        </div>
+      ),
+    },
+  ];
 
   const step = steps[currentStep];
   const isFirstStep = currentStep === 0;
@@ -360,147 +259,98 @@ export default function OnboardingWizard({
     }
   };
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -300 : 300,
-      opacity: 0,
-    }),
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden">
-        {/* Skip Button */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        {/* Close Button */}
         <button
           onClick={onSkip}
           className="absolute top-4 right-4 z-10 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+          aria-label="Skip onboarding"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Progress Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100">
+        <div className="h-1 bg-slate-100">
           <div
-            className="h-full bg-umukozi-orange transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-orange-500 to-teal-500 transition-all duration-300"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-          ></div>
-        </div>
-
-        {/* Step Indicators */}
-        <div className="flex items-center justify-center gap-2 pt-8 pb-4">
-          {steps.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setDirection(index > currentStep ? 1 : -1);
-                setCurrentStep(index);
-              }}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentStep
-                  ? "w-6 bg-umukozi-orange"
-                  : index < currentStep
-                  ? "bg-umukozi-orange/50"
-                  : "bg-slate-200"
-              }`}
-            />
-          ))}
+          />
         </div>
 
         {/* Content */}
-        <div className="px-8 pb-8 overflow-hidden">
-          <AnimatePresence mode="wait" custom={direction}>
+        <div className="p-6">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={currentStep}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              initial={{ opacity: 0, x: direction > 0 ? 20 : -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction > 0 ? -20 : 20 }}
+              transition={{ duration: 0.2 }}
             >
-              {/* Step Header */}
+              {/* Header */}
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-umukozi-orange/10 rounded-2xl mb-4">
-                  <step.icon className="w-7 h-7 text-umukozi-orange" />
+                <div className={`inline-flex items-center justify-center w-12 h-12 ${step.iconBg} rounded-xl mb-3`}>
+                  <step.icon className="w-6 h-6 text-white" />
                 </div>
-                <p className="text-sm text-umukozi-orange font-medium mb-1">{step.subtitle}</p>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                  {currentStep === 0 && userName ? `${step.title}, ${userName}!` : step.title}
-                </h2>
-                <p className="text-slate-600 max-w-lg mx-auto">{step.description}</p>
+                <span className="block text-xs font-medium text-orange-600 uppercase tracking-wide mb-1">
+                  {step.badge}
+                </span>
+                <h2 className="text-xl font-bold text-slate-900 mb-2">{step.title}</h2>
+                <p className="text-sm text-slate-600 leading-relaxed">{step.description}</p>
               </div>
 
-              {/* Illustration */}
-              <div className="mb-6">{step.illustration}</div>
-
-              {/* Features Grid */}
-              {step.features && (
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  {step.features.map((feature, index) => (
-                    <div key={index} className="text-center p-3 bg-slate-50 rounded-xl">
-                      <feature.icon className="w-5 h-5 text-umukozi-orange mx-auto mb-2" />
-                      <h4 className="text-sm font-medium text-slate-900">{feature.title}</h4>
-                      <p className="text-xs text-slate-500">{feature.description}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Tip */}
-              {step.tip && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-6">
-                  <p className="text-sm text-blue-800 flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 mt-0.5 shrink-0 text-blue-600" />
-                    {step.tip}
-                  </p>
-                </div>
-              )}
+              {/* Step Content */}
+              <div className="mb-6">{step.content}</div>
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation */}
           <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-            <button
+            <Button
+              variant="ghost"
               onClick={prevStep}
               disabled={isFirstStep}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                isFirstStep
-                  ? "text-slate-300 cursor-not-allowed"
-                  : "text-slate-600 hover:bg-slate-100"
-              }`}
+              className={isFirstStep ? "opacity-0 pointer-events-none" : ""}
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Back
-            </button>
+            </Button>
 
-            <span className="text-sm text-slate-400">
-              {currentStep + 1} of {steps.length}
-            </span>
+            <div className="flex gap-1.5">
+              {steps.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setDirection(i > currentStep ? 1 : -1);
+                    setCurrentStep(i);
+                  }}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    i === currentStep
+                      ? "w-6 bg-orange-500"
+                      : i < currentStep
+                      ? "bg-orange-300"
+                      : "bg-slate-200"
+                  }`}
+                  aria-label={`Go to step ${i + 1}`}
+                />
+              ))}
+            </div>
 
-            <button
-              onClick={nextStep}
-              className="flex items-center gap-2 px-6 py-2 bg-umukozi-orange text-white rounded-lg hover:bg-umukozi-orange-dark transition-colors"
-            >
+            <Button onClick={nextStep} className="bg-orange-500 hover:bg-orange-600">
               {isLastStep ? (
                 <>
-                  <Play className="w-4 h-4" />
-                  Get Started
+                  Start Searching
+                  <Rocket className="w-4 h-4 ml-2" />
                 </>
               ) : (
                 <>
                   Next
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
