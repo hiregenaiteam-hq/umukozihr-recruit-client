@@ -13,9 +13,15 @@ interface Message {
   content: string;
   timestamp: Date;
   isTyping?: boolean;
+  isStatusUpdate?: boolean;  // New: for workflow status messages
   clarification?: {
     missing_fields: string[];
     suggestions?: string[];
+  };
+  workflowStatus?: {
+    current_step: string;
+    step_progress: number;
+    step_message: string;
   };
 }
 
@@ -27,6 +33,11 @@ interface SearchChatProps {
     missing_fields: string[];
     clarification_prompt: string;
   } | null;
+  workflowStatus?: {
+    current_step: string;
+    step_progress: number;
+    step_message: string;
+  } | null;
 }
 
 export default function SearchChat({
@@ -34,6 +45,7 @@ export default function SearchChat({
   onClarificationResponse,
   isSearching,
   clarificationData,
+  workflowStatus,
 }: SearchChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -69,6 +81,30 @@ export default function SearchChat({
       setMessages((prev) => [...prev, clarificationMessage]);
     }
   }, [clarificationData]);
+
+  // Handle workflow status updates from parent
+  useEffect(() => {
+    if (workflowStatus && workflowStatus.current_step !== "idle" && workflowStatus.current_step !== "complete") {
+      const statusMessage: Message = {
+        id: `status-${Date.now()}`,
+        role: "assistant",
+        content: workflowStatus.step_message,
+        timestamp: new Date(),
+        isStatusUpdate: true,
+        workflowStatus: {
+          current_step: workflowStatus.current_step,
+          step_progress: workflowStatus.step_progress,
+          step_message: workflowStatus.step_message,
+        },
+      };
+      
+      setMessages((prev) => {
+        // Remove previous status messages to avoid duplicates
+        const filtered = prev.filter(msg => !msg.isStatusUpdate);
+        return [...filtered, statusMessage];
+      });
+    }
+  }, [workflowStatus]);
 
   const getMissingSuggestions = (fields: string[]): string[] => {
     const suggestions: string[] = [];
@@ -195,6 +231,16 @@ export default function SearchChat({
                 <div className="flex items-center gap-1">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span className="text-sm">Searching...</span>
+                </div>
+              ) : message.isStatusUpdate ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                  <span className="text-sm text-blue-600 font-medium">{message.content}</span>
+                  {message.workflowStatus && (
+                    <div className="ml-auto text-xs text-slate-400">
+                      {Math.round(message.workflowStatus.step_progress * 100)}%
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>

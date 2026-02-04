@@ -14,7 +14,8 @@ import {
   ExperienceRange,
   LocationAutocomplete,
   SearchChat,
-  ResultsPanel
+  ResultsPanel,
+  WorkflowProgress
 } from "@/components/search"
 
 import {
@@ -80,6 +81,13 @@ export default function ChatSearchPage() {
     missing_fields: string[]
     clarification_prompt: string
   } | null>(null)
+  
+  // Workflow status state
+  const [workflowStatus, setWorkflowStatus] = useState<{
+    current_step: string
+    step_progress: number
+    step_message: string
+  } | null>({ current_step: "idle", step_progress: 0, step_message: "Ready to search" })
   
   // Manual form state
   const [currentStep, setCurrentStep] = useState(1)
@@ -179,6 +187,7 @@ export default function ChatSearchPage() {
     setSearchStatus("searching")
     setClarificationData(null)
     setErrorMessage("")
+    setWorkflowStatus({ current_step: "analyzing", step_progress: 0.1, step_message: "Preparing your search..." })
 
     try {
       const token = await ensureValidToken()
@@ -216,6 +225,12 @@ export default function ChatSearchPage() {
 
       const data = await response.json()
       console.log("Chat search response:", data)
+      
+      // Set workflow status if available
+      if (data.workflow_status) {
+        setWorkflowStatus(data.workflow_status)
+        console.log("📊 Workflow status updated:", data.workflow_status)
+      }
 
       // Check if API needs clarification
       if (data.needs_clarification && data.clarification) {
@@ -223,6 +238,7 @@ export default function ChatSearchPage() {
         console.log("📊 Setting searchStatus to 'clarifying' (was:", searchStatus, ")")
         setClarificationData(data.clarification)
         setSearchStatus("clarifying")
+        setWorkflowStatus(null) // Clear workflow status during clarification
         console.log("✅ Input should now be ENABLED for user response")
         return
       }
@@ -231,6 +247,7 @@ export default function ChatSearchPage() {
       if (!data.success) {
         setErrorMessage(data.message || "Search failed. Please try again.")
         setSearchStatus("error")
+        setWorkflowStatus(null) // Clear workflow status
         setToast({ type: "error", message: data.message || "Search failed. Please try again." })
         return
       }
@@ -240,6 +257,7 @@ export default function ChatSearchPage() {
         setCandidates([])
         setTotalFound(0)
         setSearchStatus("complete")
+        setWorkflowStatus(null) // Clear workflow status
         setToast({ 
           type: "error", 
           message: data.warnings?.[0] || "No candidates found. Try broadening your search criteria." 
@@ -251,6 +269,7 @@ export default function ChatSearchPage() {
       setCandidates(transformed)
       setTotalFound(data.candidates.length)
       setSearchStatus("complete")
+      setWorkflowStatus(null) // Clear workflow status
       
       // Show success toast
       setToast({ 
@@ -272,6 +291,7 @@ export default function ChatSearchPage() {
       const norm = normalizeError(err)
       setErrorMessage(`${norm.title}: ${norm.description}`)
       setSearchStatus("error")
+      setWorkflowStatus(null) // Clear workflow status on error
       setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
     }
   }, [])
@@ -304,6 +324,7 @@ export default function ChatSearchPage() {
     setIsSubmitting(true)
     setSearchStatus("searching")
     setErrorMessage("")
+    setWorkflowStatus({ current_step: "analyzing", step_progress: 0.1, step_message: "Preparing your search..." })
 
     try {
       const token = await ensureValidToken()
@@ -360,6 +381,7 @@ export default function ChatSearchPage() {
       if (data.needs_clarification && data.clarification) {
         setClarificationData(data.clarification)
         setSearchStatus("clarifying")
+        setWorkflowStatus(null) // Clear workflow status during clarification
         setIsSubmitting(false)
         return
       }
@@ -369,6 +391,7 @@ export default function ChatSearchPage() {
         setCandidates([])
         setTotalFound(0)
         setSearchStatus("complete")
+        setWorkflowStatus(null) // Clear workflow status
         setIsSubmitting(false)
         return
       }
@@ -390,6 +413,7 @@ export default function ChatSearchPage() {
       setCandidates(transformed)
       setTotalFound(data.total_results || transformed.length)
       setSearchStatus("complete")
+      setWorkflowStatus(null) // Clear workflow status
 
       // Store for results page
       localStorage.setItem('searchResults', JSON.stringify(data))
@@ -399,6 +423,7 @@ export default function ChatSearchPage() {
       const norm = normalizeError(err)
       setErrorMessage(`${norm.title}: ${norm.description}`)
       setSearchStatus("error")
+      setWorkflowStatus(null) // Clear workflow status on error
       try {
         const parsed = parseValidationDetails(err as Error & { body?: unknown })
         if (Object.keys(parsed).length) setFieldErrors(parsed)
@@ -467,6 +492,7 @@ export default function ChatSearchPage() {
                 onClarificationResponse={handleClarificationResponse}
                 isSearching={searchStatus === "searching"} // Enable input when clarifying
                 clarificationData={clarificationData}
+                workflowStatus={workflowStatus}
               />
             ) : (
               <ManualSearchForm
@@ -511,6 +537,15 @@ export default function ChatSearchPage() {
           />
         </div>
       </div>
+
+      {/* Workflow Progress Indicator */}
+      {workflowStatus && (
+        <WorkflowProgress
+          currentStep={workflowStatus.current_step}
+          progress={workflowStatus.step_progress}
+          message={workflowStatus.step_message}
+        />
+      )}
 
       {/* Toast Notification */}
       {toast && (
