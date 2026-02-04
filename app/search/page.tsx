@@ -75,6 +75,7 @@ export default function ChatSearchPage() {
   const [totalFound, setTotalFound] = useState<number>(0)
   
   // Clarification state
+  const [originalPrompt, setOriginalPrompt] = useState("") // Track original prompt for clarification
   const [clarificationData, setClarificationData] = useState<{
     missing_fields: string[]
     clarification_prompt: string
@@ -168,6 +169,11 @@ export default function ChatSearchPage() {
     if (!prompt || prompt.trim().length < 10) {
       setToast({ type: "error", message: "Please describe who you're looking for in at least 10 characters." })
       return
+    }
+
+    // Store original prompt if this is the first attempt (not a clarification response)
+    if (!clarificationData) {
+      setOriginalPrompt(prompt)
     }
 
     setSearchStatus("searching")
@@ -270,10 +276,16 @@ export default function ChatSearchPage() {
 
   // Handle clarification response
   const handleClarificationResponse = useCallback((response: string) => {
-    // Build new prompt with clarification
-    const clarifiedPrompt = response
+    // Combine original prompt with clarification response for complete context
+    const clarifiedPrompt = originalPrompt 
+      ? `${originalPrompt}. ${response}` 
+      : response
+    
+    console.log("Clarification response:", { original: originalPrompt, response, combined: clarifiedPrompt })
+    
+    // Re-search with complete prompt
     handleChatSearch(clarifiedPrompt, false)
-  }, [handleChatSearch])
+  }, [handleChatSearch, originalPrompt])
 
   // Handle manual form submit
   const handleManualSubmit = async () => {
