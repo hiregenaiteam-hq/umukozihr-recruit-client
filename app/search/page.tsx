@@ -219,9 +219,11 @@ export default function ChatSearchPage() {
 
       // Check if API needs clarification
       if (data.needs_clarification && data.clarification) {
-        console.log("Clarification needed:", data.clarification)
+        console.log("⚠️ Clarification needed - enabling input:", data.clarification)
+        console.log("📊 Setting searchStatus to 'clarifying' (was:", searchStatus, ")")
         setClarificationData(data.clarification)
         setSearchStatus("clarifying")
+        console.log("✅ Input should now be ENABLED for user response")
         return
       }
 
@@ -463,7 +465,7 @@ export default function ChatSearchPage() {
               <SearchChat
                 onSearch={handleChatSearch}
                 onClarificationResponse={handleClarificationResponse}
-                isSearching={searchStatus === "searching"}
+                isSearching={searchStatus === "searching"} // Enable input when clarifying
                 clarificationData={clarificationData}
               />
             ) : (
