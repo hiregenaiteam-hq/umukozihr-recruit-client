@@ -223,6 +223,7 @@ export default function ChatSearchPage() {
       if (!data.success) {
         setErrorMessage(data.message || "Search failed. Please try again.")
         setSearchStatus("error")
+        setToast({ type: "error", message: data.message || "Search failed. Please try again." })
         return
       }
 
@@ -231,6 +232,10 @@ export default function ChatSearchPage() {
         setCandidates([])
         setTotalFound(0)
         setSearchStatus("complete")
+        setToast({ 
+          type: "error", 
+          message: data.warnings?.[0] || "No candidates found. Try broadening your search criteria." 
+        })
         return
       }
 
@@ -239,18 +244,27 @@ export default function ChatSearchPage() {
       setTotalFound(data.candidates.length)
       setSearchStatus("complete")
       
+      // Show success toast
+      setToast({ 
+        type: "success", 
+        message: `Found ${data.candidates.length} candidate${data.candidates.length > 1 ? 's' : ''}! Check the results panel →` 
+      })
+      
       // Store for results page navigation
       localStorage.setItem('searchResults', JSON.stringify({
-        search_id: `prompt-${Date.now()}`,
+        search_id: data.search_id || `prompt-${Date.now()}`,
         results: transformed,
         total_results: data.candidates.length,
         timestamp: new Date().toISOString(),
+        search_metadata: data.search_metadata,
+        company_context: data.company_context,
       }))
 
     } catch (err: unknown) {
       const norm = normalizeError(err)
       setErrorMessage(`${norm.title}: ${norm.description}`)
       setSearchStatus("error")
+      setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
     }
   }, [])
 
