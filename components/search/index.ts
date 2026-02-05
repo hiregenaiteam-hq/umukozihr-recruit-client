@@ -18,3 +18,4 @@ export { default as PromptInput } from "./PromptInput";
 export { default as SearchChat } from "./SearchChat";
 export { default as ResultsPanel } from "./ResultsPanel";
 export { default as WorkflowProgress } from "./WorkflowProgress";
+export { default as SearchProgressPanel } from "./SearchProgressPanel";

@@ -5,6 +5,7 @@ import { Users, MapPin, Briefcase, Star, ExternalLink, Search, Loader2 } from "l
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+import SearchProgressPanel from "./SearchProgressPanel";
 interface Candidate {
   id: number;
   full_name: string;
@@ -21,6 +22,12 @@ interface Candidate {
   } | null;
 }
 
+interface WorkflowStatus {
+  current_step: string;
+  step_progress: number;
+  step_message: string;
+}
+
 interface ResultsPanelProps {
   candidates: Candidate[];
   isLoading: boolean;
@@ -28,6 +35,7 @@ interface ResultsPanelProps {
   totalFound?: number;
   onViewProfile: (id: number) => void;
   errorMessage?: string;
+  workflowStatus?: WorkflowStatus | null;
 }
 
 export default function ResultsPanel({
@@ -37,6 +45,7 @@ export default function ResultsPanel({
   totalFound,
   onViewProfile,
   errorMessage,
+  workflowStatus,
 }: ResultsPanelProps) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
@@ -59,6 +68,16 @@ export default function ResultsPanel({
 
   // Loading state
   if (isLoading || searchStatus === "searching") {
+    // Show progress panel when workflowStatus is available
+    if (workflowStatus && workflowStatus.current_step !== "idle") {
+      return (
+        <div className="h-full flex flex-col p-4">
+          <SearchProgressPanel workflowStatus={workflowStatus} />
+        </div>
+      );
+    }
+    
+    // Fallback loading state
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
         <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">

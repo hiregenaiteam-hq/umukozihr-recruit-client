@@ -172,7 +172,7 @@ export default function ChatSearchPage() {
     }))
   }
 
-  // Handle chat search
+  // Handle chat search with SSE streaming
   const handleChatSearch = useCallback(async (prompt: string, deepResearch: boolean) => {
     if (!prompt || prompt.trim().length < 10) {
       setToast({ type: "error", message: "Please describe who you're looking for in at least 10 characters." })
@@ -200,7 +200,7 @@ export default function ChatSearchPage() {
       
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
-        "Accept": "application/json",
+        "Accept": "text/event-stream",
         "Authorization": `Bearer ${token}`
       }
 
@@ -210,9 +210,10 @@ export default function ChatSearchPage() {
         use_deep_research: deepResearch,
       }
 
-      console.log("Submitting chat search:", promptPayload)
+      console.log("[SSE Search] Starting:", promptPayload)
 
-      const response = await fetch("/api/search", {
+      // Use SSE streaming endpoint
+      const response = await fetch("/api/search/stream", {
         method: "POST",
         headers,
         body: JSON.stringify(promptPayload),
@@ -220,81 +221,125 @@ export default function ChatSearchPage() {
       })
 
       if (!response.ok) {
+        const errorText = await response.text()
+        console.error("[SSE Search] Error:", response.status, errorText)
         throw new Error(`Request failed: ${response.status}`)
       }
 
-      const data = await response.json()
-      console.log("Chat search response:", data)
-      
-      // Set workflow status if available
-      if (data.workflow_status) {
-        setWorkflowStatus(data.workflow_status)
-        console.log("📊 Workflow status updated:", data.workflow_status)
+      if (!response.body) {
+        throw new Error("No response body")
       }
 
-      // Check if API needs clarification
-      if (data.needs_clarification && data.clarification) {
-        console.log("⚠️ Clarification needed - enabling input:", data.clarification)
-        console.log("📊 Setting searchStatus to 'clarifying' (was:", searchStatus, ")")
-        setClarificationData(data.clarification)
-        setSearchStatus("clarifying")
-        setWorkflowStatus(null) // Clear workflow status during clarification
-        console.log("✅ Input should now be ENABLED for user response")
-        return
+      // Read SSE stream
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        
+        if (done) {
+          console.log("[SSE Search] Stream ended")
+          break
+        }
+
+        buffer += decoder.decode(value, { stream: true })
+        
+        // Process complete SSE events from buffer
+        const lines = buffer.split("\n")
+        buffer = lines.pop() || ""
+        
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const jsonStr = line.slice(6).trim()
+            if (!jsonStr) continue
+            
+            try {
+              const event = JSON.parse(jsonStr)
+              console.log("[SSE Search] Event:", event.type, event)
+              
+              if (event.type === "progress") {
+                setWorkflowStatus({
+                  current_step: event.step,
+                  step_progress: event.progress,
+                  step_message: event.message
+                })
+              } 
+              else if (event.type === "clarification") {
+                console.log("[SSE Search] Clarification needed:", event.clarification)
+                setClarificationData(event.clarification)
+                setSearchStatus("clarifying")
+                setWorkflowStatus(null)
+                return // Exit early for clarification
+              }
+              else if (event.type === "complete") {
+                console.log("[SSE Search] Complete:", event.candidates?.length, "candidates")
+                
+                if (!event.candidates || event.candidates.length === 0) {
+                  setCandidates([])
+                  setTotalFound(0)
+                  setSearchStatus("complete")
+                  setWorkflowStatus(null)
+                  setToast({ 
+                    type: "error", 
+                    message: event.warnings?.[0] || "No candidates found. Try broadening your search criteria." 
+                  })
+                  return
+                }
+
+                const transformed = transformCandidates(event.candidates)
+                setCandidates(transformed)
+                setTotalFound(event.candidates.length)
+                setSearchStatus("complete")
+                setWorkflowStatus(null)
+                
+                setToast({ 
+                  type: "success", 
+                  message: `Found ${event.candidates.length} candidate${event.candidates.length > 1 ? 's' : ''}! Check the results panel →` 
+                })
+                
+                // Store for results page navigation
+                localStorage.setItem('searchResults', JSON.stringify({
+                  search_id: event.search_id || `prompt-${Date.now()}`,
+                  results: transformed,
+                  total_results: event.candidates.length,
+                  timestamp: new Date().toISOString(),
+                  search_metadata: event.search_metadata,
+                  company_context: event.company_context,
+                }))
+                return // Exit after complete
+              }
+              else if (event.type === "error") {
+                console.error("[SSE Search] Error event:", event.message)
+                setErrorMessage(event.message || "Search failed. Please try again.")
+                setSearchStatus("error")
+                setWorkflowStatus(null)
+                setToast({ type: "error", message: event.message || "Search failed. Please try again." })
+                return
+              }
+            } catch (parseErr) {
+              console.warn("[SSE Search] Parse error:", jsonStr, parseErr)
+            }
+          }
+        }
       }
 
-      // Check for errors
-      if (!data.success) {
-        setErrorMessage(data.message || "Search failed. Please try again.")
+      // If we reach here without a complete/error event, handle gracefully
+      if (searchStatus === "searching") {
         setSearchStatus("error")
-        setWorkflowStatus(null) // Clear workflow status
-        setToast({ type: "error", message: data.message || "Search failed. Please try again." })
-        return
+        setWorkflowStatus(null)
+        setErrorMessage("Search stream ended unexpectedly")
+        setToast({ type: "error", message: "Search stream ended unexpectedly. Please try again." })
       }
-
-      // Process results
-      if (!data.candidates || data.candidates.length === 0) {
-        setCandidates([])
-        setTotalFound(0)
-        setSearchStatus("complete")
-        setWorkflowStatus(null) // Clear workflow status
-        setToast({ 
-          type: "error", 
-          message: data.warnings?.[0] || "No candidates found. Try broadening your search criteria." 
-        })
-        return
-      }
-
-      const transformed = transformCandidates(data.candidates)
-      setCandidates(transformed)
-      setTotalFound(data.candidates.length)
-      setSearchStatus("complete")
-      setWorkflowStatus(null) // Clear workflow status
-      
-      // Show success toast
-      setToast({ 
-        type: "success", 
-        message: `Found ${data.candidates.length} candidate${data.candidates.length > 1 ? 's' : ''}! Check the results panel →` 
-      })
-      
-      // Store for results page navigation
-      localStorage.setItem('searchResults', JSON.stringify({
-        search_id: data.search_id || `prompt-${Date.now()}`,
-        results: transformed,
-        total_results: data.candidates.length,
-        timestamp: new Date().toISOString(),
-        search_metadata: data.search_metadata,
-        company_context: data.company_context,
-      }))
 
     } catch (err: unknown) {
       const norm = normalizeError(err)
       setErrorMessage(`${norm.title}: ${norm.description}`)
       setSearchStatus("error")
-      setWorkflowStatus(null) // Clear workflow status on error
+      setWorkflowStatus(null)
       setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
     }
-  }, [])
+  }, [clarificationData, searchStatus])
 
   // Handle clarification response
   const handleClarificationResponse = useCallback((response: string) => {
@@ -363,7 +408,7 @@ export default function ChatSearchPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Accept": "text/event-stream",
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload),
@@ -534,6 +579,7 @@ export default function ChatSearchPage() {
             totalFound={totalFound}
             onViewProfile={handleViewProfile}
             errorMessage={errorMessage}
+            workflowStatus={workflowStatus}
           />
         </div>
       </div>
