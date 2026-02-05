@@ -1,6 +1,10 @@
 import { NextRequest } from "next/server";
 import baseUrl from "@/lib/config";
 
+// Force dynamic rendering for SSE streaming
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * SSE Streaming proxy for search progress updates.
  * 

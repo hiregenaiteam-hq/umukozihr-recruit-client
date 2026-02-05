@@ -584,15 +584,6 @@ export default function ChatSearchPage() {
         </div>
       </div>
 
-      {/* Workflow Progress Indicator */}
-      {workflowStatus && (
-        <WorkflowProgress
-          currentStep={workflowStatus.current_step}
-          progress={workflowStatus.step_progress}
-          message={workflowStatus.step_message}
-        />
-      )}
-
       {/* Toast Notification */}
       {toast && (
         <div className={`fixed right-8 bottom-8 p-6 rounded-lg shadow-lg border z-50 ${
