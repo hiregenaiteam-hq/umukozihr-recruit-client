@@ -103,6 +103,9 @@ export default function SearchChat({
         const filtered = prev.filter(msg => !msg.isStatusUpdate);
         return [...filtered, statusMessage];
       });
+    } else {
+      // Clear status messages when workflow is null, idle, or complete
+      setMessages((prev) => prev.filter(msg => !msg.isStatusUpdate));
     }
   }, [workflowStatus]);
 
