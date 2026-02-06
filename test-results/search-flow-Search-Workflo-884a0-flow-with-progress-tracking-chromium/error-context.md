@@ -1,0 +1,75 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "UmukoziHR Icon UmukoziHR Recruit" [ref=e5] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e6]:
+            - img "UmukoziHR Icon" [ref=e8]
+            - generic [ref=e9]:
+              - generic [ref=e10]: UmukoziHR
+              - generic [ref=e11]: Recruit
+        - generic [ref=e12]:
+          - generic [ref=e13]: free
+          - button "Profile" [ref=e14]:
+            - generic [ref=e16] [cursor=pointer]: JQ
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - generic [ref=e20]:
+          - button "Chat AI" [ref=e21]:
+            - img [ref=e22]
+            - text: Chat
+            - generic [ref=e24]: AI
+          - button "Manual Fields" [ref=e25]:
+            - img [ref=e26]
+            - text: Manual Fields
+        - generic [ref=e28]:
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - img [ref=e33]
+              - generic [ref=e36]:
+                - heading "AI Search" [level=3] [ref=e37]
+                - paragraph [ref=e38]: Describe who you need
+            - generic [ref=e39]:
+              - generic [ref=e40]: Deep Research
+              - switch "Deep Research" [ref=e41] [cursor=pointer]
+          - generic [ref=e42]:
+            - generic [ref=e43]:
+              - img [ref=e45]
+              - paragraph [ref=e49]: "Hi! Tell me who you're looking to hire. For example: \"I need a senior Python developer in Nigeria with 5+ years experience\" or \"Find me a marketing manager for our fintech startup in Kenya\""
+            - generic [ref=e50]:
+              - img [ref=e52]
+              - paragraph [ref=e56]: Software Engineer in Ghana with 5 years experience
+            - generic [ref=e57]:
+              - img [ref=e59]
+              - paragraph [ref=e63]:
+                - text: Got it! I'll search for a
+                - strong [ref=e64]: Software Engineer
+                - text: in
+                - strong [ref=e65]: Ghana
+                - text: with
+                - strong [ref=e66]: 5 years of experience
+                - text: . Does that sound right?
+            - generic [ref=e67]:
+              - img [ref=e69]
+              - paragraph [ref=e73]: yes go ahead
+            - generic [ref=e74]:
+              - img [ref=e76]
+              - paragraph [ref=e80]: I apologize, I couldn't generate a response.
+          - generic [ref=e82]:
+            - textbox "Describe who you're looking for..." [ref=e83]
+            - button [disabled]:
+              - img
+      - generic [ref=e85]:
+        - img [ref=e87]
+        - heading "Ready to Search" [level=3] [ref=e92]
+        - paragraph [ref=e93]: Describe who you're looking for in the chat, and candidates will appear here.
+  - region "Notifications (F8)":
+    - list
+  - button "Open Next.js Dev Tools" [ref=e99] [cursor=pointer]:
+    - img [ref=e100]
+  - alert [ref=e103]
+```
