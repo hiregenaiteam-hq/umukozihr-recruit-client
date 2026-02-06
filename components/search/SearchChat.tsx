@@ -7,6 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+// Simple markdown renderer for bold text
+const renderMarkdown = (text: string) => {
+  // Split by **text** pattern and render bold
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+};
+
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -249,7 +261,7 @@ export default function SearchChat({
                 </div>
               ) : (
                 <>
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap">{renderMarkdown(message.content)}</p>
                   
                   {/* Clarification suggestions */}
                   {message.clarification && (
