@@ -273,9 +273,20 @@ export default function ChatSearchPage() {
               
               // Handle new event types
               if (event.type === "message") {
-                // Chat response from assistant - stay in analyzing state, show message
-                console.log("[ChatSearch] Assistant message:", event.content?.substring(0, 50))
-                addAssistantMessage(event.content || "")
+                // Ensure content is a string (Gemini may return complex types)
+                let messageContent = event.content
+                if (typeof messageContent !== 'string') {
+                  if (Array.isArray(messageContent)) {
+                    // Handle Gemini list format: [{"type": "text", "text": "..."}]
+                    messageContent = messageContent.map((p: { text?: string }) => p.text || String(p)).join('')
+                  } else if (messageContent && typeof messageContent === 'object') {
+                    messageContent = messageContent.text || JSON.stringify(messageContent)
+                  } else {
+                    messageContent = String(messageContent || '')
+                  }
+                }
+                console.log("[ChatSearch] Assistant message:", messageContent?.substring(0, 50))
+                addAssistantMessage(messageContent || "")
                 // Keep analyzing state - this is just conversation
                 setSearchStatus("idle")
               }
@@ -344,7 +355,12 @@ export default function ChatSearchPage() {
                 return
               }
             } catch (parseErr) {
-              console.warn("[ChatSearch] Parse error:", jsonStr, parseErr)
+              // Separate JSON parse errors from other errors
+              if (parseErr instanceof SyntaxError) {
+                console.warn("[ChatSearch] JSON Parse error:", jsonStr?.substring(0, 100), parseErr)
+              } else {
+                console.error("[ChatSearch] Event handling error:", parseErr)
+              }
             }
           }
         }
