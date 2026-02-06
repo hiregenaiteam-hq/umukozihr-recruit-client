@@ -235,7 +235,7 @@ export default function SearchChat({
               {message.isTyping ? (
                 <div className="flex items-center gap-1">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">Searching...</span>
+                  <span className="text-sm">Analyzing...</span>
                 </div>
               ) : message.isStatusUpdate ? (
                 <div className="flex items-center gap-2">

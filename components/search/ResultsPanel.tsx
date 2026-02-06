@@ -49,26 +49,9 @@ export default function ResultsPanel({
 }: ResultsPanelProps) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-  // Idle state - no search yet
-  if ((searchStatus === "idle" || searchStatus === "analyzing") && candidates.length === 0) {
-    // If analyzing, show a brief analyzing message
-    if (searchStatus === "analyzing") {
-      return (
-        <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
-          <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-            <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
-          </div>
-          <h3 className="text-lg font-semibold text-slate-700 mb-2">
-            Analyzing Request
-          </h3>
-          <p className="text-sm text-slate-500 max-w-xs">
-            Understanding your requirements...
-          </p>
-        </div>
-      );
-    }
-    
-    // Normal idle state
+  // Idle state - no search yet (also keep idle during "analyzing" phase - only change when actual search starts)
+  if ((searchStatus === "idle" || searchStatus === "analyzing" || searchStatus === "clarifying") && candidates.length === 0) {
+    // Normal idle state - stay unchanged until search actually starts
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
@@ -120,22 +103,6 @@ export default function ResultsPanel({
     );
   }
 
-  // Clarifying state
-  if (searchStatus === "clarifying") {
-    return (
-      <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-amber-50 rounded-2xl border border-amber-200">
-        <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center mb-4">
-          <Search className="w-8 h-8 text-amber-600" />
-        </div>
-        <h3 className="text-lg font-semibold text-amber-800 mb-2">
-          Need More Details
-        </h3>
-        <p className="text-sm text-amber-700 max-w-xs">
-          Please answer the questions in the chat to help narrow down your search.
-        </p>
-      </div>
-    );
-  }
 
   // Error state
   if (searchStatus === "error") {
