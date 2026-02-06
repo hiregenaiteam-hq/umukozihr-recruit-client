@@ -1,6 +1,14 @@
 "use client";
 
-import { Search, Users, Database, CheckCircle, Loader2 } from "lucide-react";
+import { Search, Users, Sparkles, CheckCircle, Loader2 } from "lucide-react";
+import {
+  Stepper,
+  StepperIndicator,
+  StepperItem,
+  StepperSeparator,
+  StepperTitle,
+} from "@/components/ui/stepper";
+import { cn } from "@/lib/utils";
 
 interface WorkflowStatus {
   current_step: string;
@@ -13,10 +21,10 @@ interface SearchProgressPanelProps {
 }
 
 const WORKFLOW_STEPS = [
-  { id: "analyzing", label: "Analyzing", icon: Search, description: "Understanding your requirements" },
-  { id: "searching", label: "Searching", icon: Users, description: "Finding matching candidates" },
-  { id: "enriching", label: "Enriching", icon: Database, description: "Getting detailed profiles" },
-  { id: "validating", label: "Validating", icon: CheckCircle, description: "Checking quality and fit" },
+  { id: "analyzing", label: "Analyzing", icon: Search },
+  { id: "searching", label: "Searching", icon: Users },
+  { id: "enriching", label: "Enriching", icon: Sparkles },
+  { id: "validating", label: "Validating", icon: CheckCircle },
 ];
 
 function getStepIndex(stepId: string | undefined): number {
@@ -33,98 +41,110 @@ export default function SearchProgressPanel({ workflowStatus }: SearchProgressPa
   const progressPercent = Math.round(workflowStatus.step_progress * 100);
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-          <h3 className="font-semibold text-slate-800">Search in Progress</h3>
-        </div>
-        <span className="text-sm font-medium text-orange-600">{progressPercent}%</span>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="w-full bg-slate-100 rounded-full h-2 mb-6 overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all duration-500 ease-out"
-          style={{ width: `${progressPercent}%` }}
-        >
-          <div className="w-full h-full bg-white/30 animate-pulse" />
-        </div>
-      </div>
-
-      {/* Step Indicators */}
-      <div className="flex justify-between mb-6">
-        {WORKFLOW_STEPS.map((step, index) => {
-          const isActive = step.id === workflowStatus.current_step;
-          const isComplete = currentIndex > index;
-          const StepIcon = step.icon;
-
-          return (
-            <div key={step.id} className="flex flex-col items-center flex-1">
-              {/* Icon Circle */}
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all duration-300 ${
-                  isComplete
-                    ? "bg-green-500 text-white"
-                    : isActive
-                    ? "bg-orange-500 text-white animate-pulse"
-                    : "bg-slate-100 text-slate-400"
-                }`}
-              >
-                {isComplete ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : isActive ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <StepIcon className="w-5 h-5" />
-                )}
-              </div>
-
-              {/* Label */}
-              <span
-                className={`text-xs font-medium text-center ${
-                  isComplete
-                    ? "text-green-600"
-                    : isActive
-                    ? "text-orange-600"
-                    : "text-slate-400"
-                }`}
-              >
-                {step.label}
-              </span>
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50/50 to-orange-50/30 p-6 border border-slate-200/60 shadow-xl shadow-slate-200/40 backdrop-blur-sm">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-teal-500/5 animate-pulse" />
+      
+      {/* Glassmorphism overlay */}
+      <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
+      
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-orange-500 rounded-full animate-ping opacity-30" />
+              <div className="relative w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-lg shadow-orange-500/50" />
             </div>
-          );
-        })}
-      </div>
+            <h3 className="font-semibold text-slate-800 text-lg tracking-tight">Search in Progress</h3>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
+              {progressPercent}%
+            </span>
+          </div>
+        </div>
 
-      {/* Connecting Lines */}
-      <div className="relative -mt-[72px] mb-6 mx-5">
-        <div className="flex justify-between items-center">
-          {WORKFLOW_STEPS.slice(0, -1).map((step, index) => {
+        {/* Progress Bar - Premium style */}
+        <div className="relative mb-8">
+          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+            <div
+              className="h-full bg-gradient-to-r from-orange-500 via-orange-400 to-teal-500 rounded-full transition-all duration-700 ease-out relative"
+              style={{ width: `${progressPercent}%` }}
+            >
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+            </div>
+          </div>
+          {/* Glow effect under progress */}
+          <div 
+            className="absolute -bottom-1 left-0 h-2 bg-gradient-to-r from-orange-500/30 to-teal-500/30 blur-md rounded-full transition-all duration-700"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Step Indicators - Using Stepper */}
+        <Stepper value={currentIndex + 1} className="justify-between mb-8">
+          {WORKFLOW_STEPS.map((step, index) => {
+            const isActive = step.id === workflowStatus.current_step;
             const isComplete = currentIndex > index;
+            const StepIcon = step.icon;
+
             return (
-              <div
-                key={`line-${step.id}`}
-                className={`flex-1 h-0.5 transition-all duration-300 ${
-                  isComplete ? "bg-green-500" : "bg-slate-200"
-                }`}
-              />
+              <StepperItem
+                key={step.id}
+                step={index + 1}
+                completed={isComplete}
+                loading={isActive}
+                className="flex-1 flex flex-col items-center"
+              >
+                <div className="flex items-center w-full">
+                  <StepperIndicator className="relative">
+                    {isActive ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : !isComplete ? (
+                      <StepIcon className="w-5 h-5" />
+                    ) : null}
+                    
+                    {/* Pulse ring for active step */}
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-full border-2 border-orange-400 animate-ping opacity-40" />
+                    )}
+                  </StepperIndicator>
+                  
+                  {/* Separator - only between steps */}
+                  {index < WORKFLOW_STEPS.length - 1 && (
+                    <StepperSeparator />
+                  )}
+                </div>
+                
+                <StepperTitle>{step.label}</StepperTitle>
+              </StepperItem>
             );
           })}
+        </Stepper>
+
+        {/* Current Status Message - Glassmorphism card */}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-50/80 to-white/80 backdrop-blur-sm border border-slate-200/50 p-4">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-teal-500/5" />
+          <div className="relative flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                <Loader2 className="w-4 h-4 text-orange-600 animate-spin" />
+              </div>
+            </div>
+            <p className="text-sm text-slate-700 font-medium">{workflowStatus.step_message}</p>
+          </div>
         </div>
-      </div>
 
-      {/* Current Status Message */}
-      <div className="text-center p-4 bg-slate-50 rounded-xl">
-        <p className="text-sm text-slate-600">{workflowStatus.step_message}</p>
-      </div>
-
-      {/* Estimated Time */}
-      <div className="text-center mt-4">
-        <p className="text-xs text-slate-400">
-          Usually takes 30-60 seconds
-        </p>
+        {/* Estimated Time */}
+        <div className="text-center mt-4">
+          <p className="text-xs text-slate-400 flex items-center justify-center gap-1.5">
+            <span className="inline-block w-1 h-1 bg-slate-300 rounded-full" />
+            Usually takes 30-60 seconds
+            <span className="inline-block w-1 h-1 bg-slate-300 rounded-full" />
+          </p>
+        </div>
       </div>
     </div>
   );
