@@ -7,7 +7,7 @@ const PUBLIC_PATHS = [
   "/favicon.ico",
   "/assets",
   "/images",
-  "/api/public",
+  "/api/",  // All API routes handle their own auth via Authorization header
   "/logo.png",
   "/umukozi-logo.png",
   "/icon.png",
