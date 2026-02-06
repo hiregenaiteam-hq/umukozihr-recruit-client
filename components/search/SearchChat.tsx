@@ -28,7 +28,8 @@ interface Message {
 interface SearchChatProps {
   onSearch: (prompt: string, deepResearch: boolean) => Promise<void>;
   onClarificationResponse: (response: string) => void;
-  isSearching: boolean;
+  isSearching: boolean;  // true when actively searching (after analysis)
+  isAnalyzing?: boolean; // true during initial prompt analysis
   clarificationData?: {
     missing_fields: string[];
     clarification_prompt: string;
@@ -44,6 +45,7 @@ export default function SearchChat({
   onSearch,
   onClarificationResponse,
   isSearching,
+  isAnalyzing = false,
   clarificationData,
   workflowStatus,
 }: SearchChatProps) {
@@ -124,7 +126,7 @@ export default function SearchChat({
   };
 
   const handleSend = async () => {
-    if (!input.trim() || isSearching) return;
+    if (!input.trim() || isSearching || isAnalyzing) return;
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -142,21 +144,21 @@ export default function SearchChat({
     if (lastMessage?.clarification) {
       onClarificationResponse(currentInput);
     } else {
-      // Add typing indicator
-      const typingMessage: Message = {
-        id: "typing",
+      // Add analyzing indicator (will be shown while backend analyzes prompt)
+      const analyzingMessage: Message = {
+        id: "analyzing",
         role: "assistant",
-        content: "",
+        content: "Analyzing your request...",
         timestamp: new Date(),
         isTyping: true,
       };
-      setMessages((prev) => [...prev, typingMessage]);
+      setMessages((prev) => [...prev, analyzingMessage]);
 
       // Trigger search
       await onSearch(currentInput, deepResearch);
 
-      // Remove typing indicator
-      setMessages((prev) => prev.filter((m) => m.id !== "typing"));
+      // Remove analyzing indicator
+      setMessages((prev) => prev.filter((m) => m.id !== "analyzing"));
     }
   };
 
@@ -313,14 +315,14 @@ export default function SearchChat({
             placeholder="Describe who you're looking for..."
             className="resize-none min-h-[44px] max-h-[120px] bg-white border-slate-200 focus:border-orange-300 focus:ring-orange-200"
             rows={1}
-            disabled={isSearching}
+            disabled={isSearching || isAnalyzing}
           />
           <Button
             onClick={handleSend}
-            disabled={!input.trim() || isSearching}
+            disabled={!input.trim() || isSearching || isAnalyzing}
             className="bg-orange-500 hover:bg-orange-600 h-[44px] px-4"
           >
-            {isSearching ? (
+            {(isSearching || isAnalyzing) ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Send className="w-4 h-4" />

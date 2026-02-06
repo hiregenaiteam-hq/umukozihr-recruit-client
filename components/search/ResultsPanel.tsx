@@ -31,7 +31,7 @@ interface WorkflowStatus {
 interface ResultsPanelProps {
   candidates: Candidate[];
   isLoading: boolean;
-  searchStatus: "idle" | "searching" | "clarifying" | "complete" | "error";
+  searchStatus: "idle" | "analyzing" | "searching" | "clarifying" | "complete" | "error";
   totalFound?: number;
   onViewProfile: (id: number) => void;
   errorMessage?: string;
@@ -50,7 +50,25 @@ export default function ResultsPanel({
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   // Idle state - no search yet
-  if (searchStatus === "idle" && candidates.length === 0) {
+  if ((searchStatus === "idle" || searchStatus === "analyzing") && candidates.length === 0) {
+    // If analyzing, show a brief analyzing message
+    if (searchStatus === "analyzing") {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
+          <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+            <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-700 mb-2">
+            Analyzing Request
+          </h3>
+          <p className="text-sm text-slate-500 max-w-xs">
+            Understanding your requirements...
+          </p>
+        </div>
+      );
+    }
+    
+    // Normal idle state
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">

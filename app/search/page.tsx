@@ -43,7 +43,7 @@ import {
 } from "@/lib/types"
 import { apiFetch, normalizeError, parseValidationDetails, getCookie, ensureValidToken, clearAuthAndRedirect } from "@/lib/api"
 
-type SearchStatus = "idle" | "searching" | "clarifying" | "complete" | "error"
+type SearchStatus = "idle" | "analyzing" | "searching" | "clarifying" | "complete" | "error"
 
 interface TransformedCandidate {
   id: number
@@ -184,10 +184,12 @@ export default function ChatSearchPage() {
       setOriginalPrompt(prompt)
     }
 
-    setSearchStatus("searching")
+    // Start in "analyzing" state - DON'T show progress panel yet
+    // Only show full progress panel after we confirm no clarification needed
+    setSearchStatus("analyzing")
     setClarificationData(null)
     setErrorMessage("")
-    setWorkflowStatus({ current_step: "analyzing", step_progress: 0.1, step_message: "Preparing your search..." })
+    setWorkflowStatus(null) // Don't show progress panel during analysis
 
     try {
       const token = await ensureValidToken()
@@ -259,11 +261,17 @@ export default function ChatSearchPage() {
               console.log("[SSE Search] Event:", event.type, event)
               
               if (event.type === "progress") {
-                setWorkflowStatus({
-                  current_step: event.step,
-                  step_progress: event.progress,
-                  step_message: event.message
-                })
+                // Only transition to "searching" and show progress panel AFTER analysis phase
+                // This ensures we don't show progress if clarification is needed
+                if (event.step !== "analyzing") {
+                  setSearchStatus("searching")
+                  setWorkflowStatus({
+                    current_step: event.step,
+                    step_progress: event.progress,
+                    step_message: event.message
+                  })
+                }
+                // During "analyzing" step, keep status as "analyzing" with no workflow progress
               } 
               else if (event.type === "clarification") {
                 console.log("[SSE Search] Clarification needed:", event.clarification)
@@ -535,7 +543,8 @@ export default function ChatSearchPage() {
               <SearchChat
                 onSearch={handleChatSearch}
                 onClarificationResponse={handleClarificationResponse}
-                isSearching={searchStatus === "searching"} // Enable input when clarifying
+                isSearching={searchStatus === "searching"}
+                isAnalyzing={searchStatus === "analyzing"}
                 clarificationData={clarificationData}
                 workflowStatus={workflowStatus}
               />
