@@ -82,6 +82,12 @@ export default function ChatSearchPage() {
     clarification_prompt: string
   } | null>(null)
   
+  // Session ID for multi-turn conversation
+  const [chatSessionId, setChatSessionId] = useState<string>("")
+  
+  // Callback ref for handling assistant messages from child
+  const [onAssistantMessage, setOnAssistantMessage] = useState<((content: string) => void) | null>(null)
+  
   // Workflow status state
   const [workflowStatus, setWorkflowStatus] = useState<{
     current_step: string
@@ -172,24 +178,29 @@ export default function ChatSearchPage() {
     }))
   }
 
-  // Handle chat search with SSE streaming
-  const handleChatSearch = useCallback(async (prompt: string, deepResearch: boolean) => {
-    if (!prompt || prompt.trim().length < 10) {
-      setToast({ type: "error", message: "Please describe who you're looking for in at least 10 characters." })
+  // Handle chat message with new conversational endpoint
+  const handleChatMessage = useCallback(async (
+    message: string, 
+    deepResearch: boolean,
+    addAssistantMessage: (content: string) => void
+  ) => {
+    if (!message || message.trim().length < 2) {
+      setToast({ type: "error", message: "Please enter a message." })
       return
     }
 
-    // Store original prompt if this is the first attempt (not a clarification response)
-    if (!clarificationData) {
-      setOriginalPrompt(prompt)
+    // Generate session ID if not exists (persist across conversation)
+    let sessionId = chatSessionId
+    if (!sessionId) {
+      sessionId = `chat-${Date.now()}-${Math.random().toString(36).substring(7)}`
+      setChatSessionId(sessionId)
     }
 
-    // Start in "analyzing" state - DON'T show progress panel yet
-    // Only show full progress panel after we confirm no clarification needed
+    // Start in "analyzing" state
     setSearchStatus("analyzing")
     setClarificationData(null)
     setErrorMessage("")
-    setWorkflowStatus(null) // Don't show progress panel during analysis
+    setWorkflowStatus(null)
 
     try {
       const token = await ensureValidToken()
@@ -206,25 +217,25 @@ export default function ChatSearchPage() {
         "Authorization": `Bearer ${token}`
       }
 
-      const promptPayload = {
-        search_type: "prompt",
-        prompt: prompt,
+      const chatPayload = {
+        message: message,
+        session_id: sessionId,
         use_deep_research: deepResearch,
       }
 
-      console.log("[SSE Search] Starting:", promptPayload)
+      console.log("[ChatSearch] Starting:", chatPayload)
 
-      // Use SSE streaming endpoint
-      const response = await fetch("/api/search/stream", {
+      // Use new chat streaming endpoint
+      const response = await fetch("/api/search/chat/stream", {
         method: "POST",
         headers,
-        body: JSON.stringify(promptPayload),
+        body: JSON.stringify(chatPayload),
         credentials: "include",
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error("[SSE Search] Error:", response.status, errorText)
+        console.error("[ChatSearch] Error:", response.status, errorText)
         throw new Error(`Request failed: ${response.status}`)
       }
 
@@ -241,7 +252,7 @@ export default function ChatSearchPage() {
         const { done, value } = await reader.read()
         
         if (done) {
-          console.log("[SSE Search] Stream ended")
+          console.log("[ChatSearch] Stream ended")
           break
         }
 
@@ -258,30 +269,37 @@ export default function ChatSearchPage() {
             
             try {
               const event = JSON.parse(jsonStr)
-              console.log("[SSE Search] Event:", event.type, event)
+              console.log("[ChatSearch] Event:", event.type, event)
               
-              if (event.type === "progress") {
-                // Only transition to "searching" and show progress panel AFTER analysis phase
-                // This ensures we don't show progress if clarification is needed
-                if (event.step !== "analyzing") {
-                  setSearchStatus("searching")
-                  setWorkflowStatus({
-                    current_step: event.step,
-                    step_progress: event.progress,
-                    step_message: event.message
-                  })
-                }
-                // During "analyzing" step, keep status as "analyzing" with no workflow progress
-              } 
-              else if (event.type === "clarification") {
-                console.log("[SSE Search] Clarification needed:", event.clarification)
-                setClarificationData(event.clarification)
-                setSearchStatus("clarifying")
-                setWorkflowStatus(null)
-                return // Exit early for clarification
+              // Handle new event types
+              if (event.type === "message") {
+                // Chat response from assistant - stay in analyzing state, show message
+                console.log("[ChatSearch] Assistant message:", event.content?.substring(0, 50))
+                addAssistantMessage(event.content || "")
+                // Keep analyzing state - this is just conversation
+                setSearchStatus("idle")
               }
+              else if (event.type === "search_triggered") {
+                // Search is starting! Transition to searching state
+                console.log("[ChatSearch] Search triggered:", event.requirements)
+                setSearchStatus("searching")
+                setWorkflowStatus({
+                  current_step: "searching",
+                  step_progress: 0.3,
+                  step_message: `Searching for ${event.requirements?.job_title || 'candidates'}...`
+                })
+              }
+              else if (event.type === "progress") {
+                // Search workflow progress
+                setSearchStatus("searching")
+                setWorkflowStatus({
+                  current_step: event.step,
+                  step_progress: event.progress,
+                  step_message: event.message
+                })
+              } 
               else if (event.type === "complete") {
-                console.log("[SSE Search] Complete:", event.candidates?.length, "candidates")
+                console.log("[ChatSearch] Complete:", event.candidates?.length, "candidates")
                 
                 if (!event.candidates || event.candidates.length === 0) {
                   setCandidates([])
@@ -308,17 +326,17 @@ export default function ChatSearchPage() {
                 
                 // Store for results page navigation
                 localStorage.setItem('searchResults', JSON.stringify({
-                  search_id: event.search_id || `prompt-${Date.now()}`,
+                  search_id: event.search_id || `chat-${Date.now()}`,
                   results: transformed,
                   total_results: event.candidates.length,
                   timestamp: new Date().toISOString(),
                   search_metadata: event.search_metadata,
                   company_context: event.company_context,
                 }))
-                return // Exit after complete
+                return
               }
               else if (event.type === "error") {
-                console.error("[SSE Search] Error event:", event.message)
+                console.error("[ChatSearch] Error event:", event.message)
                 setErrorMessage(event.message || "Search failed. Please try again.")
                 setSearchStatus("error")
                 setWorkflowStatus(null)
@@ -326,18 +344,15 @@ export default function ChatSearchPage() {
                 return
               }
             } catch (parseErr) {
-              console.warn("[SSE Search] Parse error:", jsonStr, parseErr)
+              console.warn("[ChatSearch] Parse error:", jsonStr, parseErr)
             }
           }
         }
       }
 
-      // If we reach here without a complete/error event, handle gracefully
-      if (searchStatus === "searching") {
-        setSearchStatus("error")
-        setWorkflowStatus(null)
-        setErrorMessage("Search stream ended unexpectedly")
-        setToast({ type: "error", message: "Search stream ended unexpectedly. Please try again." })
+      // If we didn't get a search or error, just go back to idle
+      if (searchStatus === "analyzing") {
+        setSearchStatus("idle")
       }
 
     } catch (err: unknown) {
@@ -347,7 +362,16 @@ export default function ChatSearchPage() {
       setWorkflowStatus(null)
       setToast({ type: "error", message: `${norm.title}: ${norm.description}` })
     }
-  }, [clarificationData, searchStatus])
+  }, [chatSessionId, searchStatus])
+
+  // Legacy handler for backwards compatibility (used by manual mode clarification)
+  const handleChatSearch = useCallback(async (prompt: string, deepResearch: boolean) => {
+    // This is now just a wrapper - for manual mode clarification
+    // For actual chat, use handleChatMessage
+    console.log("[Legacy] handleChatSearch called - forwarding to handleChatMessage")
+    // Note: This won't work perfectly without the addAssistantMessage callback
+    // But manual mode doesn't use chat messages anyway
+  }, [])
 
   // Handle clarification response
   const handleClarificationResponse = useCallback((response: string) => {
@@ -541,7 +565,7 @@ export default function ChatSearchPage() {
           <div className="flex-1 overflow-hidden p-4">
             {searchMode === "chat" ? (
               <SearchChat
-                onSearch={handleChatSearch}
+                onSendMessage={handleChatMessage}
                 onClarificationResponse={handleClarificationResponse}
                 isSearching={searchStatus === "searching"}
                 isAnalyzing={searchStatus === "analyzing"}

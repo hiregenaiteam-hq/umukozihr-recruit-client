@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Sparkles, User, Bot, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,7 +38,10 @@ interface Message {
 }
 
 interface SearchChatProps {
-  onSearch: (prompt: string, deepResearch: boolean) => Promise<void>;
+  // New conversational handler - parent handles API call, returns assistant message via callback
+  onSendMessage?: (message: string, deepResearch: boolean, addAssistantMessage: (content: string) => void) => Promise<void>;
+  // Legacy handler for backwards compatibility
+  onSearch?: (prompt: string, deepResearch: boolean) => Promise<void>;
   onClarificationResponse: (response: string) => void;
   isSearching: boolean;  // true when actively searching (after analysis)
   isAnalyzing?: boolean; // true during initial prompt analysis
@@ -54,6 +57,7 @@ interface SearchChatProps {
 }
 
 export default function SearchChat({
+  onSendMessage,
   onSearch,
   onClarificationResponse,
   isSearching,
@@ -137,6 +141,21 @@ export default function SearchChat({
     return suggestions;
   };
 
+  // Callback to add assistant message from parent
+  const addAssistantMessage = useCallback((content: string) => {
+    const assistantMessage: Message = {
+      id: `assistant-${Date.now()}`,
+      role: "assistant",
+      content,
+      timestamp: new Date(),
+    };
+    setMessages((prev) => {
+      // Remove any analyzing indicator
+      const filtered = prev.filter((m) => m.id !== "analyzing");
+      return [...filtered, assistantMessage];
+    });
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim() || isSearching || isAnalyzing) return;
 
@@ -156,7 +175,7 @@ export default function SearchChat({
     if (lastMessage?.clarification) {
       onClarificationResponse(currentInput);
     } else {
-      // Add analyzing indicator (will be shown while backend analyzes prompt)
+      // Add analyzing indicator
       const analyzingMessage: Message = {
         id: "analyzing",
         role: "assistant",
@@ -166,11 +185,16 @@ export default function SearchChat({
       };
       setMessages((prev) => [...prev, analyzingMessage]);
 
-      // Trigger search
-      await onSearch(currentInput, deepResearch);
-
-      // Remove analyzing indicator
-      setMessages((prev) => prev.filter((m) => m.id !== "analyzing"));
+      // Use new conversational handler if available, fallback to legacy
+      if (onSendMessage) {
+        await onSendMessage(currentInput, deepResearch, addAssistantMessage);
+        // Remove analyzing indicator (addAssistantMessage handles this when adding message)
+        setMessages((prev) => prev.filter((m) => m.id !== "analyzing"));
+      } else if (onSearch) {
+        // Legacy flow
+        await onSearch(currentInput, deepResearch);
+        setMessages((prev) => prev.filter((m) => m.id !== "analyzing"));
+      }
     }
   };
 
